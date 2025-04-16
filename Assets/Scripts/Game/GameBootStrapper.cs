@@ -15,9 +15,13 @@ public class GameBootstrapper : MonoBehaviour
     {
         // 1. Game state
         GameStateService = new GameStateService(gameConfig);
+        var gridManager = GameObject.FindFirstObjectByType<GridManager>();
+        var gameplayUIController = GameObject.FindFirstObjectByType<GameplayUIController>();
+        
 
         // 2. Doom logic
-        DoomHandler = new DoomHandler(GameStateService);
+        var doomEffectService = new DoomEffectService(gridManager, gameplayUIController);
+        DoomHandler = new DoomHandler(GameStateService, doomEffectService); // ✅ Assign to static
 
         // 3. Card drawing (uses both game state and doom)
         CardDrawService = new CardDrawService(allSymbols, GameStateService, DoomHandler);

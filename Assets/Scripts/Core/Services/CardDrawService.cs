@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CardDrawService : ICardDrawService
@@ -34,13 +35,18 @@ public class CardDrawService : ICardDrawService
         // Fallback
         return _symbolPool[0];
     }
+    public SymbolCard GenerateCard()
+    {
+        SymbolDataSO selected = GetWeightedSymbol();
+        return new SymbolCard(selected);
+    }
+
 
     public SymbolCard DrawSymbolCard(bool applyDoom = true)
     {
-        SymbolDataSO selectedSymbol = GetWeightedSymbol();
-        SymbolCard newCard = new(selectedSymbol);
-
+        SymbolCard newCard = GenerateCard();
         _stateService.AddCardToHand(newCard);
+        LogHand("After draw");
 
         if (applyDoom)
         {
@@ -48,11 +54,24 @@ public class CardDrawService : ICardDrawService
 
             if (_doomHandler.TryTriggerDoom())
             {
-                Debug.Log("DOOM TRIGGERED! Add corrupted card here.");
+                Debug.Log("DOOM TRIGGERED!");
+                // DO NOT add another card here
             }
         }
 
         return newCard;
+    }
+
+    public SymbolDataSO GetRandomSymbol()
+    {
+        return _symbolPool[Random.Range(0, _symbolPool.Count)];
+    }
+    private void LogHand(string context)
+    {
+        var hand = _stateService.PlayerHand;
+        Debug.Log($"[HAND] {context} ({hand.Count} cards):");
+        foreach (var c in hand)
+            Debug.Log($" - {c.Data.symbolName}");
     }
 
 

@@ -44,6 +44,12 @@ public class TileSlotController : MonoBehaviour
     }
 
     public bool IsOccupied() => isOccupied;
+    public void ForceSetCard(SymbolCard card)
+    {
+        currentCard = card;
+        isOccupied = true;
+        RefreshVisuals();
+    }
 
     public void AssignModifier(TileModifierSO modifierSO)
     {
@@ -92,5 +98,29 @@ public class TileSlotController : MonoBehaviour
             TileModifierType.MultiplyValue => baseValue * modifier.amount,
             _ => baseValue
         };
+    }
+    public void MarkUnplayable()
+    {
+        isOccupied = true;
+        modifierText.text = "X"; // Or "🕳️" or "DEAD"
+        modifierText.color = Color.red;
+        modifierText.gameObject.SetActive(true);
+    }
+
+    public void LockPermanently()
+    {
+        isOccupied = true;
+        modifierText.text = "🔒";
+    }
+
+    public bool IsLocked() => isOccupied;
+
+    public void RefreshVisuals()
+    {
+        if (currentCard != null)
+        {
+            symbolImage.sprite = currentCard.Data.symbolSprite;
+            symbolText.text = currentCard.Data.symbolName;
+        }
     }
 }

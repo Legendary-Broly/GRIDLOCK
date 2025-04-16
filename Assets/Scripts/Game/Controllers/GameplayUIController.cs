@@ -33,12 +33,11 @@ public class GameplayUIController : MonoBehaviour
         gridStateEvaluator = new GridStateEvaluator();
 
         // Initial 3-card draw (no Doom)
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 1; i++)
         {
-            var card = GameBootstrapper.CardDrawService.DrawSymbolCard(false);
-            CreateCardSlot(card);
+            GameBootstrapper.CardDrawService.DrawSymbolCard(false);
         }
-
+        RebuildHandUI(); // ✅ Add this after the loop
         RefreshUI();
     }
 
@@ -50,16 +49,17 @@ public class GameplayUIController : MonoBehaviour
             return;
         }
 
-        var card = GameBootstrapper.CardDrawService.DrawSymbolCard(true);
-        CreateCardSlot(card);
+        GameBootstrapper.CardDrawService.DrawSymbolCard(true);
+        RebuildHandUI(); // ✅ Trigger rebuild after draw
         RefreshUI();
-    }
 
+    }
     private void CreateCardSlot(SymbolCard card)
     {
         GameObject slot = Instantiate(cardSlotPrefab, cardHandContainer);
         CardSlotController controller = slot.GetComponent<CardSlotController>();
         controller.Initialize(card, this);
+        Debug.Log($"[UI] CreateCardSlot called — card: {card.Data.symbolName}, from: {new System.Diagnostics.StackTrace()}");
     }
 
     private void RefreshUI()
@@ -106,4 +106,21 @@ public class GameplayUIController : MonoBehaviour
         Debug.Log($"[GRIDLOCK] Final Score (includes Doom multiplier): {finalScore}");
 
     }
+    public void RebuildHandUI()
+    {
+        // Forcefully destroy all children in the hand container
+        foreach (Transform child in cardHandContainer)
+        {
+            DestroyImmediate(child.gameObject); // ✅ Forces full clean regardless of timing
+        }
+
+        var hand = GameBootstrapper.GameStateService.PlayerHand;
+        foreach (var card in hand)
+        {
+            CreateCardSlot(card);
+        }
+
+        Debug.Log($"[UI] Rebuilding hand: {hand.Count} cards");
+    }
+
 }

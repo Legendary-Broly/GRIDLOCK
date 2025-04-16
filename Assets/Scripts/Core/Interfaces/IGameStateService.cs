@@ -7,4 +7,8 @@ public interface IGameStateService
     float CurrentDoomChance { get; }
     void AddCardToHand(SymbolCard card);
     void AdvanceDraw();
+    int CurrentDoomStage { get; }
+    int DoomEffectCount { get; }
+    void IncrementDoomEffectCount();
+
 }
