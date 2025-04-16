@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b0f89c764d48fe40bd2bb9b0f254966, type: 3}
+  m_Name: GameConfigDefault
+  m_EditorClassIdentifier: 
+  doomStartChance: 0.05
+  doomMaxChance: 0.5
+  doomIncrementPerDraw: 0.1
+  multiplierStart: 1
+  multiplierMax: 4
+  multiplierIncrementPerDraw: 0.5
