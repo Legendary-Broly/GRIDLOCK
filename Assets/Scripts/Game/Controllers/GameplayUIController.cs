@@ -111,7 +111,7 @@ public class GameplayUIController : MonoBehaviour
         // Forcefully destroy all children in the hand container
         foreach (Transform child in cardHandContainer)
         {
-            DestroyImmediate(child.gameObject); // ✅ Forces full clean regardless of timing
+            Destroy(child.gameObject); // ✅ Forces full clean regardless of timing
         }
 
         var hand = GameBootstrapper.GameStateService.PlayerHand;

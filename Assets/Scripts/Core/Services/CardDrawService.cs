@@ -41,7 +41,6 @@ public class CardDrawService : ICardDrawService
         return new SymbolCard(selected);
     }
 
-
     public SymbolCard DrawSymbolCard(bool applyDoom = true)
     {
         SymbolCard newCard = GenerateCard();
