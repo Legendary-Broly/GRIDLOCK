@@ -1,36 +1,48 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
+using System.Linq;
 
 public class GameBootstrapper : MonoBehaviour
 {
-    [Header("Config References")]
-    [SerializeField] private GameConfigSO gameConfig;
-    [SerializeField] private List<SymbolDataSO> allSymbols;
-
     public static IGameStateService GameStateService { get; private set; }
-    public static IDoomHandler DoomHandler { get; private set; }
-    public static ICardDrawService CardDrawService { get; private set; }
+    public static CardDrawService CardDrawService { get; private set; }
+    public static DoomEffectService DoomEffectService { get; private set; }
+    public static DoomHandler DoomHandler { get; private set; }
     public static DoomMeterUI DoomMeterUI { get; private set; }
 
-    public static void Init(GameObject root)
-    {
-        // After instantiating or finding the UI prefab:
-        DoomMeterUI = root.GetComponentInChildren<DoomMeterUI>();
-    }
+    [SerializeField] private GameObject Canvas;
 
     private void Awake()
     {
-        // 1. Game state
-        GameStateService = new GameStateService(gameConfig);
-        var gridManager = GameObject.FindFirstObjectByType<GridManager>();
-        var gameplayUIController = GameObject.FindFirstObjectByType<GameplayUIController>();
-        
+        // Load all symbols from Resources/Symbols/
+        var symbolPool = new List<SymbolDataSO>(Resources.LoadAll<SymbolDataSO>("Symbols"));
 
-        // 2. Doom logic
-        var doomEffectService = new DoomEffectService(gridManager, gameplayUIController);
-        DoomHandler = new DoomHandler(GameStateService, doomEffectService); // ✅ Assign to static
+        // Core services
+        GameStateService = new GameStateService();
+        var gameplayUI = FindFirstObjectByType<GameplayUIController>();
+        var gridManager = FindFirstObjectByType<GridManager>();
 
-        // 3. Card drawing (uses both game state and doom)
-        CardDrawService = new CardDrawService(allSymbols, GameStateService, DoomHandler);
+        DoomEffectService = new DoomEffectService(gridManager, gameplayUI);
+
+        DoomHandler = new DoomHandler(GameStateService, DoomEffectService);
+
+        // Inject with null pool initially (safe DI pattern)
+        CardDrawService = new CardDrawService(null, GameStateService, DoomHandler);
+        CardDrawService.InitializeSymbolPool(symbolPool);
+
+        // UI
+        DoomMeterUI = Canvas.GetComponentInChildren<DoomMeterUI>();
+        DoomMeterUI.UpdateDoomMeter(
+            GameStateService.CurrentDoomChance,
+            GameStateService.CurrentDoomMultiplier
+        );
+
+        // Ensure the hand is initialized once everything is ready
+        //gameplayUI.Init();
     }
+    private void Start()
+    {
+        FindFirstObjectByType<GameplayUIController>().Init();
+    }
+
 }

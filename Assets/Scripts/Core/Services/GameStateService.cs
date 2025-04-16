@@ -3,52 +3,41 @@ using System.Collections.Generic;
 
 public class GameStateService : IGameStateService
 {
-    public List<SymbolCard> PlayerHand { get; } = new();
-    public float CurrentMultiplier { get; private set; }
-    public float CurrentDoomChance { get; private set; }
-    private float _currentDoomMultiplier = 1.0f;
+    private float _currentDoomChance = 0f;
+    private float _currentDoomMultiplier = 1f;
+    private int _doomDrawCount = 0;
+    private int _doomEffectCount = 0;
+
+    private List<SymbolCard> _playerHand = new();
+
+    public List<SymbolCard> PlayerHand => _playerHand;
+
+    public float CurrentMultiplier => _currentDoomMultiplier;
+
+    public int DoomEffectCount => _doomEffectCount;
+
+    public float CurrentDoomChance => _currentDoomChance;
     public float CurrentDoomMultiplier => _currentDoomMultiplier;
-
-    private GameConfigSO _config;
-
-    public GameStateService(GameConfigSO config)
-    {
-        _config = config;
-        CurrentMultiplier = _config.multiplierStart;
-        CurrentDoomChance = _config.doomStartChance;
-    }
+    public int CurrentDoomStage => Mathf.Clamp(_doomEffectCount + 1, 1, 3);
 
     public void AddCardToHand(SymbolCard card)
     {
-        PlayerHand.Add(card);
+        _playerHand.Add(card);
     }
 
     public void AdvanceDraw()
     {
-        CurrentMultiplier = Mathf.Min(CurrentMultiplier + _config.multiplierIncrementPerDraw, _config.multiplierMax);
-        CurrentDoomChance = Mathf.Min(CurrentDoomChance + _config.doomIncrementPerDraw, _config.doomMaxChance);
-    }
+        _doomDrawCount++;
 
-    private int CalculateDoomStage(float doomChance)
-    {
-        if (doomChance < 0.2f) return 1;
-        if (doomChance < 0.4f) return 2;
-        return 3;
-    }
-    private int _doomEffectCount = 0;
+        _currentDoomChance = Mathf.Min(1f, _doomDrawCount * 0.1f);      // 10% per draw
+        _currentDoomMultiplier = 1f + (_doomDrawCount * 0.25f);         // +0.25x per draw
 
-    public int DoomEffectCount => _doomEffectCount;
+        // Update DoomMeterUI
+        GameBootstrapper.DoomMeterUI.UpdateDoomMeter(_currentDoomChance, _currentDoomMultiplier);
+    }
 
     public void IncrementDoomEffectCount()
     {
         _doomEffectCount++;
     }
-
-    public int CurrentDoomStage => _doomEffectCount switch
-    {
-        0 => 1,
-        1 => 2,
-        _ => 3
-    };
-
 }

@@ -17,6 +17,12 @@ public class CardDrawService : ICardDrawService
 
     private SymbolDataSO GetWeightedSymbol()
     {
+        if (_symbolPool == null || _symbolPool.Count == 0)
+        {
+            Debug.LogWarning("Symbol pool is empty or not initialized.");
+            return null; // Or throw an exception if this is critical
+        }
+
         int totalWeight = 0;
 
         foreach (var symbol in _symbolPool)
@@ -67,11 +73,20 @@ public class CardDrawService : ICardDrawService
     }
     private void LogHand(string context)
     {
+        if (_stateService?.PlayerHand == null)
+        {
+            Debug.LogWarning("Player hand is not initialized.");
+            return;
+        }
+
         var hand = _stateService.PlayerHand;
         Debug.Log($"[HAND] {context} ({hand.Count} cards):");
         foreach (var c in hand)
             Debug.Log($" - {c.Data.symbolName}");
     }
-
+    public void InitializeSymbolPool(List<SymbolDataSO> symbols)
+    {
+        _symbolPool = symbols;
+    }
 
 }

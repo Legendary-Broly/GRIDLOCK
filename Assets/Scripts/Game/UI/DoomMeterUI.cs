@@ -8,7 +8,7 @@ public class DoomMeterUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI multiplierText;
 
     private float fillAmount = 0f;
-    private float maxFill = 1f; // Full bar
+    //private float maxFill = 1f; // Full bar
 
     public void UpdateDoomMeter(float doomChance, float doomMultiplier)
     {

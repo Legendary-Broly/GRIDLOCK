@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class GameplayUIController : MonoBehaviour
 {
@@ -26,6 +27,11 @@ public class GameplayUIController : MonoBehaviour
     private const int MaxHandSize = 5;
     private IGridStateEvaluator gridStateEvaluator;
     private CardSlotController selectedCard = null;
+    public void Init()
+    {
+        GameBootstrapper.CardDrawService.DrawSymbolCard(true);
+        RebuildHandUI();
+    }
 
     private void Start()
     {
@@ -35,13 +41,13 @@ public class GameplayUIController : MonoBehaviour
         // Initial 3-card draw (no Doom)
         for (int i = 0; i < 1; i++)
         {
-            GameBootstrapper.CardDrawService.DrawSymbolCard(false);
+            //GameBootstrapper.CardDrawService.DrawSymbolCard(false);
         }
-        RebuildHandUI(); // ✅ Add this after the loop
         RefreshUI();
     }
 
-    private void OnDrawButtonClicked()
+
+    public void OnDrawButtonClicked()
     {
         if (GameBootstrapper.GameStateService.PlayerHand.Count >= MaxHandSize)
         {
