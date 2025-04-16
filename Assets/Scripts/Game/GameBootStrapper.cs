@@ -10,6 +10,13 @@ public class GameBootstrapper : MonoBehaviour
     public static IGameStateService GameStateService { get; private set; }
     public static IDoomHandler DoomHandler { get; private set; }
     public static ICardDrawService CardDrawService { get; private set; }
+    public static DoomMeterUI DoomMeterUI { get; private set; }
+
+    public static void Init(GameObject root)
+    {
+        // After instantiating or finding the UI prefab:
+        DoomMeterUI = root.GetComponentInChildren<DoomMeterUI>();
+    }
 
     private void Awake()
     {

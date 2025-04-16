@@ -6,6 +6,8 @@ public class GameStateService : IGameStateService
     public List<SymbolCard> PlayerHand { get; } = new();
     public float CurrentMultiplier { get; private set; }
     public float CurrentDoomChance { get; private set; }
+    private float _currentDoomMultiplier = 1.0f;
+    public float CurrentDoomMultiplier => _currentDoomMultiplier;
 
     private GameConfigSO _config;
 

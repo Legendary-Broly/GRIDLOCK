@@ -10,5 +10,6 @@ public interface IGameStateService
     int CurrentDoomStage { get; }
     int DoomEffectCount { get; }
     void IncrementDoomEffectCount();
+    float CurrentDoomMultiplier { get; }
 
 }
