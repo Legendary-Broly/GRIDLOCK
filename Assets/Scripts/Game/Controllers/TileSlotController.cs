@@ -40,7 +40,7 @@ public class TileSlotController : MonoBehaviour
         if (symbolText != null)
             symbolText.text = card.Data.symbolName;
 
-        Debug.Log("[TileSlot] Card placed: " + card.Data.symbolName);
+        // Debug.Log("[TileSlot] Card placed: " + card.Data.symbolName);
     }
 
     public bool IsOccupied() => isOccupied;
@@ -58,7 +58,7 @@ public class TileSlotController : MonoBehaviour
         if (modifierSO == null)
         {
             modifierText.gameObject.SetActive(false);
-            Debug.Log("Modifier cleared or null.");
+            // Debug.Log("Modifier cleared or null.");
             return;
         }
 
@@ -72,7 +72,7 @@ public class TileSlotController : MonoBehaviour
         modifierText.text = modDisplay;
         modifierText.gameObject.SetActive(true);
 
-        Debug.Log($"Modifier text set to: {modDisplay}");
+        // Debug.Log($"Modifier text set to: {modDisplay}");
     }
 
     public void OnTileClicked()

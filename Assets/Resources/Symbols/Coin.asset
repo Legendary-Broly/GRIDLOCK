@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   symbolName: Coin
   symbolSprite: {fileID: 21300000, guid: 93b5b28db06f8d2439c780ec3aeb28d2, type: 3}
-  baseValue: 2
+  baseValue: 20
   symbolType: 1
   triggersCombo: 1
   drawWeight: 5

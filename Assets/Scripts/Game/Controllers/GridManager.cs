@@ -22,27 +22,27 @@ public class GridManager : MonoBehaviour
 
     public void CreateGrid(int size)
     {
-        Debug.Log("GridManager CreateGrid started");
-        Debug.Log("GridContainer: " + gridContainer);
+        // Debug.Log("GridManager CreateGrid started");
+        // Debug.Log("GridContainer: " + gridContainer);
 
         ClearGrid();
 
         if (gridContainer == null)
         {
-            Debug.LogError("GridContainer not assigned!");
+            // Debug.LogError("GridContainer not assigned!");
             return;
         }
 
         if (tileSlotPrefab == null)
         {
-            Debug.LogError("TileSlotPrefab not assigned in GridManager!", this);
+            // Debug.LogError("TileSlotPrefab not assigned in GridManager!", this);
             return;
         }
 
         GridLayoutGroup layout = gridContainer.GetComponent<GridLayoutGroup>();
         if (layout == null)
         {
-            Debug.LogError("GridContainer is missing GridLayoutGroup!");
+            // Debug.LogError("GridContainer is missing GridLayoutGroup!");
             return;
         }
 
@@ -51,21 +51,21 @@ public class GridManager : MonoBehaviour
 
         for (int i = 0; i < size * size; i++)
         {
-            Debug.Log($"Creating tile {i}");
+            // Debug.Log($"Creating tile {i}");
 
             GameObject tile = Instantiate(tileSlotPrefab, gridContainer.transform);
             if (tile == null)
             {
-                Debug.LogError("Tile instantiation failed!");
+                // Debug.LogError("Tile instantiation failed!");
                 continue;
             }
 
-            Debug.Log("Tile instantiated successfully");
+            // Debug.Log("Tile instantiated successfully");
 
             TileSlotController controller = tile.GetComponent<TileSlotController>();
             if (controller == null)
             {
-                Debug.LogError("TileSlotController missing on prefab!", tile);
+                // Debug.LogError("TileSlotController missing on prefab!", tile);
                 continue;
             }
 
@@ -75,13 +75,13 @@ public class GridManager : MonoBehaviour
             Button button = tile.GetComponent<Button>();
             if (button == null)
             {
-                Debug.LogError("Button missing on tile prefab!", tile);
+                // Debug.LogError("Button missing on tile prefab!", tile);
                 continue;
             }
 
             // TileSlotController handles its own click logic now, no need to assign anything here.
 
-            Debug.Log($"Tile {i} setup complete");
+            // Debug.Log($"Tile {i} setup complete");
         }
 
     }

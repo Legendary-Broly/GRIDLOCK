@@ -32,9 +32,14 @@ public class GameStateService : IGameStateService
         _currentDoomChance = Mathf.Min(1f, _doomDrawCount * 0.1f);      // 10% per draw
         _currentDoomMultiplier = 1f + (_doomDrawCount * 0.25f);         // +0.25x per draw
 
-        // Update DoomMeterUI
-        GameBootstrapper.DoomMeterUI.UpdateDoomMeter(_currentDoomChance, _currentDoomMultiplier);
+        // Update DoomMeterUI with stage
+        GameBootstrapper.DoomMeterUI.UpdateDoomMeter(
+            _currentDoomChance,
+            _currentDoomMultiplier,
+            CurrentDoomStage
+        );
     }
+
 
     public void IncrementDoomEffectCount()
     {

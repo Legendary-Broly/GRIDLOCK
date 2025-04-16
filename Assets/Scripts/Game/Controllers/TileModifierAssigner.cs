@@ -12,12 +12,12 @@ public class TileModifierAssigner : MonoBehaviour
     {
         if (availableModifiers == null || availableModifiers.Count == 0 || tiles == null || tiles.Count == 0)
         {
-            Debug.LogWarning("TileModifierAssigner: No modifiers or tiles available.");
+            // Debug.LogWarning("TileModifierAssigner: No modifiers or tiles available.");
             return;
         }
 
         int modifierCount = Random.Range(minModifiers, maxModifiers + 1);
-        Debug.Log($"Attempting to assign {modifierCount} modifiers.");
+        // Debug.Log($"Attempting to assign {modifierCount} modifiers.");
 
         List<int> availableIndexes = new List<int>();
         for (int i = 0; i < tiles.Count; i++) availableIndexes.Add(i);
@@ -32,7 +32,7 @@ public class TileModifierAssigner : MonoBehaviour
             TileSlotController tile = tiles[tileIndex];
             TileModifierSO modifier = availableModifiers[Random.Range(0, availableModifiers.Count)];
             
-            Debug.Log($"Assigning modifier {modifier.modifierType} with value {modifier.amount} to tile {tileIndex}");
+            // Debug.Log($"Assigning modifier {modifier.modifierType} with value {modifier.amount} to tile {tileIndex}");
             
             tile.AssignModifier(modifier);
         }

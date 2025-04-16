@@ -29,7 +29,9 @@ public class GameplayUIController : MonoBehaviour
     private CardSlotController selectedCard = null;
     public void Init()
     {
-        GameBootstrapper.CardDrawService.DrawSymbolCard(true); // Initial draw to populate the hand
+        for (int i = 0; i < 3; i++)
+            GameBootstrapper.CardDrawService.DrawSymbolCard(false); // Initial draw to populate the hand
+
         RebuildHandUI();
     }
 
@@ -38,11 +40,6 @@ public class GameplayUIController : MonoBehaviour
         drawButton.onClick.AddListener(OnDrawButtonClicked);
         gridStateEvaluator = new GridStateEvaluator();
 
-        // Initial 3-card draw (no Doom)
-        for (int i = 0; i < 1; i++)
-        {
-            //GameBootstrapper.CardDrawService.DrawSymbolCard(false);
-        }
         RefreshUI();
     }
 
@@ -51,7 +48,7 @@ public class GameplayUIController : MonoBehaviour
     {
         if (GameBootstrapper.GameStateService.PlayerHand.Count >= MaxHandSize)
         {
-            Debug.Log("Hand is full.");
+            // Debug.Log("Hand is full.");
             return;
         }
 
@@ -65,7 +62,7 @@ public class GameplayUIController : MonoBehaviour
         GameObject slot = Instantiate(cardSlotPrefab, cardHandContainer);
         CardSlotController controller = slot.GetComponent<CardSlotController>();
         controller.Initialize(card, this);
-        Debug.Log($"[UI] CreateCardSlot called — card: {card.Data.symbolName}, from: {new System.Diagnostics.StackTrace()}");
+        // Debug.Log($"[UI] CreateCardSlot called — card: {card.Data.symbolName}, from: {new System.Diagnostics.StackTrace()}");
     }
 
     private void RefreshUI()
@@ -117,7 +114,7 @@ public class GameplayUIController : MonoBehaviour
         float doomMultiplier = GameBootstrapper.GameStateService.CurrentMultiplier;
 
         int finalScore = gridStateEvaluator.EvaluateTotalScore(grid);
-        Debug.Log($"[GRIDLOCK] Final Score (includes Doom multiplier): {finalScore}");
+        // Debug.Log($"[GRIDLOCK] Final Score (includes Doom multiplier): {finalScore}");
 
     }
     public void RebuildHandUI()
@@ -134,7 +131,7 @@ public class GameplayUIController : MonoBehaviour
             CreateCardSlot(card);
         }
 
-        Debug.Log($"[UI] Rebuilding hand: {hand.Count} cards");
+        // Debug.Log($"[UI] Rebuilding hand: {hand.Count} cards");
     }
 
 }

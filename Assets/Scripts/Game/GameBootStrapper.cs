@@ -23,7 +23,6 @@ public class GameBootstrapper : MonoBehaviour
         var gridManager = FindFirstObjectByType<GridManager>();
 
         DoomEffectService = new DoomEffectService(gridManager, gameplayUI);
-
         DoomHandler = new DoomHandler(GameStateService, DoomEffectService);
 
         // Inject with null pool initially (safe DI pattern)
@@ -34,12 +33,14 @@ public class GameBootstrapper : MonoBehaviour
         DoomMeterUI = Canvas.GetComponentInChildren<DoomMeterUI>();
         DoomMeterUI.UpdateDoomMeter(
             GameStateService.CurrentDoomChance,
-            GameStateService.CurrentDoomMultiplier
+            GameStateService.CurrentDoomMultiplier,
+            GameStateService.CurrentDoomStage
         );
 
         // Ensure the hand is initialized once everything is ready
-        //gameplayUI.Init();
+        // gameplayUI.Init();
     }
+
     private void Start()
     {
         FindFirstObjectByType<GameplayUIController>().Init();

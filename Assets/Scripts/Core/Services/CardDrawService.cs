@@ -19,7 +19,7 @@ public class CardDrawService : ICardDrawService
     {
         if (_symbolPool == null || _symbolPool.Count == 0)
         {
-            Debug.LogWarning("Symbol pool is empty or not initialized.");
+            // Debug.LogWarning("Symbol pool is empty or not initialized.");
             return null; // Or throw an exception if this is critical
         }
 
@@ -75,7 +75,7 @@ public class CardDrawService : ICardDrawService
     {
         if (_stateService?.PlayerHand == null)
         {
-            Debug.LogWarning("Player hand is not initialized.");
+            // Debug.LogWarning("Player hand is not initialized.");
             return;
         }
 

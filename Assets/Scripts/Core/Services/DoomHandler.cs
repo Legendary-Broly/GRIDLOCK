@@ -14,11 +14,14 @@ public class DoomHandler : IDoomHandler
     public void IncrementDoom()
     {
         _stateService.AdvanceDraw();
+
         GameBootstrapper.DoomMeterUI.UpdateDoomMeter(
             _stateService.CurrentDoomChance,
-            _stateService.CurrentDoomMultiplier
+            _stateService.CurrentDoomMultiplier,
+            _stateService.CurrentDoomStage
         );
     }
+
 
     public bool TryTriggerDoom()
     {
