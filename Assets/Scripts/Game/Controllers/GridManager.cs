@@ -10,10 +10,14 @@ public class GridManager : MonoBehaviour
 
     private List<TileSlotController> gridSlots = new();
 
+    [SerializeField] private TileModifierAssigner modifierAssigner; // Ensure this is assigned in inspector.
+
     private void Start()
     {
-        // Example: Initialize the grid with a default size of 5
         CreateGrid(3);
+
+        // Assign modifiers after grid creation
+        modifierAssigner.AssignModifiers(gridSlots);
     }
 
     public void CreateGrid(int size)

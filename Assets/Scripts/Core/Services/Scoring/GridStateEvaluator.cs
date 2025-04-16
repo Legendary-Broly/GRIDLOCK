@@ -20,38 +20,72 @@ public class GridStateEvaluator : IGridStateEvaluator
         allMatchedStates.AddRange(MatchPlus(grid));
         allMatchedStates.AddRange(MatchFullGrid(grid));
 
-        foreach (var state in allMatchedStates)
-        {
-            int baseValue = 0;
-            foreach (var pos in state)
-            {
-                matchedPositions.Add(pos);
-                baseValue += GetSymbolValue(grid[pos.x, pos.y].CurrentCard?.Data);
-            }
-
-            int multiplier = GetMultiplierForState(state.Length);
-            totalScore += baseValue * multiplier;
-        }
-
-        // Add value of unmatched cards as fallback
+        // STEP 1 & 2: Get final value of each symbol (face + modifier)
+        Dictionary<Vector2Int, int> modifiedSymbolValues = new();
         for (int x = 0; x < 3; x++)
         {
             for (int y = 0; y < 3; y++)
             {
-                Vector2Int pos = new(x, y);
-                if (!matchedPositions.Contains(pos))
+                var slot = grid[x, y];
+                var card = slot.CurrentCard;
+                if (card == null) continue;
+
+                int value = card.Data.baseValue;
+
+                var mod = slot.GetModifier();
+                if (mod != null)
                 {
-                    var card = grid[x, y].CurrentCard;
-                    if (card != null)
+                    switch (mod.modifierType)
                     {
-                        totalScore += GetSymbolValue(card.Data); // No multiplier
+                        case TileModifierType.AddValue:
+                            value += mod.amount;
+                            break;
+                        case TileModifierType.MultiplyValue:
+                            value *= mod.amount;
+                            break;
                     }
                 }
+
+                modifiedSymbolValues[new Vector2Int(x, y)] = value;
             }
         }
 
-        return totalScore;
+        // STEP 3: Apply Grid State multipliers
+        foreach (var state in allMatchedStates)
+        {
+            if (state.Length == 0) continue;
+
+            int stateScore = 0;
+            int multiplier = GetMultiplierForState(state.Length);
+
+            foreach (var pos in state)
+            {
+                if (modifiedSymbolValues.TryGetValue(pos, out int val))
+                {
+                    stateScore += val;
+                    matchedPositions.Add(pos);
+                }
+            }
+
+            totalScore += stateScore * multiplier;
+        }
+
+        // Add unmatched tile values (not multiplied)
+        foreach (var kvp in modifiedSymbolValues)
+        {
+            if (!matchedPositions.Contains(kvp.Key))
+                totalScore += kvp.Value;
+        }
+
+        // STEP 4: Apply Doom Multiplier
+        float doomMultiplier = GameBootstrapper.GameStateService.CurrentMultiplier;
+        int finalScore = Mathf.RoundToInt(totalScore * doomMultiplier);
+
+        Debug.Log($"[GRIDLOCK] Raw Score: {totalScore}, Final Score with Doom x{doomMultiplier}: {finalScore}");
+        return finalScore;
     }
+
+
     private bool AllMatch(SymbolDataSO[] symbols)
     {
         if (symbols.Any(s => s == null)) return false;

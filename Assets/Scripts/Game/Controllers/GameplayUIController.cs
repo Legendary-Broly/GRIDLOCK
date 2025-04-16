@@ -102,9 +102,8 @@ public class GameplayUIController : MonoBehaviour
         TileSlotController[,] grid = gridManager.GetTileGrid();
         float doomMultiplier = GameBootstrapper.GameStateService.CurrentMultiplier;
 
-        int rawScore = gridStateEvaluator.EvaluateTotalScore(grid);
-        int totalScore = Mathf.RoundToInt(rawScore * doomMultiplier);
+        int finalScore = gridStateEvaluator.EvaluateTotalScore(grid);
+        Debug.Log($"[GRIDLOCK] Final Score (includes Doom multiplier): {finalScore}");
 
-        Debug.Log($"[GRIDLOCK] Raw: {rawScore}, Multiplied: {totalScore} (x{doomMultiplier})");
     }
 }

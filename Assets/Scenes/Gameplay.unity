@@ -1814,6 +1814,7 @@ GameObject:
   - component: {fileID: 1867186482}
   - component: {fileID: 1867186483}
   - component: {fileID: 1867186484}
+  - component: {fileID: 1867186485}
   m_Layer: 0
   m_Name: GameLogic
   m_TagString: Untagged
@@ -1870,6 +1871,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridContainer: {fileID: 1318466804}
   tileSlotPrefab: {fileID: 4547969106807560049, guid: 4d622f4beeb7535409018ababd0b6504, type: 3}
+  modifierAssigner: {fileID: 1867186485}
+--- !u!114 &1867186485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1867186481}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 458a4f58ca4787a459ac4e69083a3ac1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  availableModifiers:
+  - {fileID: 11400000, guid: fa9d16466c4b4a4449adac3247519b86, type: 2}
+  - {fileID: 11400000, guid: bce32c7f69c65b04a8ebf27f6433b22c, type: 2}
+  - {fileID: 11400000, guid: e48bc7ba254780347a5cd8c6269d4e95, type: 2}
+  - {fileID: 11400000, guid: 233031e12863ff24d9858202a6ff0d1d, type: 2}
+  minModifiers: 1
+  maxModifiers: 3
 --- !u!1 &1879451001
 GameObject:
   m_ObjectHideFlags: 0
