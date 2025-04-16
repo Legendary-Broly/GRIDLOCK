@@ -29,7 +29,7 @@ public class GameplayUIController : MonoBehaviour
     private CardSlotController selectedCard = null;
     public void Init()
     {
-        GameBootstrapper.CardDrawService.DrawSymbolCard(true);
+        GameBootstrapper.CardDrawService.DrawSymbolCard(true); // Initial draw to populate the hand
         RebuildHandUI();
     }
 
@@ -71,16 +71,24 @@ public class GameplayUIController : MonoBehaviour
     private void RefreshUI()
     {
         float doom = GameBootstrapper.GameStateService.CurrentDoomChance;
-        float mult = GameBootstrapper.GameStateService.CurrentMultiplier;
+        float mult = GameBootstrapper.GameStateService.CurrentDoomMultiplier;
 
-        doomBar.fillAmount = doom;
-        doomText.text = $"Doom: {(int)(doom * 100)}%";
+        if (doomBar != null)
+            doomBar.fillAmount = doom;
 
-        multiplierBar.fillAmount = mult / 4f;
-        multiplierText.text = $"x{mult:0.0}";
+        if (doomText != null)
+            doomText.text = $"Doom: {(int)(doom * 100)}%";
 
-        drawButton.interactable = GameBootstrapper.GameStateService.PlayerHand.Count < MaxHandSize;
+        if (multiplierBar != null)
+            multiplierBar.fillAmount = mult / 4f;
+
+        if (multiplierText != null)
+            multiplierText.text = $"x{mult:0.0}";
+
+        if (drawButton != null)
+            drawButton.interactable = GameBootstrapper.GameStateService.PlayerHand.Count < MaxHandSize;
     }
+
 
     public void SelectCard(CardSlotController cardSlot)
     {

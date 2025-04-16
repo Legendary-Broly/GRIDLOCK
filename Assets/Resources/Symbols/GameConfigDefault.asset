@@ -15,6 +15,6 @@ MonoBehaviour:
   doomStartChance: 0
   doomMaxChance: 0.6
   doomIncrementPerDraw: 0.15
-  multiplierStart: 1
+  multiplierStart: 0.7
   multiplierMax: 4
   multiplierIncrementPerDraw: 0.5
