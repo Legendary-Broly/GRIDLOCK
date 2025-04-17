@@ -85,7 +85,6 @@ public class GridStateEvaluator : IGridStateEvaluator
         return finalScore;
     }
 
-
     private bool AllMatch(SymbolDataSO[] symbols)
     {
         if (symbols.Any(s => s == null)) return false;
@@ -350,4 +349,103 @@ public class GridStateEvaluator : IGridStateEvaluator
         matches.Add(allPositions.ToArray());
         return matches;
     }
+    public int CalculateRawScore(TileSlotController[,] grid)
+    {
+        int totalScore = 0;
+        int gridSize = grid.GetLength(0);
+
+        HashSet<Vector2Int> matchedPositions = new();
+        List<Vector2Int[]> allMatchedStates = new();
+
+        allMatchedStates.AddRange(MatchRows(grid));
+        allMatchedStates.AddRange(MatchColumns(grid));
+        allMatchedStates.AddRange(MatchDiagonals(grid));
+        allMatchedStates.AddRange(MatchDiamond(grid));
+        allMatchedStates.AddRange(MatchX(grid));
+        allMatchedStates.AddRange(MatchPlus(grid));
+        allMatchedStates.AddRange(MatchFullGrid(grid));
+
+        Dictionary<Vector2Int, int> modifiedSymbolValues = new();
+        for (int x = 0; x < 3; x++)
+        for (int y = 0; y < 3; y++)
+        {
+            var slot = grid[x, y];
+            var card = slot.CurrentCard;
+            if (card == null) continue;
+
+            int value = card.Data.baseValue;
+
+            var mod = slot.GetModifier();
+            if (mod != null)
+            {
+                switch (mod.modifierType)
+                {
+                    case TileModifierType.AddValue:
+                        value += mod.amount;
+                        break;
+                    case TileModifierType.MultiplyValue:
+                        value *= mod.amount;
+                        break;
+                }
+            }
+
+            modifiedSymbolValues[new Vector2Int(x, y)] = value;
+        }
+
+        foreach (var state in allMatchedStates)
+        {
+            if (state.Length == 0) continue;
+
+            int stateScore = 0;
+            int multiplier = GetMultiplierForState(state.Length);
+
+            foreach (var pos in state)
+            {
+                if (modifiedSymbolValues.TryGetValue(pos, out int val))
+                {
+                    stateScore += val;
+                    matchedPositions.Add(pos);
+                }
+            }
+
+            totalScore += stateScore * multiplier;
+        }
+
+        foreach (var kvp in modifiedSymbolValues)
+        {
+            if (!matchedPositions.Contains(kvp.Key))
+                totalScore += kvp.Value;
+        }
+
+        return totalScore;
+    }
+    public string GetGridStateSummary(TileSlotController[,] grid)
+    {
+        Dictionary<string, int> matchCounts = new();
+
+        void CountMatches(string label, List<Vector2Int[]> matches)
+        {
+            if (matches.Count > 0)
+            {
+                if (!matchCounts.ContainsKey(label))
+                    matchCounts[label] = 0;
+
+                matchCounts[label] += matches.Count;
+            }
+        }
+
+        CountMatches("Row", MatchRows(grid));
+        CountMatches("Column", MatchColumns(grid));
+        CountMatches("Diagonal", MatchDiagonals(grid));
+        CountMatches("Diamond", MatchDiamond(grid));
+        CountMatches("X", MatchX(grid));
+        CountMatches("Plus", MatchPlus(grid));
+        CountMatches("Full Grid", MatchFullGrid(grid));
+
+        if (matchCounts.Count == 0)
+            return "None";
+
+        return string.Join(", ", matchCounts.Select(kvp => $"{kvp.Value} {kvp.Key}{(kvp.Value > 1 ? "s" : "")}"));
+    }
+    
 }

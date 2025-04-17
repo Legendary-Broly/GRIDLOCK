@@ -19,28 +19,34 @@ public class CardDrawService : ICardDrawService
     {
         if (_symbolPool == null || _symbolPool.Count == 0)
         {
-            // Debug.LogWarning("Symbol pool is empty or not initialized.");
-            return null; // Or throw an exception if this is critical
+            Debug.LogWarning("Symbol pool is empty or not initialized.");
+            return null;
         }
 
         int totalWeight = 0;
-
         foreach (var symbol in _symbolPool)
-            totalWeight += symbol.drawWeight;
+        {
+            int bonus = GameBootstrapper.SymbolModifierService.GetBonusForSymbol(symbol.symbolName);
+            totalWeight += symbol.drawWeight + bonus;
+        }
 
         int roll = Random.Range(0, totalWeight);
         int cumulative = 0;
 
         foreach (var symbol in _symbolPool)
         {
-            cumulative += symbol.drawWeight;
+            int bonus = GameBootstrapper.SymbolModifierService.GetBonusForSymbol(symbol.symbolName);
+            int adjustedWeight = symbol.drawWeight + bonus;
+
+            cumulative += adjustedWeight;
             if (roll < cumulative)
                 return symbol;
         }
 
-        // Fallback
+        // Fallback (should never hit)
         return _symbolPool[0];
     }
+
     public SymbolCard GenerateCard()
     {
         SymbolDataSO selected = GetWeightedSymbol();

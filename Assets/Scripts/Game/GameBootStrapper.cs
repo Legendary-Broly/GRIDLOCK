@@ -9,6 +9,8 @@ public class GameBootstrapper : MonoBehaviour
     public static DoomEffectService DoomEffectService { get; private set; }
     public static DoomHandler DoomHandler { get; private set; }
     public static DoomMeterUI DoomMeterUI { get; private set; }
+    public static SymbolModifierService SymbolModifierService { get; private set; }
+
 
     [SerializeField] private GameObject Canvas;
 
@@ -36,6 +38,7 @@ public class GameBootstrapper : MonoBehaviour
             GameStateService.CurrentDoomMultiplier,
             GameStateService.CurrentDoomStage
         );
+        SymbolModifierService = new SymbolModifierService();
 
         // Ensure the hand is initialized once everything is ready
         // gameplayUI.Init();

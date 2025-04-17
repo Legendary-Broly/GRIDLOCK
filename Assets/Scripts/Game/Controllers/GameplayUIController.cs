@@ -23,6 +23,7 @@ public class GameplayUIController : MonoBehaviour
 
     [Header("Grid")]
     [SerializeField] private GridManager gridManager;
+    [SerializeField] private ScoreBreakdownUI scoreBreakdownUI;
 
     private const int MaxHandSize = 5;
     private IGridStateEvaluator gridStateEvaluator;
@@ -107,16 +108,22 @@ public class GameplayUIController : MonoBehaviour
 
         RefreshUI();
         return card;
-    }
+        }
     public void OnGridlockPressed()
     {
-        TileSlotController[,] grid = gridManager.GetTileGrid();
-        float doomMultiplier = GameBootstrapper.GameStateService.CurrentMultiplier;
+        var grid = gridManager.GetTileGrid();
 
-        int finalScore = gridStateEvaluator.EvaluateTotalScore(grid);
-        // Debug.Log($"[GRIDLOCK] Final Score (includes Doom multiplier): {finalScore}");
+        // Evaluate and cache the score
+        ScoreManager.Instance.EvaluateGrid(grid);
 
+        // Show breakdown panel
+        scoreBreakdownUI.ShowBreakdown(
+            ScoreManager.Instance.RawScore,
+            ScoreManager.Instance.GridStateSummary,
+            GameBootstrapper.GameStateService.CurrentDoomMultiplier
+        );
     }
+
     public void RebuildHandUI()
     {
         // Forcefully destroy all children in the hand container
