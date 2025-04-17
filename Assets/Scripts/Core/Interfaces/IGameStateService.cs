@@ -15,5 +15,6 @@ public interface IGameStateService
     int CurrentGridSize { get; set; }
     void AdvanceGridSize();
     int GetCurrentGridSize();
-
+    void ResetDoomState();
+    void ResetPlayerHand();
 }

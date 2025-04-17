@@ -63,11 +63,8 @@ public class GameplayUIController : MonoBehaviour
             return;
         }
         
-        // Initial draw to populate the hand
-        for (int i = 0; i < 3; i++)
-            GameBootstrapper.CardDrawService.DrawSymbolCard(false);
-
-        RebuildHandUI();
+        // Start the first round with reset state
+        StartNewRound();
 
         int gridSize = GameBootstrapper.GameStateService.CurrentGridSize;
         Debug.Log($"[UI CONTROLLER] Init with grid size {gridSize}");
@@ -78,6 +75,17 @@ public class GameplayUIController : MonoBehaviour
     {
         drawButton.onClick.AddListener(OnDrawButtonClicked);
         gridStateEvaluator = new GridStateEvaluator();
+
+        // Check if we need to reset the game state (returning from bar phase)
+        if (PlayerPrefs.GetInt("ResetGameState", 0) == 1)
+        {
+            // Clear the flag
+            PlayerPrefs.SetInt("ResetGameState", 0);
+            PlayerPrefs.Save();
+            
+            // Reset the game state for the new round
+            StartNewRound();
+        }
 
         RefreshUI();
     }
@@ -195,4 +203,35 @@ public class GameplayUIController : MonoBehaviour
         }
     }
 
+    public void StartNewRound()
+    {
+        // Make sure services are available
+        if (GameBootstrapper.GameStateService == null)
+        {
+            Debug.LogError("GameStateService is null in StartNewRound");
+            return;
+        }
+
+        // Reset doom state and player hand
+        GameBootstrapper.GameStateService.ResetDoomState();
+        GameBootstrapper.GameStateService.ResetPlayerHand();
+        
+        // Initial draw to populate the hand
+        for (int i = 0; i < 3; i++)
+            GameBootstrapper.CardDrawService.DrawSymbolCard(false);
+
+        RebuildHandUI();
+        
+        // Make sure the UI is updated to show reset doom meter
+        if (GameBootstrapper.DoomMeterUI != null)
+        {
+            GameBootstrapper.DoomMeterUI.UpdateDoomMeter(
+                GameBootstrapper.GameStateService.CurrentDoomChance,
+                GameBootstrapper.GameStateService.CurrentDoomMultiplier,
+                GameBootstrapper.GameStateService.CurrentDoomStage
+            );
+        }
+        
+        RefreshUI();
+    }
 }

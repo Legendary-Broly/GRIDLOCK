@@ -65,6 +65,19 @@ public class GameStateService : MonoBehaviour, IGameStateService
         _doomEffectCount++;
     }
 
+    public void ResetDoomState()
+    {
+        _currentDoomChance = 0f;
+        _currentDoomMultiplier = 1f;
+        _doomDrawCount = 0;
+        _doomEffectCount = 0;
+    }
+
+    public void ResetPlayerHand()
+    {
+        _playerHand.Clear();
+    }
+
     public int GetCurrentGridSize()
     {
         return _gridSize;

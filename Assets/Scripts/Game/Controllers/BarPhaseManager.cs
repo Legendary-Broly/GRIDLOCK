@@ -50,7 +50,11 @@ public class BarPhaseManager : MonoBehaviour
     private void OnDrinkChosen(DrinkEffectSO chosen)
     {
         GameBootstrapper.SystemModifierService.ApplyDrinkEffect(chosen);
-        GameBootstrapper.GameStateService.AdvanceGridSize(); // ← move this above
+        GameBootstrapper.GameStateService.AdvanceGridSize();
+
+        // Set a flag to reset the game state on return to gameplay
+        PlayerPrefs.SetInt("ResetGameState", 1);
+        PlayerPrefs.Save();
 
         UnityEngine.SceneManagement.SceneManager.LoadScene("Gameplay");
     }
