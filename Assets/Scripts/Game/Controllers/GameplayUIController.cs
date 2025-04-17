@@ -30,10 +30,34 @@ public class GameplayUIController : MonoBehaviour
     private CardSlotController selectedCard = null;
     public void Init()
     {
+        // Make sure services are available
+        if (GameBootstrapper.CardDrawService == null)
+        {
+            Debug.LogError("CardDrawService is null in Init");
+            return;
+        }
+        
+        if (GameBootstrapper.GameStateService == null)
+        {
+            Debug.LogError("GameStateService is null in Init");
+            return;
+        }
+        
+        if (GameBootstrapper.GridManager == null)
+        {
+            Debug.LogError("GridManager is null in Init");
+            return;
+        }
+        
+        // Initial draw to populate the hand
         for (int i = 0; i < 3; i++)
-            GameBootstrapper.CardDrawService.DrawSymbolCard(false); // Initial draw to populate the hand
+            GameBootstrapper.CardDrawService.DrawSymbolCard(false);
 
         RebuildHandUI();
+
+        int gridSize = GameBootstrapper.GameStateService.CurrentGridSize;
+        Debug.Log($"[UI CONTROLLER] Init with grid size {gridSize}");
+        GameBootstrapper.GridManager.GenerateGridFromState();
     }
 
     private void Start()
@@ -66,6 +90,13 @@ public class GameplayUIController : MonoBehaviour
 
     private void RefreshUI()
     {
+        // Add null check for GameBootstrapper.GameStateService
+        if (GameBootstrapper.GameStateService == null)
+        {
+            Debug.LogError("GameStateService is null in RefreshUI");
+            return;
+        }
+        
         float doom = GameBootstrapper.GameStateService.CurrentDoomChance;
         float mult = GameBootstrapper.GameStateService.CurrentDoomMultiplier;
 
@@ -81,7 +112,7 @@ public class GameplayUIController : MonoBehaviour
         if (multiplierText != null)
             multiplierText.text = $"x{mult:0.0}";
 
-        if (drawButton != null)
+        if (drawButton != null && GameBootstrapper.GameStateService != null)
             drawButton.interactable = GameBootstrapper.GameStateService.PlayerHand.Count < MaxHandSize;
     }
 
@@ -124,10 +155,23 @@ public class GameplayUIController : MonoBehaviour
 
     public void RebuildHandUI()
     {
+        if (cardHandContainer == null)
+        {
+            Debug.LogError("Card hand container is null");
+            return;
+        }
+
         // Forcefully destroy all children in the hand container
         foreach (Transform child in cardHandContainer)
         {
             Destroy(child.gameObject); // ✅ Forces full clean regardless of timing
+        }
+
+        // Add null check for GameStateService
+        if (GameBootstrapper.GameStateService == null)
+        {
+            Debug.LogError("GameStateService is null in RebuildHandUI");
+            return;
         }
 
         var hand = GameBootstrapper.GameStateService.PlayerHand;

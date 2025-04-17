@@ -17,7 +17,7 @@ public class BarPhaseManager : MonoBehaviour
 
     private IEnumerator DelayedInit()
     {
-        yield return null; // wait 1 frame to ensure GameBootstrapper is initialized
+        yield return null;
 
         if (GameBootstrapper.SystemModifierService != null)
         {
@@ -49,14 +49,8 @@ public class BarPhaseManager : MonoBehaviour
 
     private void OnDrinkChosen(DrinkEffectSO chosen)
     {
-        // Debug.Log($"[BAR PHASE] Drink chosen: {chosen.displayName}, boosting {chosen.symbolNameToBoost} by {chosen.weightBonus}");
-
         GameBootstrapper.SystemModifierService.ApplyDrinkEffect(chosen);
-
-        foreach (var bonus in GameBootstrapper.GameStateService.ActiveDrinkBonuses)
-        {
-            // Debug.Log($"[BAR PHASE] Active bonus: {bonus.symbolName} with weight {bonus.weightBonus}");
-        }
+        GameBootstrapper.GameStateService.AdvanceGridSize(); // ← move this above
 
         UnityEngine.SceneManagement.SceneManager.LoadScene("Gameplay");
     }
@@ -82,7 +76,6 @@ public class BarPhaseManager : MonoBehaviour
 
         if (weighted.Count == 0)
         {
-            // Debug.LogWarning("[BAR DEBUG] Weighted pool is empty.");
             return new List<DrinkEffectSO>();
         }
 

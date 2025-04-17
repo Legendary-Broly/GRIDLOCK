@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b0f89c764d48fe40bd2bb9b0f254966, type: 3}
   m_Name: GameConfigDefault
   m_EditorClassIdentifier: 
-  doomStartChance: 0.1
-  doomMaxChance: 0.8
-  doomIncrementPerDraw: 0.15
+  doomStartChance: 0.05
+  doomMaxChance: 0.5
+  doomIncrementPerDraw: 0.05
   multiplierStart: 0.1
   multiplierMax: 4
   multiplierIncrementPerDraw: 0.5

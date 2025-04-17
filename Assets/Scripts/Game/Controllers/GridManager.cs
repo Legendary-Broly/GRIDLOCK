@@ -10,80 +10,52 @@ public class GridManager : MonoBehaviour
 
     private List<TileSlotController> gridSlots = new();
 
-    [SerializeField] private TileModifierAssigner modifierAssigner; // Ensure this is assigned in inspector.
+    [SerializeField] private TileModifierAssigner modifierAssigner;
+
+    private int currentGridSize = 3;
 
     private void Start()
     {
-        CreateGrid(3);
+        //GenerateGridFromState();
+    }
 
-        // Assign modifiers after grid creation
-        modifierAssigner.AssignModifiers(gridSlots);
+    public void GenerateGridFromState()
+    {
+        int nextSize = GameBootstrapper.GameStateService.GetCurrentGridSize();
+        Debug.Log($"[GRID MANAGER] GenerateGridFromState() reading nextSize = {nextSize}");
+        CreateGrid(nextSize);
     }
 
     public void CreateGrid(int size)
     {
-        // Debug.Log("GridManager CreateGrid started");
-        // Debug.Log("GridContainer: " + gridContainer);
-
         ClearGrid();
+        
+        // Update the current grid size to match the new grid
+        currentGridSize = size;
 
-        if (gridContainer == null)
-        {
-            // Debug.LogError("GridContainer not assigned!");
+        if (gridContainer == null || tileSlotPrefab == null)
             return;
-        }
-
-        if (tileSlotPrefab == null)
-        {
-            // Debug.LogError("TileSlotPrefab not assigned in GridManager!", this);
-            return;
-        }
 
         GridLayoutGroup layout = gridContainer.GetComponent<GridLayoutGroup>();
         if (layout == null)
-        {
-            // Debug.LogError("GridContainer is missing GridLayoutGroup!");
             return;
-        }
 
         layout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
         layout.constraintCount = size;
 
         for (int i = 0; i < size * size; i++)
         {
-            // Debug.Log($"Creating tile {i}");
-
             GameObject tile = Instantiate(tileSlotPrefab, gridContainer.transform);
-            if (tile == null)
-            {
-                // Debug.LogError("Tile instantiation failed!");
-                continue;
-            }
-
-            // Debug.Log("Tile instantiated successfully");
+            if (tile == null) continue;
 
             TileSlotController controller = tile.GetComponent<TileSlotController>();
-            if (controller == null)
-            {
-                // Debug.LogError("TileSlotController missing on prefab!", tile);
-                continue;
-            }
+            if (controller == null) continue;
 
             gridSlots.Add(controller);
-
-            int index = i;
-            Button button = tile.GetComponent<Button>();
-            if (button == null)
-            {
-                // Debug.LogError("Button missing on tile prefab!", tile);
-                continue;
-            }
-
-            // TileSlotController handles its own click logic now, no need to assign anything here.
-
-            // Debug.Log($"Tile {i} setup complete");
         }
 
+        modifierAssigner.AssignModifiers(gridSlots);
+        Debug.Log($"[GRID MANAGER] Created {size}x{size} grid.");
     }
 
     private void ClearGrid()
@@ -94,15 +66,16 @@ public class GridManager : MonoBehaviour
         }
         gridSlots.Clear();
     }
+
     public TileSlotController[,] GetTileGrid()
     {
-        TileSlotController[,] grid = new TileSlotController[3, 3];
+        TileSlotController[,] grid = new TileSlotController[currentGridSize, currentGridSize];
 
-        for (int y = 0; y < 3; y++)
+        for (int y = 0; y < currentGridSize; y++)
         {
-            for (int x = 0; x < 3; x++)
+            for (int x = 0; x < currentGridSize; x++)
             {
-                int index = x + y * 3;
+                int index = x + y * currentGridSize;
                 if (index >= gridSlots.Count) continue;
 
                 grid[x, y] = gridSlots[index];
@@ -112,5 +85,8 @@ public class GridManager : MonoBehaviour
         return grid;
     }
 
+    public int GetCurrentGridSize()
+    {
+        return currentGridSize;
+    }
 }
-
