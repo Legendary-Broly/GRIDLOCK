@@ -73,7 +73,9 @@ public class DoomEffectService
             var tile = moddedTiles[Random.Range(0, moddedTiles.Count)];
             tile.AssignModifier(null);
             Debug.Log($"[DOOM] Slot Malfunction: Removed bonus from tile.");
+            uiController.ShowDoomEffect("Slot Malfunction - A bonus tile was removed.");
         }
+    
     }
 
     private void DiscardRandomHandCard()
@@ -87,6 +89,7 @@ public class DoomEffectService
 
         Debug.Log($"[DOOM] Spilled Drink: Discarded {toRemove.Data.symbolName} from hand.");
         uiController.RebuildHandUI();
+        uiController.ShowDoomEffect($"Spilled Drink - A {toRemove.Data.symbolName} card was discarded.");
     }
 
     private void ShuffleHand()
@@ -101,6 +104,7 @@ public class DoomEffectService
 
         Debug.Log($"[DOOM] Shuffled Hand: All cards replaced.");
         uiController.RebuildHandUI();
+        uiController.ShowDoomEffect("Shuffled Hand - All cards in your hand were replaced.");
     }
 
 
@@ -120,6 +124,7 @@ public class DoomEffectService
             var tile = available[Random.Range(0, available.Count)];
             tile.MarkUnplayable();
             Debug.Log("[DOOM] Dead Tile: One tile is now unplayable.");
+            uiController.ShowDoomEffect("Dead Tile - A grid tile has become permanently unplayable.");
         }
     }
 
@@ -149,6 +154,7 @@ public class DoomEffectService
             a.RefreshVisuals();
             b.RefreshVisuals();
             Debug.Log("[DOOM] Card Swap: Two placed cards were swapped.");
+            uiController.ShowDoomEffect("Card Swap - Two cards on the grid have changed positions.");
         }
     }
 
@@ -172,6 +178,7 @@ public class DoomEffectService
             var tile = unlocked[Random.Range(0, unlocked.Count)];
             tile.LockPermanently();
             Debug.Log("[DOOM] Locked Tile: A tile is permanently blocked.");
+            uiController.ShowDoomEffect("Locked Tile - A grid tile has been permanently locked.");
         }
     }
     private void LogHand(string context)

@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using System.Collections;
 
 public class GameplayUIController : MonoBehaviour
 {
@@ -23,7 +24,20 @@ public class GameplayUIController : MonoBehaviour
 
     [Header("Grid")]
     [SerializeField] private GridManager gridManager;
-    [SerializeField] private ScoreBreakdownUI scoreBreakdownUI;
+    [SerializeField] private ScoreBreakdownUI scoreBreakdownUI;[SerializeField] private TextMeshProUGUI doomEffectText;
+
+    public void ShowDoomEffect(string effectDescription)
+    {
+        doomEffectText.text = $"Doom Effect: {effectDescription}";
+        StopAllCoroutines();
+        StartCoroutine(FadeDoomText());
+    }
+
+    private IEnumerator FadeDoomText()
+    {
+        yield return new WaitForSeconds(3f);
+        doomEffectText.text = "";
+    }
 
     private const int MaxHandSize = 5;
     private IGridStateEvaluator gridStateEvaluator;
