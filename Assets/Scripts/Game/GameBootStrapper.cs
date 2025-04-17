@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Core.Services;
 
 public class GameBootstrapper : MonoBehaviour
 {
@@ -9,44 +10,35 @@ public class GameBootstrapper : MonoBehaviour
     public static DoomEffectService DoomEffectService { get; private set; }
     public static DoomHandler DoomHandler { get; private set; }
     public static DoomMeterUI DoomMeterUI { get; private set; }
-    public static SymbolModifierService SymbolModifierService { get; private set; }
-
+    public static SystemModifierService SystemModifierService { get; private set; }
 
     [SerializeField] private GameObject Canvas;
 
     private void Awake()
     {
-        // Load all symbols from Resources/Symbols/
+        // Load symbol pooll
         var symbolPool = new List<SymbolDataSO>(Resources.LoadAll<SymbolDataSO>("Symbols"));
 
         // Core services
-        GameStateService = new GameStateService();
+        GameStateService = new GameStateService(); // ✅ Must come first
+        SystemModifierService = new SystemModifierService(GameStateService); // ✅ Corrected reference
+
         var gameplayUI = FindFirstObjectByType<GameplayUIController>();
         var gridManager = FindFirstObjectByType<GridManager>();
 
         DoomEffectService = new DoomEffectService(gridManager, gameplayUI);
         DoomHandler = new DoomHandler(GameStateService, DoomEffectService);
 
-        // Inject with null pool initially (safe DI pattern)
-        CardDrawService = new CardDrawService(null, GameStateService, DoomHandler);
-        CardDrawService.InitializeSymbolPool(symbolPool);
+        // Card draw service
+        CardDrawService = new CardDrawService(symbolPool, GameStateService, DoomHandler, SystemModifierService);
 
-        // UI
         DoomMeterUI = Canvas.GetComponentInChildren<DoomMeterUI>();
         DoomMeterUI.UpdateDoomMeter(
             GameStateService.CurrentDoomChance,
             GameStateService.CurrentDoomMultiplier,
             GameStateService.CurrentDoomStage
         );
-        SymbolModifierService = new SymbolModifierService();
 
-        // Ensure the hand is initialized once everything is ready
-        // gameplayUI.Init();
+        gameplayUI.Init(); // ✅ Delay until all services hooked up
     }
-
-    private void Start()
-    {
-        FindFirstObjectByType<GameplayUIController>().Init();
-    }
-
 }

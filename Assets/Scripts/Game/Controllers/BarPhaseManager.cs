@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using System.Collections;
 
 public class BarPhaseManager : MonoBehaviour
 {
@@ -11,36 +12,52 @@ public class BarPhaseManager : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("[BAR DEBUG] Start() entered");
+        StartCoroutine(DelayedInit());
+    }
 
-        GameBootstrapper.SymbolModifierService.Reset();
+    private IEnumerator DelayedInit()
+    {
+        yield return null; // wait 1 frame to ensure GameBootstrapper is initialized
+
+        if (GameBootstrapper.SystemModifierService != null)
+        {
+            GameBootstrapper.SystemModifierService.Reset();
+        }
 
         allDrinks = Resources.LoadAll<DrinkEffectSO>("DrinkEffects").ToList();
-        Debug.Log($"[BAR DEBUG] Loaded {allDrinks.Count} drinks");
+
+        if (allDrinks == null || allDrinks.Count == 0)
+        {
+            Debug.LogError("[BAR PHASE] No drinks loaded from Resources/DrinkEffects.");
+            yield break;
+        }
 
         ShowRandomDrinks();
     }
 
-
     private void ShowRandomDrinks()
     {
         var selected = GetRandomDrinks(3);
-        Debug.Log($"[BAR DEBUG] Showing {selected.Count} drinks");
 
         foreach (var drink in selected)
         {
             var button = Instantiate(drinkButtonPrefab, drinkButtonContainer);
             var ui = button.GetComponent<DrinkButtonUI>();
-            Debug.Log($"[BAR DEBUG] Button created for: {drink.displayName}");
             ui.Setup(drink, OnDrinkChosen);
         }
     }
 
-
     private void OnDrinkChosen(DrinkEffectSO chosen)
     {
-        GameBootstrapper.SymbolModifierService.ApplyDrinkEffect(chosen);
-        // Transition back to gameplay scene
+        // Debug.Log($"[BAR PHASE] Drink chosen: {chosen.displayName}, boosting {chosen.symbolNameToBoost} by {chosen.weightBonus}");
+
+        GameBootstrapper.SystemModifierService.ApplyDrinkEffect(chosen);
+
+        foreach (var bonus in GameBootstrapper.GameStateService.ActiveDrinkBonuses)
+        {
+            // Debug.Log($"[BAR PHASE] Active bonus: {bonus.symbolName} with weight {bonus.weightBonus}");
+        }
+
         UnityEngine.SceneManagement.SceneManager.LoadScene("Gameplay");
     }
 
@@ -65,11 +82,10 @@ public class BarPhaseManager : MonoBehaviour
 
         if (weighted.Count == 0)
         {
-            Debug.LogWarning("[BAR DEBUG] Weighted pool is empty.");
+            // Debug.LogWarning("[BAR DEBUG] Weighted pool is empty.");
             return new List<DrinkEffectSO>();
         }
 
-        // Ensure random drinks picked without crashing
         return weighted.OrderBy(x => Random.value).Distinct().Take(count).ToList();
     }
 }

@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: King's Cup
   symbolNameToBoost: 7
-  weightBonus: 2
+  weightBonus: 20
   rarity: 3

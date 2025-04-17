@@ -32,7 +32,7 @@ public class ScoreManager : MonoBehaviour
         float multiplier = GameBootstrapper.GameStateService.CurrentDoomMultiplier;
         FinalScore = Mathf.RoundToInt(RawScore * multiplier);
 
-        Debug.Log($"[SCORE MANAGER] Base: {RawScore}, States: {GridStateSummary}, Multiplier x{multiplier:0.0} → Final: {FinalScore}");
+        // Debug.Log($"[SCORE MANAGER] Base: {RawScore}, States: {GridStateSummary}, Multiplier x{multiplier:0.0} → Final: {FinalScore}");
     }
 
     public void ResetScore()

@@ -81,7 +81,7 @@ public class GridStateEvaluator : IGridStateEvaluator
         float doomMultiplier = GameBootstrapper.GameStateService.CurrentMultiplier;
         int finalScore = Mathf.RoundToInt(totalScore * doomMultiplier);
 
-        Debug.Log($"[GRIDLOCK] Raw Score: {totalScore}, Final Score with Doom x{doomMultiplier}: {finalScore}");
+        // Debug.Log($"[GRIDLOCK] Raw Score: {totalScore}, Final Score with Doom x{doomMultiplier}: {finalScore}");
         return finalScore;
     }
 

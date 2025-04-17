@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: Diamond Fizz
   symbolNameToBoost: Diamond
-  weightBonus: 2
+  weightBonus: 20
   rarity: 2

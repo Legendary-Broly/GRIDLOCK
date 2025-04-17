@@ -20,3 +20,9 @@ public enum SymbolType
     Diamond,
     Seven
 }
+[System.Serializable]
+public struct SymbolBonus
+{
+    public string symbolName;
+    public int weightBonus;
+}

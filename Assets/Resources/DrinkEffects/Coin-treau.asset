@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: Coin-treau
   symbolNameToBoost: Coin
-  weightBonus: 2
+  weightBonus: 20
   rarity: 1

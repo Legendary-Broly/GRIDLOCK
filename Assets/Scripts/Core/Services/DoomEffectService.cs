@@ -86,7 +86,7 @@ public class DoomEffectService
         LogHand("After SpilledDrink");
 
         Debug.Log($"[DOOM] Spilled Drink: Discarded {toRemove.Data.symbolName} from hand.");
-        uiController.RebuildHandUI(); // ✅ Add this line to reflect the change
+        uiController.RebuildHandUI();
     }
 
     private void ShuffleHand()
@@ -95,7 +95,7 @@ public class DoomEffectService
 
         for (int i = 0; i < hand.Count; i++)
         {
-            SymbolCard replacement = new SymbolCard(GameBootstrapper.CardDrawService.GetRandomSymbol()); // 🔁 new method below
+            SymbolCard replacement = new SymbolCard(GameBootstrapper.CardDrawService.GetWeightedSymbol());
             hand[i] = replacement;
         }
 
@@ -176,10 +176,7 @@ public class DoomEffectService
     }
     private void LogHand(string context)
     {
-        var hand = GameBootstrapper.GameStateService.PlayerHand;
-        Debug.Log($"[HAND] {context} ({hand.Count} cards):");
-        foreach (var c in hand)
-            Debug.Log($" - {c.Data.symbolName}");
+        // Method kept for potential future use but logs removed
     }
     
 }

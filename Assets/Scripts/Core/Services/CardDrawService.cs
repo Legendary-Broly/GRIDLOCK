@@ -1,49 +1,56 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
+using System.Linq;
+using Core.Services;
 
 public class CardDrawService : ICardDrawService
 {
     private List<SymbolDataSO> _symbolPool;
     private IGameStateService _stateService;
     private IDoomHandler _doomHandler;
+    private SystemModifierService _modifierService;
 
-    public CardDrawService(List<SymbolDataSO> symbolPool, IGameStateService stateService, IDoomHandler doomHandler)
+    public CardDrawService(List<SymbolDataSO> symbolPool, IGameStateService stateService, IDoomHandler doomHandler, SystemModifierService modifierService)
     {
         _symbolPool = symbolPool;
         _stateService = stateService;
         _doomHandler = doomHandler;
+        _modifierService = modifierService;
     }
 
-    private SymbolDataSO GetWeightedSymbol()
+    public SymbolDataSO GetWeightedSymbol()
     {
         if (_symbolPool == null || _symbolPool.Count == 0)
         {
-            Debug.LogWarning("Symbol pool is empty or not initialized.");
             return null;
         }
+
+        var bonuses = _modifierService.GetActiveBonuses();
 
         int totalWeight = 0;
         foreach (var symbol in _symbolPool)
         {
-            int bonus = GameBootstrapper.SymbolModifierService.GetBonusForSymbol(symbol.symbolName);
+            string normalizedSymbolName = symbol.symbolName.ToLowerInvariant();
+            int bonus = _modifierService.GetBonusForSymbol(normalizedSymbolName);
             totalWeight += symbol.drawWeight + bonus;
         }
 
         int roll = Random.Range(0, totalWeight);
-        int cumulative = 0;
 
+        int cumulative = 0;
         foreach (var symbol in _symbolPool)
         {
-            int bonus = GameBootstrapper.SymbolModifierService.GetBonusForSymbol(symbol.symbolName);
+            string normalizedSymbolName = symbol.symbolName.ToLowerInvariant();
+            int bonus = _modifierService.GetBonusForSymbol(normalizedSymbolName);
             int adjustedWeight = symbol.drawWeight + bonus;
 
             cumulative += adjustedWeight;
             if (roll < cumulative)
+            {
                 return symbol;
+            }
         }
 
-        // Fallback (should never hit)
         return _symbolPool[0];
     }
 
@@ -57,7 +64,6 @@ public class CardDrawService : ICardDrawService
     {
         SymbolCard newCard = GenerateCard();
         _stateService.AddCardToHand(newCard);
-        LogHand("After draw");
 
         if (applyDoom)
         {
@@ -66,33 +72,19 @@ public class CardDrawService : ICardDrawService
             if (_doomHandler.TryTriggerDoom())
             {
                 Debug.Log("DOOM TRIGGERED!");
-                // DO NOT add another card here
             }
         }
 
         return newCard;
     }
 
-    public SymbolDataSO GetRandomSymbol()
-    {
-        return _symbolPool[Random.Range(0, _symbolPool.Count)];
-    }
     private void LogHand(string context)
     {
-        if (_stateService?.PlayerHand == null)
-        {
-            // Debug.LogWarning("Player hand is not initialized.");
-            return;
-        }
-
-        var hand = _stateService.PlayerHand;
-        Debug.Log($"[HAND] {context} ({hand.Count} cards):");
-        foreach (var c in hand)
-            Debug.Log($" - {c.Data.symbolName}");
+        // Removing debug logs for hand
     }
+
     public void InitializeSymbolPool(List<SymbolDataSO> symbols)
     {
         _symbolPool = symbols;
     }
-
 }

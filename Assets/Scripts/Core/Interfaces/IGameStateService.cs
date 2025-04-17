@@ -11,5 +11,6 @@ public interface IGameStateService
     int DoomEffectCount { get; }
     void IncrementDoomEffectCount();
     float CurrentDoomMultiplier { get; }
+    List<SymbolBonus> ActiveDrinkBonuses { get; set; }
 
 }

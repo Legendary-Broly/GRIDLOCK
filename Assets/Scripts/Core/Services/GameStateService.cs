@@ -15,6 +15,8 @@ public class GameStateService : IGameStateService
     public float CurrentMultiplier => _currentDoomMultiplier;
 
     public int DoomEffectCount => _doomEffectCount;
+    public List<SymbolBonus> ActiveDrinkBonuses { get; set; } = new();
+
 
     public float CurrentDoomChance => _currentDoomChance;
     public float CurrentDoomMultiplier => _currentDoomMultiplier;

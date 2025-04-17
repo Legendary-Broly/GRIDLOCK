@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displayName: Shirley Temple
   symbolNameToBoost: Cherry
-  weightBonus: 5
+  weightBonus: 20
   rarity: 0

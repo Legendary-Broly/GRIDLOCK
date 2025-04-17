@@ -49,7 +49,6 @@ public class GameplayUIController : MonoBehaviour
     {
         if (GameBootstrapper.GameStateService.PlayerHand.Count >= MaxHandSize)
         {
-            // Debug.Log("Hand is full.");
             return;
         }
 
@@ -63,7 +62,6 @@ public class GameplayUIController : MonoBehaviour
         GameObject slot = Instantiate(cardSlotPrefab, cardHandContainer);
         CardSlotController controller = slot.GetComponent<CardSlotController>();
         controller.Initialize(card, this);
-        // Debug.Log($"[UI] CreateCardSlot called — card: {card.Data.symbolName}, from: {new System.Diagnostics.StackTrace()}");
     }
 
     private void RefreshUI()
@@ -137,8 +135,6 @@ public class GameplayUIController : MonoBehaviour
         {
             CreateCardSlot(card);
         }
-
-        // Debug.Log($"[UI] Rebuilding hand: {hand.Count} cards");
     }
 
 }

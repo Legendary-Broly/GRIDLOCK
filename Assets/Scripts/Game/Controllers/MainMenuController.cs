@@ -11,7 +11,7 @@ public class MainMenuController : MonoBehaviour
     public void ExitGame()
     {
         Application.Quit();
-        Debug.Log("Game Quit"); // Will show in editor for testing
+        // Debug.Log("Game Quit"); // Will show in editor for testing
     }
 }
 // This script handles the main menu actions, such as starting the game and exiting the application.
