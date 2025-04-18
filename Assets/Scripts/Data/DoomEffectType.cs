@@ -9,6 +9,5 @@ public enum DoomEffectType
     DeadTile,
 
     // Stage 3
-    CardSwap,
-    LockedTile
+    CardSwap
 }

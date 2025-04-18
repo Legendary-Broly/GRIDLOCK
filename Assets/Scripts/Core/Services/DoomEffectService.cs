@@ -1,10 +1,19 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class DoomEffectService
 {
     private GridManager gridManager;
     private GameplayUIController uiController;
+    [SerializeField] private Image symbolRenderer;
+    private bool isLocked = false;
+    private SymbolCard currentCard;
+
+    public bool HasSymbol()
+    {
+        return currentCard != null;
+    }
 
     public DoomEffectService(GridManager grid, GameplayUIController ui)
     {
@@ -34,9 +43,6 @@ public class DoomEffectService
             case DoomEffectType.CardSwap:
                 SwapTwoPlacedCards();
                 break;
-            case DoomEffectType.LockedTile:
-                LockTilePermanently();
-                break;
         }
     }
 
@@ -45,12 +51,28 @@ public class DoomEffectService
         List<DoomEffectType> pool = stage switch
         {
             1 => new() { DoomEffectType.SlotMalfunction, DoomEffectType.SpilledDrink },
-            2 => new() { DoomEffectType.ShuffledHand, DoomEffectType.DeadTile },
-            3 => new() { DoomEffectType.CardSwap, DoomEffectType.LockedTile },
+            2 => new() { DoomEffectType.ShuffledHand, DoomEffectType.CardSwap },
+            3 => new() { DoomEffectType.DeadTile },
             _ => new() { DoomEffectType.SlotMalfunction }
         };
 
         return pool[Random.Range(0, pool.Count)];
+    }
+    private bool isUnplayable = false;
+
+    public void MarkUnplayable()
+    {
+        isUnplayable = true;
+
+        if (symbolRenderer != null)
+            symbolRenderer.color = Color.gray;
+        //else
+            //Debug.LogWarning($"[TileSlot] symbolRenderer not assigned on: {gameObject.name}");
+    }
+
+    public bool IsPlayable()
+    {
+        return !isLocked && !isUnplayable && !HasSymbol();
     }
 
     private void RemoveRandomTileModifier()
@@ -107,7 +129,6 @@ public class DoomEffectService
         uiController.ShowDoomEffect("Shuffled Hand - All cards in your hand were replaced.");
     }
 
-
     private void MarkTileUnplayable()
     {
         var grid = gridManager.GetTileGrid();
@@ -122,7 +143,7 @@ public class DoomEffectService
         if (available.Count > 0)
         {
             var tile = available[Random.Range(0, available.Count)];
-            tile.MarkUnplayable();
+            tile.MarkTileUnplayable();
             Debug.Log("[DOOM] Dead Tile: One tile is now unplayable.");
             uiController.ShowDoomEffect("Dead Tile - A grid tile has become permanently unplayable.");
         }
@@ -158,29 +179,6 @@ public class DoomEffectService
         }
     }
 
-    private void LockTilePermanently()
-    {
-        var grid = gridManager.GetTileGrid();
-        TileSlotController[,] gridArray = gridManager.GetTileGrid();
-        List<TileSlotController> allTiles = new();
-
-        for (int x = 0; x < grid.GetLength(0); x++)
-        {
-            for (int y = 0; y < grid.GetLength(1); y++)
-            {
-                allTiles.Add(grid[x, y]);
-            }
-        }
-        
-        List<TileSlotController> unlocked = allTiles.FindAll(t => !t.IsLocked);
-        if (unlocked.Count > 0)
-        {
-            var tile = unlocked[Random.Range(0, unlocked.Count)];
-            tile.LockPermanently();
-            Debug.Log("[DOOM] Locked Tile: A tile is permanently blocked.");
-            uiController.ShowDoomEffect("Locked Tile - A grid tile has been permanently locked.");
-        }
-    }
     private void LogHand(string context)
     {
         // Method kept for potential future use but logs removed

@@ -4,8 +4,9 @@ using UnityEngine.UI;
 
 public class TileSlotController : MonoBehaviour
 {
-    [SerializeField] private Image symbolRenderer;  // ← was SpriteRenderer, now Image
+    [SerializeField] private Image symbolRenderer;
     [SerializeField] private TMP_Text modifierText;
+    [SerializeField] private GameObject lockOverlay;
 
     private SymbolCard currentCard;
     private TileModifierSO modifier;
@@ -16,6 +17,7 @@ public class TileSlotController : MonoBehaviour
 
         currentCard = card;
         symbolRenderer.sprite = card.Data.symbolSprite;
+        RefreshVisuals();
     }
 
     public bool HasSymbol()
@@ -23,19 +25,15 @@ public class TileSlotController : MonoBehaviour
         return currentCard != null;
     }
 
-    public string GetDisplayText()
-    {
-        return modifier != null ? modifier.GetDisplayText() : "";
-    }
-
-    public string GetSymbolName()
-    {
-        return currentCard != null ? currentCard.Data.symbolName : "None";
-    }
-
     public int GetSymbolValue()
     {
-        int baseValue = currentCard != null ? currentCard.Data.baseValue : 0;
+        if (currentCard == null || currentCard.Data == null)
+        {
+            Debug.LogWarning("[TileSlotController] GetSymbolValue: currentCard or its Data is null.");
+            return 0;
+        }
+
+        int baseValue = currentCard.Data.baseValue;
 
         if (modifier != null)
         {
@@ -49,6 +47,13 @@ public class TileSlotController : MonoBehaviour
         }
 
         return baseValue;
+    }
+    public string GetSymbolName()
+    {
+        if (currentCard == null || currentCard.Data == null)
+            return "None";
+
+        return currentCard.Data.symbolName;
     }
 
     public void AssignModifier(TileModifierSO mod)
@@ -66,20 +71,35 @@ public class TileSlotController : MonoBehaviour
     {
         return currentCard;
     }
-    // Returns the active modifier (ScriptableObject)
-    public TileModifierSO ActiveModifier => modifier;
 
-    // Checks if the tile has any card or is disabled
-    
+    public TileModifierSO ActiveModifier => modifier;
+    public SymbolCard CurrentCard => currentCard;
+
     public bool IsOccupied()
     {
         return currentCard != null;
     }
 
-    // Gets the card on the tile
-    public SymbolCard CurrentCard => currentCard;
+    public bool IsUnplayable()
+    {
+        return lockOverlay != null && lockOverlay.activeSelf;
+    }
 
-    // Force-sets a card even if already assigned
+    public bool IsPlayable()
+    {
+        return !IsUnplayable() && HasSymbol();
+    }
+
+    public void MarkTileUnplayable()
+    {
+        if (lockOverlay != null)
+        {
+            lockOverlay.SetActive(true);
+        }
+
+        symbolRenderer.color = Color.gray;
+    }
+
     public void ForceSetCard(SymbolCard card)
     {
         currentCard = card;
@@ -87,23 +107,17 @@ public class TileSlotController : MonoBehaviour
         RefreshVisuals();
     }
 
-    // Marks tile visually unplayable
-    public void MarkUnplayable()
-    {
-        symbolRenderer.color = Color.gray;
-    }
-
-    // Refresh visuals for tile state (can be expanded as needed)
     public void RefreshVisuals()
     {
         symbolRenderer.enabled = currentCard != null;
         modifierText.text = modifier != null ? modifier.GetDisplayText() : "";
     }
+
     public void OnClick()
     {
-        if (isLocked || currentCard != null)
+        if (IsUnplayable() || currentCard != null)
         {
-            Debug.Log("[TILE CLICK] Cannot place: Tile is either locked or already occupied.");
+            Debug.Log("[TILE CLICK] Cannot place: Tile is either unplayable or already occupied.");
             return;
         }
 
@@ -119,15 +133,4 @@ public class TileSlotController : MonoBehaviour
             Debug.Log("[TILE CLICK] No selected card available to place.");
         }
     }
-
-    // Locks a tile to prevent further changes
-    private bool isLocked = false;
-
-    public bool IsLocked => isLocked;
-
-    public void LockPermanently()
-    {
-        isLocked = true;
-    }
-
 }

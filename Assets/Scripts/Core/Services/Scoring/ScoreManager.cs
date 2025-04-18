@@ -20,19 +20,28 @@ public class ScoreManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         _state = GameBootstrapper.GameStateService;
+
+        if (_state == null)
+            Debug.LogError("[SCORE MANAGER] GameStateService is null!");
+
         _evaluator = new GridStateEvaluator(_state);
     }
 
+
     public int CalculateTotalScore(TileSlotController[,] grid)
     {
-        int baseScore = 0;
+        if (grid == null)
+        {
+            Debug.LogError("[SCORE MANAGER] Grid is null during score calculation.");
+            return 0;
+        }
 
+        int baseScore = 0;
         foreach (var tile in grid)
         {
-            if (tile.HasSymbol())
+            if (tile != null && tile.IsPlayable())
             {
-                int value = tile.GetSymbolValue();
-                baseScore += value;
+                baseScore += tile.GetSymbolValue();
             }
         }
 
@@ -41,11 +50,14 @@ public class ScoreManager : MonoBehaviour
         int comboMultiplier = 1;
         foreach (var state in states)
         {
-            comboMultiplier *= state.multiplier;
-            Debug.Log($"Matched: {state.name}, x{state.multiplier}");
+            if (state != null)
+            {
+                comboMultiplier *= state.multiplier;
+                Debug.Log($"[SCORE] Matched: {state.name} x{state.multiplier}");
+            }
         }
 
-        float doomMulti = _state.CurrentDoomMultiplier;
+        float doomMulti = _state != null ? _state.CurrentDoomMultiplier : 1f;
         float total = baseScore * comboMultiplier * doomMulti;
 
         Debug.Log($"[SCORE] Base={baseScore}, ComboMulti={comboMultiplier}, Doom={doomMulti}, Final={total}");
@@ -53,14 +65,18 @@ public class ScoreManager : MonoBehaviour
         return Mathf.RoundToInt(total);
     }
 
+
     public int RawScore(TileSlotController[,] grid)
     {
         int baseScore = 0;
 
         foreach (var tile in grid)
         {
-            if (tile.HasSymbol())
+            if (tile == null) continue;
+            if (tile.IsPlayable())
+            {
                 baseScore += tile.GetSymbolValue();
+            }
         }
 
         return baseScore;

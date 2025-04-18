@@ -9,10 +9,8 @@ public class ScoreBreakdownUI : MonoBehaviour
     [SerializeField] private TextMeshProUGUI multiplierText;
     [SerializeField] private TextMeshProUGUI finalScoreText;
 
-    public void ShowBreakdown(int baseScore, string gridStates, float multiplier)
+    public void ShowBreakdown(int baseScore, string gridStates, float multiplier, int finalScore)
     {
-        int finalScore = Mathf.RoundToInt(baseScore * multiplier);
-
         baseScoreText.text = $"Base Score: {baseScore}";
         gridStatesText.text = $"Grid States: {gridStates}";
         multiplierText.text = $"Doom Multiplier: x{multiplier:0.0}";

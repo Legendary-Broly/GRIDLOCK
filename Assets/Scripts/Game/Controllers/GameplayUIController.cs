@@ -141,12 +141,20 @@ public class GameplayUIController : MonoBehaviour
     {
         var grid = gridManager.GetTileGrid();
 
+        if (grid == null)
+        {
+            Debug.LogError("[GRIDLOCK] Tile grid is null! Cannot calculate score.");
+            return;
+        }
+
         int finalScore = ScoreManager.Instance.CalculateTotalScore(grid);
+        int baseScore = ScoreManager.Instance.RawScore(grid);
         string summary = ScoreManager.Instance.GridStateSummary(grid);
         float doomMultiplier = GameBootstrapper.GameStateService.CurrentDoomMultiplier;
 
-        scoreBreakdownUI.ShowBreakdown(finalScore, summary, doomMultiplier);
+        scoreBreakdownUI.ShowBreakdown(baseScore, summary, doomMultiplier, finalScore);
     }
+
 
     public void RebuildHandUI()
     {

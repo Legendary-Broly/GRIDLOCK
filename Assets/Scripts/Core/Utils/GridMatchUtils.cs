@@ -54,9 +54,9 @@ public static class GridMatchUtils
         matchedSymbol = null;
         if (positions.Count == 0) return false;
 
-        // Check first tile has a symbol
+        // Check if first tile is playable
         var first = grid[positions[0].x, positions[0].y];
-        if (!first.HasSymbol()) return false;
+        if (!first.IsPlayable()) return false;
 
         string baseSymbol = first.GetSymbolName();
         if (string.IsNullOrEmpty(baseSymbol) || baseSymbol == "None") return false;
@@ -64,7 +64,7 @@ public static class GridMatchUtils
         foreach (var pos in positions)
         {
             var tile = grid[pos.x, pos.y];
-            if (!tile.HasSymbol()) return false;
+            if (!tile.IsPlayable()) return false;
 
             string symbol = tile.GetSymbolName();
             if (!IsMatchCompatible(baseSymbol, symbol))
