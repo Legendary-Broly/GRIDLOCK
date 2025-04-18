@@ -86,10 +86,22 @@ public class GameplayUIController : MonoBehaviour
 
     public void OnDrawButtonClicked()
     {
-        if (GameBootstrapper.GameStateService.PlayerHand.Count >= MaxHandSize)
-            return;
+        var state = GameBootstrapper.GameStateService;
+        var drawService = GameBootstrapper.CardDrawService;
 
-        GameBootstrapper.CardDrawService.DrawSymbolCard(true);
+        if (state == null || drawService == null)
+        {
+            Debug.LogError("[DRAW] Missing state or service.");
+            return;
+        }
+
+        // Clear the current hand
+        state.PlayerHand.Clear();
+
+        // Draw 3 new cards (only one Doom escalation per refresh)
+        for (int i = 0; i < 3; i++)
+            drawService.DrawSymbolCard(applyDoom: i == 0); // apply Doom ONCE
+
         RebuildHandUI();
         RefreshUI();
     }
