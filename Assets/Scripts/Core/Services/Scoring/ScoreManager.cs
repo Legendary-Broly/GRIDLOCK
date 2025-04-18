@@ -26,7 +26,6 @@ public class ScoreManager : MonoBehaviour
     public int CalculateTotalScore(TileSlotController[,] grid)
     {
         int baseScore = 0;
-        int multiplier = 1;
 
         foreach (var tile in grid)
         {
@@ -39,16 +38,17 @@ public class ScoreManager : MonoBehaviour
 
         List<GridStateResult> states = _evaluator.EvaluateStates(grid);
 
+        int comboMultiplier = 1;
         foreach (var state in states)
         {
-            multiplier += state.multiplier;
+            comboMultiplier *= state.multiplier;
             Debug.Log($"Matched: {state.name}, x{state.multiplier}");
         }
 
         float doomMulti = _state.CurrentDoomMultiplier;
-        float total = baseScore * multiplier * doomMulti;
+        float total = baseScore * comboMultiplier * doomMulti;
 
-        Debug.Log($"[SCORE] Base={baseScore}, Multi={multiplier}, Doom={doomMulti}, Final={total}");
+        Debug.Log($"[SCORE] Base={baseScore}, ComboMulti={comboMultiplier}, Doom={doomMulti}, Final={total}");
 
         return Mathf.RoundToInt(total);
     }
@@ -69,7 +69,8 @@ public class ScoreManager : MonoBehaviour
     public string GridStateSummary(TileSlotController[,] grid)
     {
         var states = _evaluator.EvaluateStates(grid);
-        if (states.Count == 0) return "No matches.";
+        if (states == null || states.Count == 0)
+            return "No matches.";
 
         string summary = "";
         foreach (var state in states)

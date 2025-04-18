@@ -136,18 +136,18 @@ public class GameplayUIController : MonoBehaviour
         RefreshUI();
         return card;
     }
-
     
     public void OnGridlockPressed()
     {
         var grid = gridManager.GetTileGrid();
 
-        int rawScore = ScoreManager.Instance.RawScore(grid);
+        int finalScore = ScoreManager.Instance.CalculateTotalScore(grid);
         string summary = ScoreManager.Instance.GridStateSummary(grid);
         float doomMultiplier = GameBootstrapper.GameStateService.CurrentDoomMultiplier;
 
-        scoreBreakdownUI.ShowBreakdown(rawScore, summary, doomMultiplier);
+        scoreBreakdownUI.ShowBreakdown(finalScore, summary, doomMultiplier);
     }
+
     public void RebuildHandUI()
     {
         if (cardHandContainer == null) return;
