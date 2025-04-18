@@ -71,12 +71,18 @@ public class GridManager : MonoBehaviour
     {
         TileSlotController[,] grid = new TileSlotController[currentGridSize, currentGridSize];
 
+        Debug.Log($"[GRID MANAGER] Getting tile grid of size {currentGridSize}x{currentGridSize}");
+        
         for (int y = 0; y < currentGridSize; y++)
         {
             for (int x = 0; x < currentGridSize; x++)
             {
                 int index = x + y * currentGridSize;
-                if (index >= gridSlots.Count) continue;
+                if (index >= gridSlots.Count)
+                {
+                    Debug.LogWarning($"[GRID MANAGER] Index {index} out of range for gridSlots (count: {gridSlots.Count})");
+                    continue;
+                }
 
                 grid[x, y] = gridSlots[index];
             }

@@ -11,10 +11,17 @@ public class SymbolDataSO : ScriptableObject
 
     [Range(1, 100)]
     public int drawWeight = 1;
+    public string displayName;
+    public Sprite icon;
+    
+    // Add this property if it doesn't exist already
+    [Tooltip("Base value used for scoring multiplier")]
+    public int Value = 1;
 
 }
 public enum SymbolType
 {
+    None, // Added None as default value
     Fruit,
     Coin,
     Diamond,

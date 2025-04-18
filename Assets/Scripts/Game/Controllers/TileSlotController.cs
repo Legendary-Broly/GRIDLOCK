@@ -1,126 +1,133 @@
 using UnityEngine;
-using UnityEngine.UI;
 using TMPro;
+using UnityEngine.UI;
 
 public class TileSlotController : MonoBehaviour
 {
-    [SerializeField] private Image symbolImage;
-    [SerializeField] private TMP_Text symbolText;
+    [SerializeField] private Image symbolRenderer;  // ← was SpriteRenderer, now Image
     [SerializeField] private TMP_Text modifierText;
-    [SerializeField] private TMP_Text modifierIndicatorText;
 
-
-    private bool isOccupied = false;
     private SymbolCard currentCard;
     private TileModifierSO modifier;
-    public SymbolCard CurrentCard => currentCard;
-    public TileModifierSO ActiveModifier => modifier;
+
+    public void SetCard(SymbolCard card)
+    {
+        if (currentCard != null) return;
+
+        currentCard = card;
+        symbolRenderer.sprite = card.Data.symbolSprite;
+    }
+
+    public bool HasSymbol()
+    {
+        return currentCard != null;
+    }
+
+    public string GetDisplayText()
+    {
+        return modifier != null ? modifier.GetDisplayText() : "";
+    }
+
+    public string GetSymbolName()
+    {
+        return currentCard != null ? currentCard.Data.symbolName : "None";
+    }
+
+    public int GetSymbolValue()
+    {
+        int baseValue = currentCard != null ? currentCard.Data.baseValue : 0;
+
+        if (modifier != null)
+        {
+            switch (modifier.modifierType)
+            {
+                case TileModifierType.AddValue:
+                    return baseValue + modifier.amount;
+                case TileModifierType.MultiplyValue:
+                    return baseValue * modifier.amount;
+            }
+        }
+
+        return baseValue;
+    }
+
+    public void AssignModifier(TileModifierSO mod)
+    {
+        modifier = mod;
+        modifierText.text = modifier != null ? modifier.GetDisplayText() : "";
+    }
+
     public TileModifierSO GetModifier()
     {
         return modifier;
     }
 
-    private void Awake()
+    public SymbolCard GetCard()
     {
-        GetComponent<Button>().onClick.AddListener(OnTileClicked);
-        modifierText.text = "";
-        modifierText.gameObject.SetActive(false); // hides the text at startup
+        return currentCard;
+    }
+    // Returns the active modifier (ScriptableObject)
+    public TileModifierSO ActiveModifier => modifier;
+
+    // Checks if the tile has any card or is disabled
+    
+    public bool IsOccupied()
+    {
+        return currentCard != null;
     }
 
-    public void SetCard(SymbolCard card)
-    {
-        if (isOccupied) return;
+    // Gets the card on the tile
+    public SymbolCard CurrentCard => currentCard;
 
-        currentCard = card;
-        isOccupied = true;
-
-        symbolImage.sprite = card.Data.symbolSprite;
-        symbolImage.color = Color.white;
-
-        if (symbolText != null)
-            symbolText.text = card.Data.symbolName;
-
-        // Debug.Log("[TileSlot] Card placed: " + card.Data.symbolName);
-    }
-
-    public bool IsOccupied() => isOccupied;
+    // Force-sets a card even if already assigned
     public void ForceSetCard(SymbolCard card)
     {
         currentCard = card;
-        isOccupied = true;
+        symbolRenderer.sprite = card.Data.symbolSprite;
         RefreshVisuals();
     }
 
-    public void AssignModifier(TileModifierSO modifierSO)
+    // Marks tile visually unplayable
+    public void MarkUnplayable()
     {
-        modifier = modifierSO;
+        symbolRenderer.color = Color.gray;
+    }
 
-        if (modifierSO == null)
+    // Refresh visuals for tile state (can be expanded as needed)
+    public void RefreshVisuals()
+    {
+        symbolRenderer.enabled = currentCard != null;
+        modifierText.text = modifier != null ? modifier.GetDisplayText() : "";
+    }
+    public void OnClick()
+    {
+        if (isLocked || currentCard != null)
         {
-            modifierText.gameObject.SetActive(false);
-            // Debug.Log("Modifier cleared or null.");
+            Debug.Log("[TILE CLICK] Cannot place: Tile is either locked or already occupied.");
             return;
         }
 
-        string modDisplay = modifierSO.modifierType switch
+        var selected = GameplayUIController.Instance?.ConsumeSelectedCard();
+
+        if (selected != null)
         {
-            TileModifierType.AddValue => $"+{modifierSO.amount}",
-            TileModifierType.MultiplyValue => $"x{modifierSO.amount}",
-            _ => ""
-        };
-
-        modifierText.text = modDisplay;
-        modifierText.gameObject.SetActive(true);
-
-        // Debug.Log($"Modifier text set to: {modDisplay}");
-    }
-
-    public void OnTileClicked()
-    {
-        if (isOccupied) return;
-
-        var ui = FindFirstObjectByType<GameplayUIController>();
-        SymbolCard card = ui.ConsumeSelectedCard();
-        if (card == null) return;
-
-        SetCard(card);
-    }
-    public int GetModifiedSymbolValue()
-    {
-        if (currentCard == null) return 0;
-
-        int baseValue = currentCard.Data.baseValue;
-        if (modifier == null) return baseValue;
-
-        return modifier.modifierType switch
+            SetCard(selected);
+            Debug.Log($"[TILE CLICK] Placed {selected.Data.symbolName} on {gameObject.name}");
+        }
+        else
         {
-            TileModifierType.AddValue => baseValue + modifier.amount,
-            TileModifierType.MultiplyValue => baseValue * modifier.amount,
-            _ => baseValue
-        };
+            Debug.Log("[TILE CLICK] No selected card available to place.");
+        }
     }
-    public void MarkUnplayable()
-    {
-        isOccupied = true;
-        modifierText.text = "X"; // Or "🕳️" or "DEAD"
-        modifierText.color = Color.red;
-        modifierText.gameObject.SetActive(true);
-    }
+
+    // Locks a tile to prevent further changes
+    private bool isLocked = false;
+
+    public bool IsLocked => isLocked;
 
     public void LockPermanently()
     {
-        isOccupied = true;
-        modifierText.text = "🔒";
+        isLocked = true;
     }
 
-    public bool IsLocked() => isOccupied;
-
-    public void RefreshVisuals()
-    {
-        if (currentCard != null)
-        {
-            symbolImage.sprite = currentCard.Data.symbolSprite;
-            symbolText.text = currentCard.Data.symbolName;
-        }
-    }
 }

@@ -1,14 +1,12 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class ScoreManager : MonoBehaviour
 {
     public static ScoreManager Instance { get; private set; }
 
-    public int RawScore { get; private set; }
-    public int FinalScore { get; private set; }
-    public string GridStateSummary { get; private set; }
-
-    private GridStateEvaluator gridStateEvaluator;
+    private GridStateEvaluator _evaluator;
+    private IGameStateService _state;
 
     private void Awake()
     {
@@ -21,24 +19,69 @@ public class ScoreManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        gridStateEvaluator = new GridStateEvaluator();
+        _state = GameBootstrapper.GameStateService;
+        _evaluator = new GridStateEvaluator(_state);
     }
 
-    public void EvaluateGrid(TileSlotController[,] grid)
+    public int CalculateTotalScore(TileSlotController[,] grid)
     {
-        RawScore = gridStateEvaluator.CalculateRawScore(grid);
-        GridStateSummary = gridStateEvaluator.GetGridStateSummary(grid);
+        int baseScore = 0;
+        int multiplier = 1;
 
-        float multiplier = GameBootstrapper.GameStateService.CurrentDoomMultiplier;
-        FinalScore = Mathf.RoundToInt(RawScore * multiplier);
+        foreach (var tile in grid)
+        {
+            if (tile.HasSymbol())
+            {
+                int value = tile.GetSymbolValue();
+                baseScore += value;
+            }
+        }
 
-        // Debug.Log($"[SCORE MANAGER] Base: {RawScore}, States: {GridStateSummary}, Multiplier x{multiplier:0.0} → Final: {FinalScore}");
+        List<GridStateResult> states = _evaluator.EvaluateStates(grid);
+
+        foreach (var state in states)
+        {
+            multiplier += state.multiplier;
+            Debug.Log($"Matched: {state.name}, x{state.multiplier}");
+        }
+
+        float doomMulti = _state.CurrentDoomMultiplier;
+        float total = baseScore * multiplier * doomMulti;
+
+        Debug.Log($"[SCORE] Base={baseScore}, Multi={multiplier}, Doom={doomMulti}, Final={total}");
+
+        return Mathf.RoundToInt(total);
     }
 
-    public void ResetScore()
+    public int RawScore(TileSlotController[,] grid)
     {
-        RawScore = 0;
-        FinalScore = 0;
-        GridStateSummary = "None";
+        int baseScore = 0;
+
+        foreach (var tile in grid)
+        {
+            if (tile.HasSymbol())
+                baseScore += tile.GetSymbolValue();
+        }
+
+        return baseScore;
+    }
+
+    public string GridStateSummary(TileSlotController[,] grid)
+    {
+        var states = _evaluator.EvaluateStates(grid);
+        if (states.Count == 0) return "No matches.";
+
+        string summary = "";
+        foreach (var state in states)
+        {
+            summary += $"{state.name} (x{state.multiplier})\n";
+        }
+
+        return summary.TrimEnd();
+    }
+
+    public List<GridStateResult> EvaluateGrid(TileSlotController[,] grid)
+    {
+        return _evaluator.EvaluateStates(grid);
     }
 }

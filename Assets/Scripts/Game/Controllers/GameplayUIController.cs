@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using System.Collections;
 
 public class GameplayUIController : MonoBehaviour
@@ -24,7 +23,23 @@ public class GameplayUIController : MonoBehaviour
 
     [Header("Grid")]
     [SerializeField] private GridManager gridManager;
-    [SerializeField] private ScoreBreakdownUI scoreBreakdownUI;[SerializeField] private TextMeshProUGUI doomEffectText;
+    [SerializeField] private ScoreBreakdownUI scoreBreakdownUI;
+    [SerializeField] private TextMeshProUGUI doomEffectText;
+    public static GameplayUIController Instance { get; private set; }
+
+    private const int MaxHandSize = 5;
+    private CardSlotController selectedCard = null;
+    
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+    }
 
     public void ShowDoomEffect(string effectDescription)
     {
@@ -39,70 +54,46 @@ public class GameplayUIController : MonoBehaviour
         doomEffectText.text = "";
     }
 
-    private const int MaxHandSize = 5;
-    private IGridStateEvaluator gridStateEvaluator;
-    private CardSlotController selectedCard = null;
     public void Init()
     {
-        // Make sure services are available
-        if (GameBootstrapper.CardDrawService == null)
+        if (GameBootstrapper.CardDrawService == null ||
+            GameBootstrapper.GameStateService == null ||
+            GameBootstrapper.GridManager == null)
         {
-            Debug.LogError("CardDrawService is null in Init");
+            Debug.LogError("One or more GameBootstrapper services are null in Init");
             return;
         }
-        
-        if (GameBootstrapper.GameStateService == null)
-        {
-            Debug.LogError("GameStateService is null in Init");
-            return;
-        }
-        
-        if (GameBootstrapper.GridManager == null)
-        {
-            Debug.LogError("GridManager is null in Init");
-            return;
-        }
-        
-        // Start the first round with reset state
+
         StartNewRound();
 
-        int gridSize = GameBootstrapper.GameStateService.CurrentGridSize;
-        Debug.Log($"[UI CONTROLLER] Init with grid size {gridSize}");
+        Debug.Log($"[UI CONTROLLER] Init with grid size {GameBootstrapper.GameStateService.CurrentGridSize}");
         GameBootstrapper.GridManager.GenerateGridFromState();
     }
 
     private void Start()
     {
         drawButton.onClick.AddListener(OnDrawButtonClicked);
-        gridStateEvaluator = new GridStateEvaluator();
 
-        // Check if we need to reset the game state (returning from bar phase)
         if (PlayerPrefs.GetInt("ResetGameState", 0) == 1)
         {
-            // Clear the flag
             PlayerPrefs.SetInt("ResetGameState", 0);
             PlayerPrefs.Save();
-            
-            // Reset the game state for the new round
             StartNewRound();
         }
 
         RefreshUI();
     }
 
-
     public void OnDrawButtonClicked()
     {
         if (GameBootstrapper.GameStateService.PlayerHand.Count >= MaxHandSize)
-        {
             return;
-        }
 
         GameBootstrapper.CardDrawService.DrawSymbolCard(true);
-        RebuildHandUI(); // ✅ Trigger rebuild after draw
+        RebuildHandUI();
         RefreshUI();
-
     }
+
     private void CreateCardSlot(SymbolCard card)
     {
         GameObject slot = Instantiate(cardSlotPrefab, cardHandContainer);
@@ -112,32 +103,18 @@ public class GameplayUIController : MonoBehaviour
 
     private void RefreshUI()
     {
-        // Add null check for GameBootstrapper.GameStateService
-        if (GameBootstrapper.GameStateService == null)
-        {
-            Debug.LogError("GameStateService is null in RefreshUI");
-            return;
-        }
-        
+        if (GameBootstrapper.GameStateService == null) return;
+
         float doom = GameBootstrapper.GameStateService.CurrentDoomChance;
         float mult = GameBootstrapper.GameStateService.CurrentDoomMultiplier;
 
-        if (doomBar != null)
-            doomBar.fillAmount = doom;
-
-        if (doomText != null)
-            doomText.text = $"Doom: {(int)(doom * 100)}%";
-
-        if (multiplierBar != null)
-            multiplierBar.fillAmount = mult / 4f;
-
-        if (multiplierText != null)
-            multiplierText.text = $"x{mult:0.0}";
-
-        if (drawButton != null && GameBootstrapper.GameStateService != null)
+        if (doomBar != null) doomBar.fillAmount = doom;
+        if (doomText != null) doomText.text = $"Doom: {(int)(doom * 100)}%";
+        if (multiplierBar != null) multiplierBar.fillAmount = mult / 4f;
+        if (multiplierText != null) multiplierText.text = $"x{mult:0.0}";
+        if (drawButton != null)
             drawButton.interactable = GameBootstrapper.GameStateService.PlayerHand.Count < MaxHandSize;
     }
-
 
     public void SelectCard(CardSlotController cardSlot)
     {
@@ -156,73 +133,46 @@ public class GameplayUIController : MonoBehaviour
         GameBootstrapper.GameStateService.PlayerHand.Remove(card);
         Destroy(selectedCard.gameObject);
         selectedCard = null;
-
         RefreshUI();
         return card;
-        }
+    }
+
+    
     public void OnGridlockPressed()
     {
         var grid = gridManager.GetTileGrid();
 
-        // Evaluate and cache the score
-        ScoreManager.Instance.EvaluateGrid(grid);
+        int rawScore = ScoreManager.Instance.RawScore(grid);
+        string summary = ScoreManager.Instance.GridStateSummary(grid);
+        float doomMultiplier = GameBootstrapper.GameStateService.CurrentDoomMultiplier;
 
-        // Show breakdown panel
-        scoreBreakdownUI.ShowBreakdown(
-            ScoreManager.Instance.RawScore,
-            ScoreManager.Instance.GridStateSummary,
-            GameBootstrapper.GameStateService.CurrentDoomMultiplier
-        );
+        scoreBreakdownUI.ShowBreakdown(rawScore, summary, doomMultiplier);
     }
-
     public void RebuildHandUI()
     {
-        if (cardHandContainer == null)
-        {
-            Debug.LogError("Card hand container is null");
-            return;
-        }
+        if (cardHandContainer == null) return;
 
-        // Forcefully destroy all children in the hand container
         foreach (Transform child in cardHandContainer)
-        {
-            Destroy(child.gameObject); // ✅ Forces full clean regardless of timing
-        }
+            Destroy(child.gameObject);
 
-        // Add null check for GameStateService
-        if (GameBootstrapper.GameStateService == null)
-        {
-            Debug.LogError("GameStateService is null in RebuildHandUI");
-            return;
-        }
+        if (GameBootstrapper.GameStateService == null) return;
 
-        var hand = GameBootstrapper.GameStateService.PlayerHand;
-        foreach (var card in hand)
-        {
+        foreach (var card in GameBootstrapper.GameStateService.PlayerHand)
             CreateCardSlot(card);
-        }
     }
 
     public void StartNewRound()
     {
-        // Make sure services are available
-        if (GameBootstrapper.GameStateService == null)
-        {
-            Debug.LogError("GameStateService is null in StartNewRound");
-            return;
-        }
+        if (GameBootstrapper.GameStateService == null) return;
 
-        // Reset doom state and player hand
         GameBootstrapper.GameStateService.ResetDoomState();
         GameBootstrapper.GameStateService.ResetPlayerHand();
-        
-        // Initial draw to populate the hand
+
         for (int i = 0; i < 3; i++)
             GameBootstrapper.CardDrawService.DrawSymbolCard(false);
 
         RebuildHandUI();
-        
-        // Make sure the UI is updated to show reset doom meter
+
         if (GameBootstrapper.DoomMeterUI != null)
         {
             GameBootstrapper.DoomMeterUI.UpdateDoomMeter(
@@ -231,7 +181,7 @@ public class GameplayUIController : MonoBehaviour
                 GameBootstrapper.GameStateService.CurrentDoomStage
             );
         }
-        
+
         RefreshUI();
     }
 }

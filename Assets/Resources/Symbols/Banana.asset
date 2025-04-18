@@ -18,3 +18,6 @@ MonoBehaviour:
   symbolType: 0
   triggersCombo: 1
   drawWeight: 10
+  displayName: Banana
+  icon: {fileID: 793172594, guid: a03c2610221b14940b818fb271b448fa, type: 3}
+  Value: 10

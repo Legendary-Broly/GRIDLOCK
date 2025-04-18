@@ -172,7 +172,7 @@ public class DoomEffectService
             }
         }
         
-        List<TileSlotController> unlocked = allTiles.FindAll(t => !t.IsLocked());
+        List<TileSlotController> unlocked = allTiles.FindAll(t => !t.IsLocked);
         if (unlocked.Count > 0)
         {
             var tile = unlocked[Random.Range(0, unlocked.Count)];

@@ -14,7 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   symbolName: 7
   symbolSprite: {fileID: 21300000, guid: 409f9bc68f7fc3646b5386b3fb9e2a3a, type: 3}
-  baseValue: 40
+  baseValue: 50
   symbolType: 3
   triggersCombo: 1
   drawWeight: 1
+  displayName: 7
+  icon: {fileID: 21300000, guid: 409f9bc68f7fc3646b5386b3fb9e2a3a, type: 3}
+  Value: 50

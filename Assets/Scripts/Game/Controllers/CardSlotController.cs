@@ -4,32 +4,43 @@ using TMPro;
 
 public class CardSlotController : MonoBehaviour
 {
-    public SymbolCard Card { get; private set; }
-
     [SerializeField] private Image icon;
     [SerializeField] private TMP_Text label;
+    [SerializeField] private Image selectionOutline; // Optional, assign in prefab
 
-    private Button button;
+    private SymbolCard currentCard;
     private GameplayUIController uiController;
 
-    public void Initialize(SymbolCard card, GameplayUIController controller)
+    public SymbolCard Card => currentCard;
+
+    public void Initialize(SymbolCard card, GameplayUIController ui)
     {
-        Card = card;
+        currentCard = card;
+        uiController = ui;
+
         icon.sprite = card.Data.symbolSprite;
         label.text = card.Data.symbolName;
-        uiController = controller;
-
-        button = GetComponent<Button>();
-        button.onClick.AddListener(OnClick);
+        SetSelectedVisual(false);
     }
 
-    private void OnClick()
+    public void SetSelectedVisual(bool isSelected)
     {
-        uiController.SelectCard(this);
+        if (selectionOutline != null)
+            selectionOutline.enabled = isSelected;
     }
 
-    public void SetSelectedVisual(bool selected)
+    public void OnClick()
     {
-        icon.color = selected ? Color.yellow : Color.white;
+        Debug.Log($"[CARD SLOT] Clicked card: {currentCard?.Data.symbolName}");
+        uiController?.SelectCard(this);
+    }
+
+
+    public void Clear()
+    {
+        currentCard = null;
+        icon.sprite = null;
+        label.text = "";
+        SetSelectedVisual(false);
     }
 }
