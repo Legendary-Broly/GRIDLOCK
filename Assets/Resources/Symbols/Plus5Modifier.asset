@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Plus5Modifier
   m_EditorClassIdentifier: 
   modifierType: 0
-  amount: 50
+  amount: 5

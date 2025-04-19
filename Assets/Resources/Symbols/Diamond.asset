@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   symbolName: Diamond
   symbolSprite: {fileID: 21300000, guid: 1200fd4c89ff9654483fdc0805358f5e, type: 3}
-  baseValue: 30
+  baseValue: 3
   symbolType: 2
   triggersCombo: 1
   drawWeight: 3
   displayName: Diamond
   icon: {fileID: 21300000, guid: 1200fd4c89ff9654483fdc0805358f5e, type: 3}
-  Value: 30
+  Value: 3

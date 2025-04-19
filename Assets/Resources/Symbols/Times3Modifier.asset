@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Times3Modifier
   m_EditorClassIdentifier: 
   modifierType: 1
-  amount: 5
+  amount: 4
