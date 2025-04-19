@@ -132,22 +132,23 @@ public class DoomEffectService
     private void MarkTileUnplayable()
     {
         var grid = gridManager.GetTileGrid();
-        List<TileSlotController> available = new();
+        List<TileSlotController> allTiles = new();
 
         foreach (var tile in grid)
         {
-            if (!tile.IsOccupied())
-                available.Add(tile);
+            if (tile != null)
+                allTiles.Add(tile); // ✅ Include all tiles regardless of occupation
         }
 
-        if (available.Count > 0)
+        if (allTiles.Count > 0)
         {
-            var tile = available[Random.Range(0, available.Count)];
+            var tile = allTiles[Random.Range(0, allTiles.Count)];
             tile.MarkTileUnplayable();
             Debug.Log("[DOOM] Dead Tile: One tile is now unplayable.");
             uiController.ShowDoomEffect("Dead Tile - A grid tile has become permanently unplayable.");
         }
     }
+
 
     private void SwapTwoPlacedCards()
     {

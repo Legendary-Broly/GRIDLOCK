@@ -18,71 +18,59 @@ public List<GridStateResult> Evaluate(TileSlotController[,] grid)
     // Horizontal matches
     if (GridMatchUtils.AllMatch(grid[0, 0], grid[1, 0], grid[2, 0], out _))
     {
-        Debug.Log("[Match] Row Top");
         results.Add(new GridStateResult("Row", 3));
     }
     if (GridMatchUtils.AllMatch(grid[0, 1], grid[1, 1], grid[2, 1], out _))
     {
-        Debug.Log("[Match] Row Middle");
         results.Add(new GridStateResult("Row", 3));
     }
     if (GridMatchUtils.AllMatch(grid[0, 2], grid[1, 2], grid[2, 2], out _))
     {
-        Debug.Log("[Match] Row Bottom");
         results.Add(new GridStateResult("Row", 3));
     }
 
     // Vertical matches
     if (GridMatchUtils.AllMatch(grid[0, 0], grid[0, 1], grid[0, 2], out _))
     {
-        Debug.Log("[Match] Column Left");
         results.Add(new GridStateResult("Column", 3));
     }
     if (GridMatchUtils.AllMatch(grid[1, 0], grid[1, 1], grid[1, 2], out _))
     {
-        Debug.Log("[Match] Column Middle");
         results.Add(new GridStateResult("Column", 3));
     }
     if (GridMatchUtils.AllMatch(grid[2, 0], grid[2, 1], grid[2, 2], out _))
     {
-        Debug.Log("[Match] Column Right");
         results.Add(new GridStateResult("Column", 3));
     }
 
     // Diagonal matches
     if (GridMatchUtils.AllMatch(grid[0, 0], grid[1, 1], grid[2, 2], out _))
     {
-        Debug.Log("[Match] Diagonal TL-BR");
         results.Add(new GridStateResult("Diagonal", 3));
     }
     if (GridMatchUtils.AllMatch(grid[2, 0], grid[1, 1], grid[0, 2], out _))
     {
-        Debug.Log("[Match] Diagonal TR-BL");
         results.Add(new GridStateResult("Diagonal", 3));
     }
 
     // Additional 3x3 patterns
     if (GridMatchUtils.MatchX(grid, out _))
     {
-        Debug.Log("[Match] X Pattern");
         results.Add(new GridStateResult("X", 5));
     }
 
     if (GridMatchUtils.MatchPlus(grid, out _))
     {
-        Debug.Log("[Match] Plus Pattern");
         results.Add(new GridStateResult("+", 5));
     }
 
     if (GridMatchUtils.MatchDiamond(grid, out _))
     {
-        Debug.Log("[Match] Diamond Pattern");
         results.Add(new GridStateResult("Diamond", 4));
     }
 
     if (GridMatchUtils.MatchFullGrid(grid, out _))
     {
-        Debug.Log("[Match] Full Grid Pattern");
         results.Add(new GridStateResult("Full Grid", 9));
     }
 

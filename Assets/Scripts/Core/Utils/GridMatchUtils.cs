@@ -6,23 +6,24 @@ public static class GridMatchUtils
 {
     private static readonly HashSet<string> WildSymbols = new() { "Coin", "Diamond", "Seven" };
 
-    private static bool IsMatchCompatible(string baseSymbol, string symbol)
+    private static bool IsValidMatch(List<string> symbols, out string matchedSymbol)
     {
-        // Exact match
-        if (symbol == baseSymbol) return true;
+        matchedSymbol = null;
+        var nonWilds = symbols.Where(s => !WildSymbols.Contains(s)).Distinct().ToList();
+        var wilds = symbols.Where(s => WildSymbols.Contains(s)).Distinct().ToList();
 
-        // Wild symbol definitions
-        var wildSymbols = new HashSet<string> { "Coin", "Diamond", "7" };
-        bool baseIsWild = wildSymbols.Contains(baseSymbol);
-        bool compareIsWild = wildSymbols.Contains(symbol);
+        if (nonWilds.Count == 1 && wilds.All(w => w == wilds[0]))
+        {
+            matchedSymbol = nonWilds[0];
+            return true;
+        }
 
-        // Allow matching if both are the same wild
-        if (baseIsWild && compareIsWild && baseSymbol == symbol) return true;
+        if (nonWilds.Count == 0 && wilds.Count == 1)
+        {
+            matchedSymbol = wilds[0];
+            return true;
+        }
 
-        // Allow wild + fruit (but not wild + different wild or fruit + different fruit)
-        if ((baseIsWild && !compareIsWild) || (!baseIsWild && compareIsWild)) return true;
-
-        // Otherwise, mismatch
         return false;
     }
 
@@ -40,13 +41,7 @@ public static class GridMatchUtils
         if (string.IsNullOrEmpty(symbolA) || string.IsNullOrEmpty(symbolB) || string.IsNullOrEmpty(symbolC))
             return false;
 
-        if (IsMatchCompatible(symbolA, symbolB) && IsMatchCompatible(symbolA, symbolC))
-        {
-            matchedSymbol = symbolA;
-            return true;
-        }
-
-        return false;
+        return IsValidMatch(new List<string> { symbolA, symbolB, symbolC }, out matchedSymbol);
     }
 
     public static bool AllMatch(TileSlotController[,] grid, List<(int x, int y)> positions, out string matchedSymbol)
@@ -54,72 +49,32 @@ public static class GridMatchUtils
         matchedSymbol = null;
         if (positions.Count == 0) return false;
 
-        // Check if first tile is playable
-        var first = grid[positions[0].x, positions[0].y];
-        if (!first.IsPlayable()) return false;
-
-        string baseSymbol = first.GetSymbolName();
-        if (string.IsNullOrEmpty(baseSymbol) || baseSymbol == "None") return false;
+        List<string> symbols = new();
 
         foreach (var pos in positions)
         {
             var tile = grid[pos.x, pos.y];
-            if (!tile.IsPlayable()) return false;
-
-            string symbol = tile.GetSymbolName();
-            if (!IsMatchCompatible(baseSymbol, symbol))
-                return false;
+            if (tile == null || !tile.HasSymbol() || tile.IsUnplayable()) return false;
+            var symbol = tile.GetSymbolName();
+            if (string.IsNullOrEmpty(symbol) || symbol == "None") return false;
+            symbols.Add(symbol);
         }
 
-        matchedSymbol = baseSymbol;
-        return true;
+        return IsValidMatch(symbols, out matchedSymbol);
     }
 
-    private static bool IsValidMatch(List<string> symbols, out string matchedSymbol)
-    {
-        matchedSymbol = null;
-        var nonWilds = symbols.Where(s => !WildSymbols.Contains(s)).Distinct().ToList();
-        var wilds = symbols.Where(s => WildSymbols.Contains(s)).Distinct().ToList();
+    public static bool MatchX(TileSlotController[,] grid, out string matchedSymbol) => AllMatch(grid, new() {
+        (0, 0), (1, 1), (2, 2),
+        (0, 2), (2, 0)
+    }, out matchedSymbol);
 
-        if (nonWilds.Count == 1 && wilds.All(w => wilds[0] == w))
-        {
-            matchedSymbol = nonWilds[0];
-            return true;
-        }
+    public static bool MatchPlus(TileSlotController[,] grid, out string matchedSymbol) => AllMatch(grid, new() {
+        (1, 0), (0, 1), (1, 1), (2, 1), (1, 2)
+    }, out matchedSymbol);
 
-        if (nonWilds.Count == 0 && wilds.Count == 1)
-        {
-            matchedSymbol = wilds[0];
-            return true;
-        }
-
-        return false;
-    }
-    public static bool MatchX(TileSlotController[,] grid, out string matchedSymbol)
-    {
-        var positions = new List<(int x, int y)>
-        {
-            (0, 0), (1, 1), (2, 2),
-            (0, 2), (2, 0)
-        };
-        return AllMatch(grid, positions, out matchedSymbol);
-    }
-    public static bool MatchPlus(TileSlotController[,] grid, out string matchedSymbol)
-    {
-        var positions = new List<(int x, int y)>
-        {
-            (1, 0), (0, 1), (1, 1), (2, 1), (1, 2)
-        };
-        return AllMatch(grid, positions, out matchedSymbol);
-    }
-    public static bool MatchDiamond(TileSlotController[,] grid, out string matchedSymbol)
-    {
-        var positions = new List<(int x, int y)>
-        {
-            (1, 0), (0, 1), (2, 1), (1, 2)
-        };
-        return AllMatch(grid, positions, out matchedSymbol);
-    }
+    public static bool MatchDiamond(TileSlotController[,] grid, out string matchedSymbol) => AllMatch(grid, new() {
+        (1, 0), (0, 1), (2, 1), (1, 2)
+    }, out matchedSymbol);
 
     public static bool MatchFullGrid(TileSlotController[,] grid, out string matchedSymbol)
     {
