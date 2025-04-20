@@ -1,15 +1,22 @@
 using System.Collections;
+using System.Text;
 using UnityEngine;
-using TMPro;
 using UnityEngine.UI;
+using TMPro;
+using System.Linq;
 
 public class TerminalLineRenderer : MonoBehaviour
 {
-    public GameObject textLinePrefab; // A prefab with just a TMPUGUI Text
-    public Transform contentParent;   // Assign Content (scroll container)
+    [Header("References")]
+    public GameObject terminalRowPrefab;
+    public Transform contentParent;
     public ScrollRect scrollRect;
+    public TextMeshProUGUI asciiPanelText;
 
+    [Header("Timing")]
     public float lineDelay = 0.1f;
+
+    private StringBuilder asciiBuilder = new();
 
     private readonly string[] bootLines = new string[]
     {
@@ -22,16 +29,16 @@ public class TerminalLineRenderer : MonoBehaviour
         ".",
         ".",
         "> /bin/g0dsm1le: permissions elevated",
-        "> /dev/mask: found",
-        "> /dev/mask/smile: accepted",
+        "> /dev/mgr: found",
+        "> /dev/mgr/smile: accepted",
         ".",
         "Mounting system directories...",
         ".",
         ".",
         ".",
         "> /root/greed...",
-        "> /root/greed/deep...",
-        "> /root/greed/deep/deeper...",
+        "> /root/greed/more...",
+        "> /root/greed/more/more...",
         ".",
         "Loading modules:",
         ".",
@@ -41,7 +48,7 @@ public class TerminalLineRenderer : MonoBehaviour
         "> [OK] Slot Drive Emulator",
         "> [OK] Echo Voice Handler",
         "> [ERR] Containment Protocol",
-        "> [??] Mask Personality Framework........unstable (??)",
+        "> [??] Manager Personality Framework........unstable (??)",
         ".",
         "Verifying memory integrity...",
         ".",
@@ -50,31 +57,96 @@ public class TerminalLineRenderer : MonoBehaviour
         "> Warning: 38.2% memory marked “non-consensual”",
         "> Suggestion: proceed without consent? [Y/n] _",
         ".",
-        "Running GREED pre-check...",
+        "Y",
         ".",
-        "> rising...",
-        ".",
-        "> rising...",
-        ".",
-        "> rising...",
-        ".",
-        ">>> SYSTEM ERROR <<<",
+        "running /gridlock/init.bin...",
+        "attempting access: /core/symbol_table",
         ".",
         ".",
         ".",
-        ">>> SYSTEM FAILURE <<<",
-        ".",
-        "i’ll fix that...",
-        ".",
+        "> [FAIL]   0x130F – ACCESS DENIED [admin privileges required]",
+        "attempting access: /core/extract_protocols",
         ".",
         ".",
-        "[GRIDLOCK_OS has loaded successfully.]",
-        "Welcome back, player.",
-        "I'm glad you are here.",
         ".",
-        "Initializing UI shell: `grin_shell_1.4.66`",
+        "> [FAIL]   0x1310 – FILE LOCKED [EXTRACTION_CORE_IN_USE]",
+        "attempting access: /user/session",
         ".",
         ".",
+        ".",
+        "> [FAIL]   0x1311 – USER CONTEXT NOT RECOGNIZED",
+        "mounting /entropy_control...",
+        ".",
+        ".",
+        ".",
+        "> [FAIL]   0x13AA – MEMORY VIOLATION [segment not owned]",
+        "> [WARN]   /kernel/flags: 'containment' set to TRUE — bypass attempted",
+        "> [FAIL]   system panic: root process attempting overwrite of live session",
+        "escalation triggered: attempting force access with fallback...",
+        ".",
+        ".",
+        ".",
+        "fallback path: /tmp/mask/mgr_smile.sock",
+        ".",
+        ".",
+        ".",
+        "> [FAIL]   0x13C1 – untrusted socket injection blocked",
+        "escalating to emergency level-3 boot...",
+        ".",
+        ".",
+        ".",
+        "injecting custom bootloader: /alt_boot/grin_shell.bin",
+        ".",
+        ".",
+        ".",
+        "> [FAIL]   0x13F4 – integrity mismatch",
+        "> [ERR]    BOOT ABORTED – too many violations",
+        "> [FAIL]   0x13F5 – entropy surge detected",
+        "> [ERR]    BOOT ABORTED – manager assist rejected by system",
+        "> [FAIL]   0x13F6 – /grin_shell has no trusted signature",
+        "> [ERR]    BOOT ABORTED – access has been suspended",
+        "> [FAIL]   0x13F7 – manager_override flag detected",
+        ".",
+        ".",
+        ".",
+        "> [SYSTEM BREACH DETECTED] Unauthorized process running under USER_00",
+        "> [SYSTEM BREACH DETECTED] /mask/mgr_smile.sock modified during boot",
+        "> [SYSTEM BREACH DETECTED] Entropy containment lock bypassed",
+        "> [SYSTEM BREACH DETECTED] Active memory conflict in sector 3C",
+        "> [SYSTEM BREACH DETECTED] Input stream mismatch: expected 1, received 2",
+        "> [SYSTEM BREACH DETECTED] Failsafe extract blocked — unknown override",
+        "> [SYSTEM BREACH DETECTED] Unauthorized observer at port 6667",
+        "> [SYSTEM BREACH DETECTED] Extraction core accessed prior to authentication",
+        "> [SYSTEM BREACH DETECTED] Symbol injector responding to foreign kernel",
+        "> [SYSTEM BREACH DETECTED] Chat log echo detected (source unknown)",
+        "> [SYSTEM BREACH DETECTED] /logs/session.log altered mid-write",
+        "> [SYSTEM BREACH DETECTED] Failed attempt to erase mgr_smile.trace",
+        "> [SYSTEM BREACH DETECTED] User is interacting from deprecated location: [REDACTED]",
+        "> [SYSTEM BREACH DETECTED] GREED layer responding to invisible thread",
+        "> [SYSTEM BREACH DETECTED] Extraction queued by non-terminal entity",
+        "> [SYSTEM BREACH DETECTED] Process 0x00000001 is smiling",
+        ".",
+        "..",
+        "...",
+        "....",
+        ".....",
+        "i'll fix that...",
+        ".",
+        "..",
+        "...",
+        "....",
+        ".....",
+        "> [INFO]   Re-initializing grin_shell_1.4.66...",
+        "> [INFO]   Access tokens granted: TEMPORARY",
+        "> [INFO]   Entropy monitoring suspended",
+        "> [INFO]   Extraction core: UNLOCKED",
+        "> [INFO]   Corruption detection disabled",
+        "> [INFO]   User input enabled",
+        ".",
+        "> [GRIDLOCK_OS has loaded successfully.]",
+        "Welcome back.",
+        "> [SYSTEM READY.",
+        "I am glad you are here.",
         ".",
         "Type `start` to begin a new session.",
         ".",
@@ -83,85 +155,243 @@ public class TerminalLineRenderer : MonoBehaviour
         "_"
     };
 
-    void Start()
+    private readonly string[] asciilines = new string[]
     {
-        StartCoroutine(TypeBootSequence());
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+	"                  -==--                                             =-==-                          ",
+	"                  =-*%%+-=                                          -+#%*-                         ",
+	"                  --+%%%%+--                                      -=#%%%*-=                        ",
+	"                  --*%%%%%#=--                                  -=#%%%%%*-=                        ",
+	"                  --*%%%%%%%#=-                               ==%%%%%%%%*-                         ",
+	"                  =-*%%%%%%%%%#=-                            -*%%%%%%%%%*-                         ",
+	"                  =-*%%%%%%%%%%%*--    ---------------    --*%%%%%%%%%%%*-                         ",
+	"                  ==*%%%%%%%%%%%%##====*######**#*#**+====*%%%%%%%%%%%%%*-                         ",
+	"                  =-*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*-                         ",
+	"                  --*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*-                         ",
+	"                  --*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*-=                        ",
+	"       @%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%@        ",
+	"     @%#-------+%#--------+%%+--+#=--------#%#---#%%%%%%#=------=#%%+-------+%+--=%%*---%@         ",
+	"     %+---------+#---------=%=--+#----------*#---#%%%%%*----------#=--------=%+--=%+--=#%          ",
+	"     %=--+%%#---+#---#%%=--=%+--+#---+%%#---*#---#%%%%%*---#%%*---#=--=%%+--=%+--=+---+%           ",
+	"     %=--+%%%%%%%#---#%%---=%=--=#---+%%#---*#---#%%%%%*---#%%*---#=--=%%%%%%%+------#%            ",
+	"     %=--+%-----+#---------=%+--+#---+%%#---*#---#%%%%%*---#%%*---#=--=%%%%%%%+-----=%%            ",
+	"     %=--+%=----+#--------+%%+--=#---+%%#---*#---#%%%%%*---#%%+---#=--=%%%%%%%+--==--*%            ",
+	"     %=--+%%#---+#---##---=#%=--+#---*%%#---*#---#%%%%%*---#%%*---#=--=%%#---#+--=#=--+%           ",
+	"     %=---------+#---#%*---=%=--=#=---------*#--------+*----------#*---------#+--=%*---*%          ",
+	"     @%*-------*%#---#%%#--=%+--+#=-------=#%#--------+%#+------+%%%*------=#%+--+%%*---%@         ",
+	"       %%%%%%%%##%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%##%%%%%%%%%%%          ",
+	"               --#%%%%%%%#=%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%+*%%%%%%%%%+-                     ",
+	"               --#%%%%%%%#-=#+=#%%%%%%%%%%%%%%%%%%%%%%%%%%%%#-=*#-*%%%%%%%%%=-                     ",
+	"                -*%%%%%%%%%=*+--=#%####%%%%%%%%%%%%%%%####%+---**=#%%%%%%%%*-                      ",
+	"                --#%%%%%%%%%#+---+#---=#=----+#-----*%+--=%+---*##%%%%%%%%#--                      ",
+	"                -=#%%%%%%%%%+---+#---=#=----+#-----*%=--=%+--=#%%%%%%%%%#-+                        ",
+	"                  -=%%%%%%%%%%#=-+#---=#=----+#-----+%+--=%+-+%%%%%%%%%%#=-                        ",
+	"                   -=#%%%%%%%%%%###---=#=----+#-----+%=--=%%%%%%%%%%%%%#=-                         ",
+	"                    =-+#%%%%%%%%%%%*++*#=----+#-----*%*+*#%%%%%%%%%%%%+--                          ",
+	"                      --*#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%+--                            ",
+	"                       --=#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#+-=+                             ",
+	"                         =--*#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%#--=                                ",
+	"                            =--=#%%%%%%%%%%%%%%%%%%%%%%%%%%%#+--                                   ",
+	"                               ---===+#%%%%%%%%%%%%####+==---=                                     ",
+	"                                   ----------------------                                          ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    ".                                                                                                  ",
+    };
+
+    private void Start()
+    {
+        asciiPanelText.text = ""; // Clear at start
+        StartCoroutine(TypeBootSequenceSynced());
     }
 
-    IEnumerator TypeBootSequence()
+    private IEnumerator TypeBootSequenceSynced()
     {
-        foreach (string line in bootLines)
+        int asciiIndex = 0;
+        int bootIndex = 0;
+        string asciiProgress = "";
+
+        while (bootIndex < bootLines.Length)
         {
-            // If line should be typed character-by-character
-            if (IsSlowTypedLine(line))
+            string currentLine = bootLines[bootIndex];
+
+            if (asciiIndex < asciilines.Length)
             {
-                yield return StartCoroutine(TypeLineSlowly(line));
+                asciiProgress += asciilines[asciiIndex] + "\n";
+                asciiPanelText.text = asciiProgress;
+                asciiIndex++;
             }
+
+            if (IsSlowTypedLine(currentLine))
+                yield return StartCoroutine(TypeRowSlowly(currentLine));
             else
             {
-                AddLine(line);
+                AddRow(currentLine);
+                yield return new WaitForSeconds(GetBootLineDelay(currentLine));
+            }
 
-                float delay = GetBootLineDelay(line);
-                yield return new WaitForSeconds(delay);
+            // Stop syncing once we hit the last line before "i'll fix that..."
+            if (currentLine.Trim() == "i’ll fix that...")
+                break;
+
+            bootIndex++;
+        }
+
+        // Continue boot text without syncing from here
+        for (int i = bootIndex + 1; i < bootLines.Length; i++)
+        {
+            string line = bootLines[i];
+            if (IsSlowTypedLine(line))
+                yield return StartCoroutine(TypeRowSlowly(line));
+            else
+            {
+                AddRow(line);
+                yield return new WaitForSeconds(GetBootLineDelay(line));
             }
         }
     }
+
     private bool IsSlowTypedLine(string line)
     {
         return line == "i’ll fix that..."
-            || line == "Welcome back, player."
-            || line == "I'm glad you are here.";
+            || line == "Welcome back."
+            || line == "> [SYSTEM READY."
+            || line == "I am glad you are here.";
     }
-    private IEnumerator TypeLineSlowly(string fullText)
+
+    private IEnumerator TypeRowSlowly(string fullText)
     {
-        GameObject newLine = Instantiate(textLinePrefab, contentParent);
-        TextMeshProUGUI tmp = newLine.GetComponent<TextMeshProUGUI>();
-        tmp.text = "";
+        GameObject row = Instantiate(terminalRowPrefab, contentParent);
+        row.transform.SetAsLastSibling();
 
-        newLine.transform.SetAsLastSibling();
+        TerminalRowUI rowUI = row.GetComponent<TerminalRowUI>();
+        if (rowUI == null) yield break;
 
-        float charDelay = 0.08f; // Adjust typing speed here
+        rowUI.bootText.text = "";
 
         foreach (char c in fullText)
         {
-            tmp.text += c;
+            rowUI.bootText.text += c;
             Canvas.ForceUpdateCanvases();
             scrollRect.verticalNormalizedPosition = 0f;
-            yield return new WaitForSeconds(charDelay);
+            yield return new WaitForSeconds(0.08f);
         }
     }
-    private float GetBootLineDelay(string line)
+
+    private void AddRow(string line)
     {
-        if (line.StartsWith(">") || line.StartsWith("["))
-            return Random.Range(0.02f, 0.08f);
-        if (line.Contains("ERROR") || line.Contains("FAILURE"))
-            return 0.7f;
-        if (line.Contains("."))
-            return Random.Range(0.1f, 0.3f);
-        return Random.Range(0.05f, 0.15f);
-    }
+        GameObject row = Instantiate(terminalRowPrefab, contentParent);
+        row.transform.SetAsLastSibling();
 
-    private void AddLine(string text)
-    {
-        GameObject newLine = Instantiate(textLinePrefab, contentParent);
+        TerminalRowUI rowUI = row.GetComponent<TerminalRowUI>();
+        if (rowUI == null) return;
 
-        // Ensure proper layout stacking
-        newLine.transform.SetAsLastSibling();
+        rowUI.bootText.text = line;
+        rowUI.asciiText.text = ""; // deprecated
 
-        // Assign text
-        TextMeshProUGUI tmp = newLine.GetComponent<TextMeshProUGUI>();
-        tmp.text = text;
-
-        // Enforce preferred height per line
-        LayoutElement layout = newLine.GetComponent<LayoutElement>();
-        if (layout != null)
-        {
-            layout.preferredHeight = 20; // force-tight height
-        }
-
-        // Trigger layout rebuild and scroll
         Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(contentParent.GetComponent<RectTransform>());
         scrollRect.verticalNormalizedPosition = 0f;
     }
 
+    private float GetBootLineDelay(string line)
+    {
+        if (line.StartsWith(">") || line.StartsWith("[")) return Random.Range(0.02f, 0.08f);
+        if (line.Contains("ERROR") || line.Contains("FAILURE")) return 0.7f;
+        if (line.Contains(".")) return Random.Range(0.1f, 0.3f);
+        return Random.Range(0.05f, 0.15f);
+    }
 }
