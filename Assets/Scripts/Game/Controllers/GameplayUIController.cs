@@ -18,18 +18,21 @@ public class GameplayUIController : MonoBehaviour
     [SerializeField] private TMP_Text multiplierText;
 
     [Header("Hand Display")]
-    [SerializeField] private Transform cardHandContainer;
     [SerializeField] private GameObject cardSlotPrefab;
+
+    [Tooltip("Assign 3 fixed hand slots in order: left, center, right")]
+    [SerializeField] private Transform[] handSlots = new Transform[3];
 
     [Header("Grid")]
     [SerializeField] private GridManager gridManager;
     [SerializeField] private ScoreBreakdownUI scoreBreakdownUI;
     [SerializeField] private TextMeshProUGUI doomEffectText;
+
     public static GameplayUIController Instance { get; private set; }
 
     private const int MaxHandSize = 5;
     private CardSlotController selectedCard = null;
-    
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -106,11 +109,39 @@ public class GameplayUIController : MonoBehaviour
         RefreshUI();
     }
 
-    private void CreateCardSlot(SymbolCard card)
+    private void CreateCardSlot(SymbolCard card, Transform slot)
     {
-        GameObject slot = Instantiate(cardSlotPrefab, cardHandContainer);
-        CardSlotController controller = slot.GetComponent<CardSlotController>();
+        GameObject slotGO = Instantiate(cardSlotPrefab, slot);
+        slotGO.transform.localPosition = Vector3.zero;
+        CardSlotController controller = slotGO.GetComponent<CardSlotController>();
         controller.Initialize(card, this);
+    }
+
+    public void RebuildHandUI()
+    {
+        if (handSlots == null || handSlots.Length != 3)
+        {
+            Debug.LogError("[HAND UI] handSlots array must contain exactly 3 assigned slot Transforms.");
+            return;
+        }
+
+        foreach (Transform slot in handSlots)
+        {
+            if (slot.childCount > 0)
+            {
+                for (int i = 0; i < slot.childCount; i++)
+                    Destroy(slot.GetChild(i).gameObject);
+            }
+        }
+
+        if (GameBootstrapper.GameStateService == null) return;
+
+        var hand = GameBootstrapper.GameStateService.PlayerHand;
+
+        for (int i = 0; i < hand.Count && i < handSlots.Length; i++)
+        {
+            CreateCardSlot(hand[i], handSlots[i]);
+        }
     }
 
     private void RefreshUI()
@@ -148,7 +179,7 @@ public class GameplayUIController : MonoBehaviour
         RefreshUI();
         return card;
     }
-    
+
     public void OnGridlockPressed()
     {
         var grid = gridManager.GetTileGrid();
@@ -165,20 +196,6 @@ public class GameplayUIController : MonoBehaviour
         float doomMultiplier = GameBootstrapper.GameStateService.CurrentDoomMultiplier;
 
         scoreBreakdownUI.ShowBreakdown(baseScore, summary, doomMultiplier, finalScore);
-    }
-
-
-    public void RebuildHandUI()
-    {
-        if (cardHandContainer == null) return;
-
-        foreach (Transform child in cardHandContainer)
-            Destroy(child.gameObject);
-
-        if (GameBootstrapper.GameStateService == null) return;
-
-        foreach (var card in GameBootstrapper.GameStateService.PlayerHand)
-            CreateCardSlot(card);
     }
 
     public void StartNewRound()
