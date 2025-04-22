@@ -8,18 +8,25 @@ using System.Linq;
 public class ProgressTrackerService : IProgressTrackerService
 {
     public int CurrentScore { get; private set; }
-    public int RoundTarget { get; private set; } = 20;
+    public int RoundTarget { get; private set; } = 20;  // Initial round threshold
 
     public void ApplyScore(int score)
     {
         CurrentScore += score;
     }
 
-    public bool HasMetGoal() => CurrentScore >= RoundTarget;
+    public bool HasMetGoal()
+    {
+        return CurrentScore >= RoundTarget;
+    }
 
-    public void ResetForNextRound()
+    public void IncreaseThreshold()
+    {
+        RoundTarget += 20;  // Increase threshold by 20 each round
+    }
+        public void ResetProgress()
     {
         CurrentScore = 0;
-        RoundTarget += 10; // progressively harder
     }
 }
+

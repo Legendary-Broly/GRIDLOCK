@@ -34,7 +34,7 @@ public class TerminalInputHandler : MonoBehaviour
         {
             case "START":
                 Debug.Log("Starting game...");
-                SceneManager.LoadScene("Gameplay");
+                SceneManager.LoadScene("NewGameplay");
                 break;
 
             case "I AM A COWARD":

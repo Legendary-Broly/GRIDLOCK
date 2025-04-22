@@ -23,8 +23,8 @@ public class InjectController : MonoBehaviour
             symbolButtons[i].onClick.AddListener(() => OnSymbolClicked(index));
         }
 
-        injectButton.onClick.AddListener(OnInject); // 👈 hook up button directly here
-        RefreshUI(); // 👈 show initial state (optional)
+        injectButton.onClick.AddListener(OnInject);
+        RefreshUI();
     }
 
     private void OnInject()
@@ -32,7 +32,7 @@ public class InjectController : MonoBehaviour
         injectService.InjectSymbols();
         RefreshUI();
 
-        gridService.SpreadVirus(); // let grid handle virus logic
+        gridService.SpreadVirus();
         FindFirstObjectByType<GridView>().RefreshGrid(gridService);
     }
 
@@ -67,4 +67,5 @@ public class InjectController : MonoBehaviour
             return raw.CurrentSymbolAt(index);
         return "?";
     }
+
 }

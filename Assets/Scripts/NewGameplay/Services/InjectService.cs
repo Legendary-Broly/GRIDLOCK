@@ -40,4 +40,9 @@ public class InjectService : IInjectService
             }
         }
     }
+    public void ClearSymbolBank()
+    {
+        // Let the controller handle the UI clearing.
+        Debug.Log("[InjectService] ClearSymbolBank() called - handled by InjectController.");
+    }
 }

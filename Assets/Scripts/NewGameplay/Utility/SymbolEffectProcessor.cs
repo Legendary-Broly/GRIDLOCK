@@ -16,36 +16,28 @@ public static class SymbolEffectProcessor
         {
             case "Ψ": // Surge
                 int basePoints = 1 * matchSize;
-                score = basePoints * matchSize;  // Apply match multiplier
+                score = basePoints * matchSize; // Apply match multiplier
                 entropy.Increase(5);
-                Debug.Log($"[Ψ] Surge: +{score} pts ({basePoints} base × {matchSize}x multiplier), +5% Entropy");
-                entropy.Increase(5);
-                Debug.Log($"[Ψ] Surge: +{score} pts, +5% Entropy");
+                Debug.Log($"[Ψ] Surge: {score} pts ({basePoints} base * {matchSize}x multiplier), +5% Entropy");
                 break;
 
             case "∆": // Purge
                 score = 1 * matchSize;
+                Debug.Log($"[∆] Purge triggered for {matchSize} symbols");
                 foreach (var pos in match)
                     PurgeAdjacentViruses(pos.x, pos.y, grid);
-                Debug.Log($"[∆] Purge: +{score} pts, purged adjacent viruses");
                 break;
 
             case "Σ": // Stabilizer
-                entropy.Decrease(matchSize);
-                Debug.Log($"[Σ] Stabilizer: -{matchSize}% Entropy");
+                int entropyReduction = matchSize; // -1 per symbol in match
+                entropy.Decrease(entropyReduction);
+                Debug.Log($"[Σ] Stabilizer: -{entropyReduction}% Entropy");
                 break;
 
             default:
                 Debug.LogWarning($"[SymbolEffect] Unknown symbol '{symbol}' encountered");
                 break;
         }
-
-        // Clear all tiles in match after effect
-        foreach (var pos in match)
-        {
-            grid.SetSymbol(pos.x, pos.y, null);
-        }
-
         return score;
     }
 
@@ -77,6 +69,17 @@ public static class SymbolEffectProcessor
                 if (grid.GetSymbolAt(x, y) == "Θ")
                     DuplicateAdjacentSymbol(x, y, grid, protectedTiles);
 
+            }
+        }
+    }
+    public static void ProcessAllPurges(IGridService grid)
+    {
+        for (int y = 0; y < grid.GridSize; y++)
+        {
+            for (int x = 0; x < grid.GridSize; x++)
+            {
+                if (grid.GetSymbolAt(x, y) == "∆")
+                    PurgeAdjacentViruses(x, y, grid);
             }
         }
     }
@@ -120,26 +123,24 @@ public static class SymbolEffectProcessor
             if (!IsInBounds(tx, ty, grid.GridSize)) continue;
 
             string symbol = grid.GetSymbolAt(tx, ty);
-            if (!string.IsNullOrEmpty(symbol) && symbol != "Θ" && symbol != "X")
+            // Exclude only Θ and empty, allow viruses ("X")
+            if (!string.IsNullOrEmpty(symbol) && symbol != "0" && symbol != "Θ")
                 nearbySymbols.Add(symbol);
         }
 
         if (nearbySymbols.Count > 0)
         {
             string duplicate = nearbySymbols[Random.Range(0, nearbySymbols.Count)];
-            grid.SetSymbol(x, y, duplicate);  // ✅ Actually replace Θ
-
-            protectedTiles.Add(new Vector2Int(x, y));  // ✅ Protect duplicated tile
-
+            grid.SetSymbol(x, y, duplicate); // Replace Θ with the duplicated symbol
+            protectedTiles.Add(new Vector2Int(x, y)); // Protect duplicated tile
             Debug.Log($"[Θ] Replaced Θ at ({x},{y}) with '{duplicate}'");
         }
         else
         {
-            grid.SetSymbol(x, y, null);
+            grid.SetSymbol(x, y, null); // Clear if nothing valid to duplicate
             protectedTiles.Add(new Vector2Int(x, y));
             Debug.Log($"[Θ] No symbols to duplicate near ({x},{y}), cleared Θ");
         }
-
     }
 
     private static bool IsInBounds(int x, int y, int size)

@@ -131,4 +131,15 @@ public class GridService : IGridService
             }
         }
     }
+        public void ClearAllTiles()
+    {
+        for (int y = 0; y < gridSize; y++)
+        {
+            for (int x = 0; x < gridSize; x++)
+            {
+                gridState[x, y] = null;
+                tilePlayable[x, y] = true;
+            }
+        }
+    }
 }

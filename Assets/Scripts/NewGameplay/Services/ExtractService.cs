@@ -31,11 +31,11 @@ public class ExtractService : IExtractService
             if (match.Count == 0) continue;
 
             string symbol = grid.GetSymbolAt(match[0].x, match[0].y);
-            Debug.Log($"[EXTRACT] -> Symbol '{symbol}' → Size {match.Count}");
+            Debug.Log($"[EXTRACT] -> Symbol '{symbol}' -> Size {match.Count}");
 
             foreach (var pos in match)
             {
-                Debug.Log($" - [{pos.x},{pos.y}]");
+                Debug.Log($"  - [{pos.x},{pos.y}]");
             }
 
             totalScore += SymbolEffectProcessor.Apply(match, grid, entropy);
@@ -47,13 +47,25 @@ public class ExtractService : IExtractService
         progress.ApplyScore(totalScore);
         CurrentScore = totalScore;
 
-        SymbolEffectProcessor.ProcessAllLoops(grid, protectedTiles); // Apply Θ duplication
-        onGridUpdated?.Invoke(); // Refresh the visual grid
+        SymbolEffectProcessor.ProcessAllPurges(grid);             // Purge viruses
+        SymbolEffectProcessor.ProcessAllLoops(grid, protectedTiles); // Duplicate loops BEFORE clearing
 
-        // ⬇️ Only clear after grid refresh
+        onGridUpdated?.Invoke(); // Refresh grid BEFORE clearing matches
+
+        // Now clear matched tiles AFTER duplication and visual refresh
+        foreach (var match in matches)
+        {
+            foreach (var pos in match)
+            {
+                grid.SetSymbol(pos.x, pos.y, null);
+            }
+        }
+
         grid.ClearAllExceptViruses(protectedTiles);
-        
+        onGridUpdated?.Invoke(); // Final refresh
+        protectedTiles.Clear();
     }
+
     public void ClearProtectedTiles()
     {
         protectedTiles.Clear();

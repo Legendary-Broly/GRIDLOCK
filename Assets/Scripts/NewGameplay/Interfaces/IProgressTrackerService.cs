@@ -10,5 +10,6 @@ public interface IProgressTrackerService
     int RoundTarget { get; }
     void ApplyScore(int score);
     bool HasMetGoal();
-    void ResetForNextRound();
+    void ResetProgress();
+    void IncreaseThreshold();
 }

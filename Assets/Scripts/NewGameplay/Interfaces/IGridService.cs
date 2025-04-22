@@ -13,5 +13,6 @@ public interface IGridService
     bool IsTilePlayable(int x, int y);
     int GridSize { get; }
     void ClearAllExceptViruses(List<Vector2Int> protectedTiles);
+    void ClearAllTiles();
 
 }
