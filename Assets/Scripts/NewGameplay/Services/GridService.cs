@@ -34,7 +34,8 @@ public class GridService : IGridService
 
         SetSymbol(x, y, symbol);
         tilePlayable[x, y] = false;
-        InjectServiceLocator.Service.ClearSelectedSymbol(symbol);
+
+        InjectServiceLocator.Service.ClearSelectedSymbol(symbol); // ✅ ensures symbol is removed
     }
 
     public void SetSymbol(int x, int y, string symbol)
@@ -108,5 +109,26 @@ public class GridService : IGridService
                 return true;
         }
         return false;
+    }
+    public void ClearAllExceptViruses(List<Vector2Int> protectedTiles)
+    {
+        for (int y = 0; y < gridSize; y++)
+        {
+            for (int x = 0; x < gridSize; x++)
+            {
+                Vector2Int pos = new Vector2Int(x, y);
+
+                // Skip if this tile is protected (e.g., Θ duplicated)
+                if (protectedTiles.Contains(pos))
+                    continue;
+
+                // Clear all except viruses
+                if (gridState[x, y] != "X")
+                {
+                    gridState[x, y] = null;
+                    tilePlayable[x, y] = true;
+                }
+            }
+        }
     }
 }

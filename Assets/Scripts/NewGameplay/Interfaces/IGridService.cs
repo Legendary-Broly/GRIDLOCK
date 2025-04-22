@@ -1,3 +1,9 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+using System.Linq;
 public interface IGridService
 {
     void TryPlaceSymbol(int x, int y);
@@ -6,4 +12,6 @@ public interface IGridService
     string GetSymbolAt(int x, int y);
     bool IsTilePlayable(int x, int y);
     int GridSize { get; }
+    void ClearAllExceptViruses(List<Vector2Int> protectedTiles);
+
 }

@@ -18,5 +18,12 @@ public class GridInputController : MonoBehaviour
     {
         grid.TryPlaceSymbol(x, y);
         view.RefreshGrid(grid);
+
+        // Refresh the symbol bank UI after placement
+        var injectController = Object.FindFirstObjectByType<InjectController>();
+        if (injectController != null)
+        {
+            injectController.RefreshUI();
+        }
     }
 }
