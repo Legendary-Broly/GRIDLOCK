@@ -1,6 +1,7 @@
 // IRoundService.cs
 public interface IRoundService
 {
-    int CurrentThreshold { get; }
     void ResetRound();
+    event System.Action onRoundReset;
+    void TriggerRoundReset(); // Add this
 }

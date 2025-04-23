@@ -11,6 +11,8 @@ public class NewGameplayBootstrapper : MonoBehaviour
     [SerializeField] private EntropyTrackerView entropyTrackerView;
     [SerializeField] private ProgressTrackerView progressTrackerView;
     [SerializeField] private RoundManager roundManager;
+    [SerializeField] private RoundPopupController roundPopupController;
+
 
 
 
@@ -23,7 +25,7 @@ public class NewGameplayBootstrapper : MonoBehaviour
         var entropyService = new EntropyService();
         var extractService = new ExtractService(gridService, entropyService, progressService);
 
-        roundManager.Initialize(roundService, progressService);
+        roundManager.Initialize(roundService, progressService, roundPopupController);
         progressTrackerView.Initialize(progressService);
         entropyTrackerView.Initialize(entropyService);
         ExposedGridService = gridService;

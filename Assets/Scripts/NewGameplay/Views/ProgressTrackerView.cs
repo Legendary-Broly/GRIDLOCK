@@ -1,11 +1,13 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class ProgressTrackerView : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI progressText;
 
     private IProgressTrackerService progress;
+    public int ProgressThreshold { get; private set; }
 
     public void Initialize(IProgressTrackerService progressService)
     {
@@ -25,5 +27,10 @@ public class ProgressTrackerView : MonoBehaviour
             progressText.color = Color.green;
         else
             progressText.color = Color.cyan;
+    }
+    public void IncreaseThreshold()
+    {
+        // Increment threshold by 20
+        ProgressThreshold += 20; 
     }
 }

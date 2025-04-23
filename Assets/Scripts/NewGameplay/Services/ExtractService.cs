@@ -42,7 +42,9 @@ public class ExtractService : IExtractService
         }
 
         SymbolEffectProcessor.ApplyPassiveEntropyPenalty(grid, entropy);
-        totalScore += SymbolEffectProcessor.ApplyUnmatchedSymbols(grid);
+        List<Vector2Int> allMatchedTiles = matches.SelectMany(m => m).ToList();
+        totalScore += SymbolEffectProcessor.ApplyUnmatchedSymbols(grid, allMatchedTiles);
+
 
         progress.ApplyScore(totalScore);
         CurrentScore = totalScore;
@@ -50,9 +52,9 @@ public class ExtractService : IExtractService
         SymbolEffectProcessor.ProcessAllPurges(grid);             // Purge viruses
         SymbolEffectProcessor.ProcessAllLoops(grid, protectedTiles); // Duplicate loops BEFORE clearing
 
-        onGridUpdated?.Invoke(); // Refresh grid BEFORE clearing matches
+        onGridUpdated?.Invoke(); // Refresh grid BEFORE clearing matches and viruses
 
-        // Now clear matched tiles AFTER duplication and visual refresh
+        // Perform clearing AFTER the duplication visuals happen
         foreach (var match in matches)
         {
             foreach (var pos in match)
@@ -60,10 +62,8 @@ public class ExtractService : IExtractService
                 grid.SetSymbol(pos.x, pos.y, null);
             }
         }
-
-        grid.ClearAllExceptViruses(protectedTiles);
-        onGridUpdated?.Invoke(); // Final refresh
-        protectedTiles.Clear();
+        grid.ClearAllExceptViruses(protectedTiles); // Cleans the grid
+        onGridUpdated?.Invoke(); // Refresh final cleared state
     }
 
     public void ClearProtectedTiles()

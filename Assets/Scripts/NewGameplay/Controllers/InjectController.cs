@@ -67,5 +67,13 @@ public class InjectController : MonoBehaviour
             return raw.CurrentSymbolAt(index);
         return "?";
     }
+    public void ClearSymbolSlots()
+    {
+        for (int i = 0; i < symbolSlots.Count; i++)
+        {
+            symbolSlots[i].text = ""; // Clear the symbol text from UI
+            symbolButtons[i].interactable = false; // Optionally disable buttons
+        }
+    }
 
 }

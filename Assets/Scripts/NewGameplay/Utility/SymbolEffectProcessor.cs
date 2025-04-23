@@ -124,7 +124,7 @@ public static class SymbolEffectProcessor
 
             string symbol = grid.GetSymbolAt(tx, ty);
             // Exclude only Θ and empty, allow viruses ("X")
-            if (!string.IsNullOrEmpty(symbol) && symbol != "0" && symbol != "Θ")
+            if (!string.IsNullOrEmpty(symbol) && symbol != "Θ")
                 nearbySymbols.Add(symbol);
         }
 
@@ -147,7 +147,7 @@ public static class SymbolEffectProcessor
     {
         return x >= 0 && y >= 0 && x < size && y < size;
     }
-    public static int ApplyUnmatchedSymbols(IGridService grid)
+    public static int ApplyUnmatchedSymbols(IGridService grid, List<Vector2Int> matchedTiles)
     {
         int score = 0;
 
@@ -155,16 +155,14 @@ public static class SymbolEffectProcessor
         {
             for (int x = 0; x < grid.GridSize; x++)
             {
+                Vector2Int pos = new Vector2Int(x, y);
+                if (matchedTiles.Contains(pos)) continue;  // ✅ Skip matched symbols
+
                 string symbol = grid.GetSymbolAt(x, y);
-
-                switch (symbol)
+                if (symbol == "Ψ")
                 {
-                    case "Ψ":  // Surge
-                        score += 1;  // Each Ψ gives 1 point passively
-                        Debug.Log($"[Ψ] Passive: +1 pt from unmatched at ({x},{y})");
-                        break;
-
-                    // No scoring for ∆, Θ, Σ unmatched (unless desired later)
+                    score += 1;
+                    Debug.Log($"[Ψ] Passive unmatched Ψ at ({x},{y}): +1 point");
                 }
             }
         }

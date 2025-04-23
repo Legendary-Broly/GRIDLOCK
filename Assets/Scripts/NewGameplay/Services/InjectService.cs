@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 
 public class InjectService : IInjectService
 {
-    private readonly List<string> availableSymbols = new() { "∆", "Θ", "Ψ", "Σ" };
+    //private readonly List<string> availableSymbols = new() { "∆", "Θ", "Ψ", "Σ" };
+    private readonly List<string> availableSymbols = new() { "Ψ" };
     private readonly string[] currentSymbols = new string[3];
     private readonly System.Random rng = new();
     public string CurrentSymbolAt(int index) => currentSymbols[index];
@@ -42,7 +45,11 @@ public class InjectService : IInjectService
     }
     public void ClearSymbolBank()
     {
-        // Let the controller handle the UI clearing.
-        Debug.Log("[InjectService] ClearSymbolBank() called - handled by InjectController.");
+        var controller = GameObject.FindFirstObjectByType<InjectController>();
+        if (controller != null)
+        {
+            controller.ClearSymbolSlots(); // Call the controller to clear the UI slots
+        }
     }
+
 }

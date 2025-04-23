@@ -116,14 +116,7 @@ public class GridService : IGridService
         {
             for (int x = 0; x < gridSize; x++)
             {
-                Vector2Int pos = new Vector2Int(x, y);
-
-                // Skip if this tile is protected (e.g., Θ duplicated)
-                if (protectedTiles.Contains(pos))
-                    continue;
-
-                // Clear all except viruses
-                if (gridState[x, y] != "X")
+                if (gridState[x, y] != "X" && !protectedTiles.Contains(new Vector2Int(x, y)))
                 {
                     gridState[x, y] = null;
                     tilePlayable[x, y] = true;
