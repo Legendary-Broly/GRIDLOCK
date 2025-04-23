@@ -15,6 +15,8 @@ public class EntropyService : IEntropyService
 
     public void Decrease(int amount)
     {
+        Debug.Log($"[EntropyService] Decrease called. Current Entropy: {EntropyPercent}, Amount: {amount}"); // Debug log
         EntropyPercent = Mathf.Max(0, EntropyPercent - amount);
+        Debug.Log($"[EntropyService] New Entropy: {EntropyPercent}"); // Debug log
     }
 }

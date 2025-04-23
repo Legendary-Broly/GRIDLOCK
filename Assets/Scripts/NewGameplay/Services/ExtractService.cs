@@ -41,7 +41,6 @@ public class ExtractService : IExtractService
             totalScore += SymbolEffectProcessor.Apply(match, grid, entropy);
         }
 
-        SymbolEffectProcessor.ApplyPassiveEntropyPenalty(grid, entropy);
         List<Vector2Int> allMatchedTiles = matches.SelectMany(m => m).ToList();
         totalScore += SymbolEffectProcessor.ApplyUnmatchedSymbols(grid, allMatchedTiles);
 
@@ -53,7 +52,7 @@ public class ExtractService : IExtractService
         SymbolEffectProcessor.ProcessAllLoops(grid, protectedTiles); // Duplicate loops BEFORE clearing
 
         onGridUpdated?.Invoke(); // Refresh grid BEFORE clearing matches and viruses
-
+        SymbolEffectProcessor.ApplyPassiveEntropyPenalty(grid, entropy);
         // Perform clearing AFTER the duplication visuals happen
         foreach (var match in matches)
         {
@@ -65,6 +64,7 @@ public class ExtractService : IExtractService
         grid.ClearAllExceptViruses(protectedTiles); // Cleans the grid
         onGridUpdated?.Invoke(); // Refresh final cleared state
     }
+
 
     public void ClearProtectedTiles()
     {

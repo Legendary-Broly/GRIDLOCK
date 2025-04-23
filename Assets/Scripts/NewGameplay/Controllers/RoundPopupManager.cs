@@ -10,6 +10,7 @@ public class RoundPopupController : MonoBehaviour
     [SerializeField] private GameObject popupWindow;
     [SerializeField] private TextMeshProUGUI popupText;
 
+    private bool isContinueButtonClicked = false; // Flag to prevent multiple clicks
 
     public System.Action onContinue;
 
@@ -28,10 +29,14 @@ public class RoundPopupController : MonoBehaviour
             $"        > COMPLETE\n\n" +
             $"> USER/EXTRACTION/{roundNumber} READY\n\n" +
             "[mgr_smile]: Excellent work";
+        isContinueButtonClicked = false; // Reset flag when popup is shown
     }
 
     public void OnContinueClicked()
     {
+        if (isContinueButtonClicked) return; // Prevent multiple invocations
+
+        isContinueButtonClicked = true; // Set flag to true to block further clicks
         popupPanel.SetActive(false);
         onContinue?.Invoke();
     }

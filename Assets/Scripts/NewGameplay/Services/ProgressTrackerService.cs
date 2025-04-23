@@ -8,25 +8,26 @@ using System.Linq;
 public class ProgressTrackerService : IProgressTrackerService
 {
     public int CurrentScore { get; private set; }
-    public int RoundTarget { get; private set; } = 20;  // Initial round threshold
+    public int RoundTarget { get; private set; } = 20;  // Initial round target
+    public int ProgressThreshold { get; private set; } = 20;  // This should be publicly accessible
 
     public void ApplyScore(int score)
     {
         CurrentScore += score;
     }
 
-    public bool HasMetGoal()
+    public bool HasMetGoal() => CurrentScore >= ProgressThreshold;
+
+    public void ResetProgress()
     {
-        return CurrentScore >= RoundTarget;
+        CurrentScore = 0;
     }
 
     public void IncreaseThreshold()
     {
+        Debug.Log("IncreaseThreshold called. Current RoundTarget: " + RoundTarget); // Debug log
         RoundTarget += 20;  // Increase threshold by 20 each round
-    }
-        public void ResetProgress()
-    {
-        CurrentScore = 0;
+        Debug.Log("Threshold increased. New RoundTarget: " + RoundTarget); // Debug log
     }
 }
 

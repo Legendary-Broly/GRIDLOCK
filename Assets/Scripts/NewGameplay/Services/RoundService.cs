@@ -14,12 +14,14 @@ public class RoundService : IRoundService
         this.inject = inject;
     }
 
+    // In RoundService.cs, ResetRound() should only clear grid and symbol bank, not modify the threshold:
     public void ResetRound()
     {
-        grid.ClearAllTiles();        // Clear grid
-        inject.ClearSymbolBank();    // Clear symbol bank
-        progress.ResetProgress();    // Reset progress tracker to 0
-        onRoundReset?.Invoke();      // Call reset event
+        // Clear the grid, symbol bank, and reset progress
+        grid.ClearAllTiles();
+        inject.ClearSymbolBank();
+        progress.ResetProgress();  // Reset progress for the next round
+        onRoundReset?.Invoke(); // Trigger event to update UI
     }
 
     public void TriggerRoundReset()

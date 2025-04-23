@@ -24,6 +24,6 @@ public class ExtractController : MonoBehaviour
         entropyTrackerView.Refresh();
         progressTrackerView.Refresh();
         extractService.ClearProtectedTiles();  // ADD THIS LINE (new method)
-        FindFirstObjectByType<RoundManager>().CheckRoundEnd();
+        FindFirstObjectByType<RoundManager>().CheckRoundEnd(); // Reinstated the redundant call to CheckRoundEnd
     }
 }

@@ -31,7 +31,7 @@ public static class SymbolEffectProcessor
             case "Σ": // Stabilizer
                 int entropyReduction = matchSize; // -1 per symbol in match
                 entropy.Decrease(entropyReduction);
-                Debug.Log($"[Σ] Stabilizer: -{entropyReduction}% Entropy");
+                Debug.Log($"[Σ] Stabilizer: -{entropyReduction}% Entropy applied for {matchSize} symbols");
                 break;
 
             default:
@@ -56,7 +56,7 @@ public static class SymbolEffectProcessor
         if (count > 0)
         {
             entropy.Increase(count);
-            Debug.Log($"[X] Passive virus penalty: +{count}% Entropy from {count} viruses");
+            Debug.Log($"[X] Passive virus penalty applied: +{count}% Entropy from {count} viruses");
         }
     }
 

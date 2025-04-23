@@ -8,8 +8,7 @@ using TMPro;
 
 public class InjectService : IInjectService
 {
-    //private readonly List<string> availableSymbols = new() { "∆", "Θ", "Ψ", "Σ" };
-    private readonly List<string> availableSymbols = new() { "Ψ" };
+    private readonly List<string> availableSymbols = new() { "∆", "Θ", "Ψ", "Σ" };
     private readonly string[] currentSymbols = new string[3];
     private readonly System.Random rng = new();
     public string CurrentSymbolAt(int index) => currentSymbols[index];

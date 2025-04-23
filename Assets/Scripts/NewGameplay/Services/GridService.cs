@@ -45,7 +45,11 @@ public class GridService : IGridService
             tilePlayable[x, y] = false;
     }
 
-    public string GetSymbolAt(int x, int y) => gridState[x, y];
+    public string GetSymbolAt(int x, int y)
+    {
+        string symbol = gridState[x, y];
+        return symbol;
+    }
 
     public bool IsTilePlayable(int x, int y) => tilePlayable[x, y];
 
