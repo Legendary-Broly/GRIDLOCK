@@ -51,4 +51,8 @@ public class InjectService : IInjectService
         }
     }
 
+    public void ClearSelectedSymbol()
+    {
+        selectedIndex = -1;
+    }
 }

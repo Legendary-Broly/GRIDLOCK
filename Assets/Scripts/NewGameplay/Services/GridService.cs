@@ -41,8 +41,22 @@ public class GridService : IGridService
     public void SetSymbol(int x, int y, string symbol)
     {
         gridState[x, y] = symbol;
+        
+        // If it's a virus, make the tile unplayable
         if (symbol == virusSymbol)
+        {
             tilePlayable[x, y] = false;
+        }
+        // If we're clearing the tile (symbol is null or empty), make it playable again
+        else if (string.IsNullOrEmpty(symbol))
+        {
+            tilePlayable[x, y] = true;
+        }
+        // For any other symbol, make it unplayable
+        else
+        {
+            tilePlayable[x, y] = false;
+        }
     }
 
     public string GetSymbolAt(int x, int y)

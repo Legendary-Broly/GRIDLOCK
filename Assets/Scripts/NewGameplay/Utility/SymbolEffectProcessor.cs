@@ -22,16 +22,19 @@ public static class SymbolEffectProcessor
                 break;
 
             case "∆": // Purge
-                score = 1 * matchSize;
                 Debug.Log($"[∆] Purge triggered for {matchSize} symbols");
                 foreach (var pos in match)
                     PurgeAdjacentViruses(pos.x, pos.y, grid);
                 break;
 
             case "Σ": // Stabilizer
-                int entropyReduction = matchSize; // -1 per symbol in match
-                entropy.Decrease(entropyReduction);
-                Debug.Log($"[Σ] Stabilizer: -{entropyReduction}% Entropy applied for {matchSize} symbols");
+                if (matchSize >= 3) // Only reduce entropy for matches of 3 or more
+                {
+                    score = matchSize; // 1 point per symbol
+                    int entropyReduction = matchSize * matchSize; // -1 per symbol, multiplied by match size
+                    entropy.Decrease(entropyReduction);
+                    Debug.Log($"[Σ] Stabilizer: {score} pts ({matchSize} symbols), -{entropyReduction}% Entropy (base -{matchSize} * {matchSize} multiplier)");
+                }
                 break;
 
             default:
@@ -132,13 +135,13 @@ public static class SymbolEffectProcessor
         {
             string duplicate = nearbySymbols[Random.Range(0, nearbySymbols.Count)];
             grid.SetSymbol(x, y, duplicate); // Replace Θ with the duplicated symbol
-            protectedTiles.Add(new Vector2Int(x, y)); // Protect duplicated tile
+            protectedTiles.Add(new Vector2Int(x, y)); // Only protect if we actually duplicated something
             Debug.Log($"[Θ] Replaced Θ at ({x},{y}) with '{duplicate}'");
         }
         else
         {
             grid.SetSymbol(x, y, null); // Clear if nothing valid to duplicate
-            protectedTiles.Add(new Vector2Int(x, y));
+            // Don't add to protectedTiles if we're clearing the tile
             Debug.Log($"[Θ] No symbols to duplicate near ({x},{y}), cleared Θ");
         }
     }
@@ -147,7 +150,7 @@ public static class SymbolEffectProcessor
     {
         return x >= 0 && y >= 0 && x < size && y < size;
     }
-    public static int ApplyUnmatchedSymbols(IGridService grid, List<Vector2Int> matchedTiles)
+    public static int ApplyUnmatchedSymbols(IGridService grid, List<Vector2Int> matchedTiles, IEntropyService entropy)
     {
         int score = 0;
 
@@ -156,13 +159,24 @@ public static class SymbolEffectProcessor
             for (int x = 0; x < grid.GridSize; x++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
-                if (matchedTiles.Contains(pos)) continue;  // ✅ Skip matched symbols
+                if (matchedTiles.Contains(pos)) continue;  // Skip matched symbols
 
                 string symbol = grid.GetSymbolAt(x, y);
-                if (symbol == "Ψ")
+                if (symbol == "∆" || symbol == "Θ" || symbol == "Σ")
                 {
                     score += 1;
-                    Debug.Log($"[Ψ] Passive unmatched Ψ at ({x},{y}): +1 point");
+                    Debug.Log($"[{symbol}] Unmatched symbol at ({x},{y}): +1 point");
+                    
+                    if (symbol == "Σ")
+                    {
+                        entropy.Decrease(1);
+                        Debug.Log($"[Σ] Unmatched Stabilizer at ({x},{y}): -1% Entropy");
+                    }
+                }
+                else if (symbol == "Ψ")
+                {
+                    score += 1;
+                    Debug.Log($"[Ψ] Unmatched Ψ at ({x},{y}): +1 point");
                 }
             }
         }

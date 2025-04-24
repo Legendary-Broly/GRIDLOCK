@@ -9,14 +9,13 @@ public class ProgressTrackerService : IProgressTrackerService
 {
     public int CurrentScore { get; private set; }
     public int RoundTarget { get; private set; } = 20;  // Initial round target
-    public int ProgressThreshold { get; private set; } = 20;  // This should be publicly accessible
 
     public void ApplyScore(int score)
     {
         CurrentScore += score;
     }
 
-    public bool HasMetGoal() => CurrentScore >= ProgressThreshold;
+    public bool HasMetGoal() => CurrentScore >= RoundTarget;
 
     public void ResetProgress()
     {

@@ -6,4 +6,5 @@ public interface IInjectService
     void SelectSymbol(int index);
     void ClearSelectedSymbol(string symbol);
     void ClearSymbolBank();
+    void ClearSelectedSymbol();
 }

@@ -3,6 +3,7 @@ using UnityEngine;
 public class NewGameplayBootstrapper : MonoBehaviour
 {
     public GridService ExposedGridService { get; private set; }
+    public EntropyService ExposedEntropyService { get; private set; }
 
     [SerializeField] private GridInputController inputController;
     [SerializeField] private GridView gridView;
@@ -25,10 +26,12 @@ public class NewGameplayBootstrapper : MonoBehaviour
         var entropyService = new EntropyService();
         var extractService = new ExtractService(gridService, entropyService, progressService);
 
+        ExposedEntropyService = entropyService;
+        ExposedGridService = gridService;
+
         roundManager.Initialize(roundService, progressService, roundPopupController);
         progressTrackerView.Initialize(progressService);
         entropyTrackerView.Initialize(entropyService);
-        ExposedGridService = gridService;
         gridView.BuildGrid(gridService.GridSize, (x, y) => inputController.HandleTileClick(x, y));
         inputController.Initialize(gridService, injectService);
         injectController.Initialize(injectService, gridService);

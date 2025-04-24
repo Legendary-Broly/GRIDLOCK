@@ -153,7 +153,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 112.2, y: -27}
+  m_AnchoredPosition: {x: 112.20001, y: -27}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &65940285
@@ -527,6 +527,261 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 100591687}
   m_CullTransparentMesh: 1
+--- !u!1 &130350008
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 130350009}
+  - component: {fileID: 130350012}
+  - component: {fileID: 130350011}
+  m_Layer: 5
+  m_Name: Text (TMP)
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &130350009
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130350008}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 915097713}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 18.91, y: 0}
+  m_SizeDelta: {x: 266.22, y: 11.52}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &130350011
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130350008}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: "      \n               \u2588\u2588\u2588\u2588                                                                                                                     
+    \u2588\u2588\u2588\u2588           \n               \u2588\u2588 \u2588\u2588\u2588                                                                                                                
+    \u2588\u2588\u2588  \u2588\u2588           \n               \u2588\u2588   \u2588\u2588\u2588                                                                                                            
+    \u2588\u2588\u2588\u2588   \u2588\u2588           \n               \u2588\u2588    
+    \u2588\u2588\u2588                                                                                                        
+    \u2588\u2588\u2588      \u2588\u2588           \n               \u2588\u2588      
+    \u2588\u2588\u2588                                                                                                    
+    \u2588\u2588\u2588        \u2588\u2588           \n               \u2588\u2588        
+    \u2588\u2588\u2588                                                                                                
+    \u2588\u2588\u2588          \u2588\u2588           \n               \u2588\u2588          
+    \u2588\u2588\u2588                                                                                            
+    \u2588\u2588\u2588            \u2588\u2588           \n               \u2588\u2588            
+    \u2588\u2588\u2588\u2588                                                                                       
+    \u2588\u2588\u2588              \u2588\u2588           \n               \u2588\u2588              
+    \u2588\u2588\u2588\u2588                                                                                  
+    \u2588\u2588\u2588\u2588                \u2588\u2588           \n              
+    \u2588\u2588                  \u2588\u2588\u2588                                                                               
+    \u2588\u2588\u2588                  \u2588\u2588           \n               \u2588\u2588                  
+    \u2588\u2588\u2588\u2588                                                                          
+    \u2588\u2588\u2588                     \u2588\u2588           \n              
+    \u2588\u2588                      \u2588\u2588\u2588                                                                      
+    \u2588\u2588\u2588                       \u2588\u2588           \n              
+    \u2588\u2588                        \u2588\u2588\u2588                                                                  
+    \u2588\u2588\u2588                         \u2588\u2588           \n              
+    \u2588\u2588                          \u2588\u2588\u2588                \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588               
+    \u2588\u2588\u2588                           \u2588\u2588           \n              
+    \u2588\u2588                            \u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                 
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588     
+    \u2588\u2588\u2588                             \u2588\u2588           \n              
+    \u2588\u2588                              \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                                       
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                              
+    \u2588\u2588           \n               \u2588\u2588                               
+    \u2588\u2588\u2588                                                    \u2588\u2588                                
+    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
+    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
+    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
+    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
+    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
+    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
+    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
+    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
+    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
+    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
+    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
+    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
+    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
+    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
+    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
+    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
+    \u2588\u2588           \n              \u2588\u2588\u2588                                                                                                                         
+    \u2588\u2588\u2588          \n              \u2588\u2588                                                                                                                           
+    \u2588\u2588          \n             \u2588\u2588\u2588                                                                                                                           
+    \u2588\u2588\u2588         \n             \u2588\u2588                                                                                                                             
+    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
+    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
+    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
+    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
+    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
+    \u2588\u2588         \n             \u2588\u2588\u2588                                                                                                                           
+    \u2588\u2588\u2588         \n             \u2588\u2588\u2588                                                                                                        
+    \u2588\u2588                 \u2588\u2588          \n              \u2588\u2588\u2588                
+    \u2588\u2588\u2588\u2588\u2588\u2588                                                                          
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                \u2588\u2588\u2588         
+    \n               \u2588\u2588                  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
+    \u2588\u2588\u2588\u2588\u2588\u2588                                                  
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                
+    \u2588\u2588           \n               \u2588\u2588\u2588                  
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                 \u2588\u2588\u2588          
+    \n                \u2588\u2588\u2588                   \u2588\u2588\u2588\u2588\u2588\u2588 
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588                 
+    \u2588\u2588\u2588            \n                 \u2588\u2588\u2588                   
+    \u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
+    \u2588\u2588\u2588\u2588                   \u2588\u2588\u2588             \n                 
+    \u2588\u2588\u2588                     \u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
+    \u2588\u2588                    \u2588\u2588\u2588              \n                  
+    \u2588\u2588\u2588                        \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                       
+    \u2588\u2588\u2588               \n                    \u2588\u2588\u2588\u2588                      
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                     
+    \u2588\u2588\u2588\u2588                \n                      \u2588\u2588\u2588                        
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588                         \u2588\u2588\u2588                 
+    \n                       \u2588\u2588\u2588\u2588                           \u2588\u2588\u2588 
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588                         
+    \u2588\u2588\u2588\u2588                   \n                         \u2588\u2588\u2588\u2588                              
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                              
+    \u2588\u2588\u2588\u2588                     \n                           \u2588\u2588\u2588\u2588                                                                                             
+    \u2588\u2588\u2588\u2588                       \n                            
+    \u2588\u2588\u2588\u2588                                                                                         
+    \u2588\u2588\u2588\u2588                         \n                              
+    \u2588\u2588\u2588\u2588\u2588                                                                                   
+    \u2588\u2588\u2588\u2588\u2588                           \n                                 
+    \u2588\u2588\u2588\u2588                                                                               
+    \u2588\u2588\u2588\u2588                              \n                                    
+    \u2588\u2588\u2588\u2588\u2588                                                                       
+    \u2588\u2588\u2588\u2588\u2588\u2588                                \n                                       
+    \u2588\u2588\u2588\u2588\u2588\u2588                                                               
+    \u2588\u2588\u2588\u2588\u2588\u2588                                    \n                                           
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588                                                     
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588                                       
+    \n                                                \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                                         
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                                           
+    \n                                                      \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                         
+    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                                                 
+    \n                                                             \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588"
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
+  m_sharedMaterial: {fileID: -4509799713525957626, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4293241856
+  m_fontColor: {r: 0, g: 0.6745098, b: 0.8980393, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 2.3
+  m_fontSizeBase: 2.3
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 0
+  m_HorizontalAlignment: 1
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
+  m_characterSpacing: -8.98
+  m_wordSpacing: 10.35
+  m_lineSpacing: -8.73
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 3.41
+  m_charWidthMaxAdj: 0
+  m_TextWrappingMode: 0
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 0
+  m_ActiveFontFeatures: 6e72656b
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_EmojiFallbackSupport: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: -36.7
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0.94, y: 370.8, z: 0, w: 370.8}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!222 &130350012
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 130350008}
+  m_CullTransparentMesh: 1
 --- !u!1 &137734316
 GameObject:
   m_ObjectHideFlags: 0
@@ -833,7 +1088,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 8.925014, y: -7.6400056}
+  m_AnchoredPosition: {x: 8.925018, y: -7.640007}
   m_SizeDelta: {x: -17.849972, y: -15.279988}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &178106696
@@ -1234,7 +1489,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 28.3, y: -9.6}
+  m_AnchoredPosition: {x: 28.300003, y: -9.599998}
   m_SizeDelta: {x: 271, y: 132}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &299908249
@@ -1585,7 +1840,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -264, y: 245.3}
+  m_AnchoredPosition: {x: -264, y: 245.29999}
   m_SizeDelta: {x: 465, y: 144}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &384962381
@@ -2058,6 +2313,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 499624324}
   m_CullTransparentMesh: 1
+--- !u!1 &537480273
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 537480275}
+  - component: {fileID: 537480274}
+  m_Layer: 0
+  m_Name: GlitchManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &537480274
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 537480273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 087f58802055bc64e8577031d90ffddb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  volume: {fileID: 2043284741}
+--- !u!4 &537480275
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 537480273}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1046.0957, y: 506.8294, z: -9.148817}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &552973122
 GameObject:
   m_ObjectHideFlags: 0
@@ -2092,7 +2392,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 105, y: -25.3}
+  m_AnchoredPosition: {x: 105, y: -25.300003}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &552973124
@@ -2228,7 +2528,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 28.9, y: -9.4}
+  m_AnchoredPosition: {x: 28.900002, y: -9.400002}
   m_SizeDelta: {x: 294.19998, y: 54.690002}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &595368657
@@ -2730,7 +3030,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 489.3, y: 92.3}
+  m_AnchoredPosition: {x: 489.3, y: 92.29999}
   m_SizeDelta: {x: 920, y: 137}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &795836073
@@ -2952,6 +3252,7 @@ RectTransform:
   m_Children:
   - {fileID: 552973123}
   - {fileID: 1374307547}
+  - {fileID: 130350009}
   m_Father: {fileID: 429585111}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -3039,7 +3340,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -3534,6 +3835,78 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 75, y: 75}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1106635838
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1106635839}
+  - component: {fileID: 1106635841}
+  - component: {fileID: 1106635840}
+  m_Layer: 0
+  m_Name: RawImage
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1106635839
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106635838}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2043284740}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1106635840
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106635838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1344c3c82d62a2a41a3576d8abb8e3ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 2100000, guid: 9e19a4b05431a864391b312814a60b4b, type: 2}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 0
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Texture: {fileID: 0}
+  m_UVRect:
+    serializedVersion: 2
+    x: 0
+    y: 0
+    width: 1
+    height: 1
+--- !u!222 &1106635841
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1106635838}
+  m_CullTransparentMesh: 1
 --- !u!1 &1116973112
 GameObject:
   m_ObjectHideFlags: 0
@@ -4559,7 +4932,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -264, y: -91.8}
+  m_AnchoredPosition: {x: -264, y: -91.79999}
   m_SizeDelta: {x: 465, y: 144}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1347529391
@@ -4657,16 +5030,16 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: -9054246099174286538, guid: e11574c08253f92408c1292887116a9c, type: 3}
-  m_Type: 0
+  m_Sprite: {fileID: -5236079261417602307, guid: 055992088386d4b40803eff09080cf85, type: 3}
+  m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
-  m_FillMethod: 4
+  m_FillMethod: 1
   m_FillAmount: 1
   m_FillClockwise: 1
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
+  m_PixelsPerUnitMultiplier: 12.65
 --- !u!222 &1374307549
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -4754,7 +5127,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 111.9, y: -27}
+  m_AnchoredPosition: {x: 111.899994, y: -27}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1435640924
@@ -5003,8 +5376,8 @@ Canvas:
   m_GameObject: {fileID: 1472327592}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 0
-  m_Camera: {fileID: 0}
+  m_RenderMode: 1
+  m_Camera: {fileID: 961739752}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
@@ -5032,6 +5405,7 @@ RectTransform:
   - {fileID: 429585111}
   - {fileID: 2131802066}
   - {fileID: 781527039}
+  - {fileID: 2043284740}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -5209,7 +5583,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 155, y: -29.91}
+  m_AnchoredPosition: {x: 155, y: -29.910004}
   m_SizeDelta: {x: 290, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1563045764
@@ -5348,7 +5722,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 468.6, y: 92.55}
+  m_AnchoredPosition: {x: 468.6, y: 92.54999}
   m_SizeDelta: {x: 920, y: 137}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1580727595
@@ -5823,7 +6197,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 8.849985, y: -14.5099945}
+  m_AnchoredPosition: {x: 8.849991, y: -14.5099945}
   m_SizeDelta: {x: -17.700031, y: -29.020002}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1779494050
@@ -5961,7 +6335,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 106.8, y: -30.51}
+  m_AnchoredPosition: {x: 106.80002, y: -30.51001}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1854714955
@@ -6608,6 +6982,69 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2028018839}
   m_CullTransparentMesh: 1
+--- !u!1 &2043284739
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2043284740}
+  - component: {fileID: 2043284741}
+  - component: {fileID: 2043284743}
+  m_Layer: 0
+  m_Name: Global Volume
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2043284740
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2043284739}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -12.652816}
+  m_LocalScale: {x: 1.3829964, y: 1.3829964, z: 1.3829964}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1106635839}
+  m_Father: {fileID: 1472327596}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &2043284741
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2043284739}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: d2f719ddabf6191438481e838efe2811, type: 2}
+--- !u!222 &2043284743
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2043284739}
+  m_CullTransparentMesh: 1
 --- !u!1 &2044628731
 GameObject:
   m_ObjectHideFlags: 0
@@ -6643,7 +7080,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 17.755, y: -25.124998}
+  m_AnchoredPosition: {x: 17.755005, y: -25.125}
   m_SizeDelta: {x: -117.11, y: -82.649994}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2044628733
@@ -6905,3 +7342,4 @@ SceneRoots:
   - {fileID: 1206357461}
   - {fileID: 1315484602}
   - {fileID: 1415048237}
+  - {fileID: 537480275}

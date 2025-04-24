@@ -176,7 +176,18 @@ public class TerminalLineRenderer : MonoBehaviour
                 delay = line.Length * 0.08f;
                 syncedDelays.Add(delay);
                 yield return StartCoroutine(TypeRowSlowly(line, 0.08f));
+
+                // Stop glitch when "i'll fix that..." finishes typing
+                if (line == "i'll fix that...")
+                {
+                    var glitchController = FindFirstObjectByType<BootSequenceGlitchController>();
+                    if (glitchController != null)
+                    {
+                        glitchController.StopGlitch();
+                    }
+                }
             }
+
             else
             {
                 delay = GetBootLineDelay(line);
@@ -216,6 +227,7 @@ public class TerminalLineRenderer : MonoBehaviour
         }
 
         TrimExcessRows();
+
     }
 
     private void AddRow(string line)
