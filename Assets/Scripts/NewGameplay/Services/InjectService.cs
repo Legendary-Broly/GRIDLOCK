@@ -4,9 +4,10 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using NewGameplay.Controllers;
 
 
-public class InjectService : IInjectService
+public class InjectService : NewGameplay.Interfaces.IInjectService
 {
     private readonly List<string> availableSymbols = new() { "∆", "Θ", "Ψ", "Σ" };
     private readonly string[] currentSymbols = new string[3];
@@ -42,12 +43,29 @@ public class InjectService : IInjectService
             }
         }
     }
+
     public void ClearSymbolBank()
     {
+        Debug.Log("[InjectService] Clearing symbol bank");
+        
+        // Clear the internal state
+        for (int i = 0; i < currentSymbols.Length; i++)
+        {
+            currentSymbols[i] = "";
+        }
+        selectedIndex = -1;
+
+        // Notify the UI to update
         var controller = GameObject.FindFirstObjectByType<InjectController>();
         if (controller != null)
         {
-            controller.ClearSymbolSlots(); // Call the controller to clear the UI slots
+            controller.ClearSymbolSlots();
+            controller.RefreshUI(); // Force a UI refresh after clearing
+            Debug.Log("[InjectService] UI cleared and refreshed");
+        }
+        else
+        {
+            Debug.LogError("[InjectService] Could not find InjectController!");
         }
     }
 

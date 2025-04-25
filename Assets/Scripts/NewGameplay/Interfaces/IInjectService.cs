@@ -1,10 +1,13 @@
 // --- IInjectService.cs ---
-public interface IInjectService
+namespace NewGameplay.Interfaces
 {
-    string SelectedSymbol { get; }
-    void InjectSymbols();
-    void SelectSymbol(int index);
-    void ClearSelectedSymbol(string symbol);
-    void ClearSymbolBank();
-    void ClearSelectedSymbol();
+    public interface IInjectService
+    {
+        string SelectedSymbol { get; }
+        void InjectSymbols();
+        void SelectSymbol(int index);
+        void ClearSelectedSymbol(string symbol);
+        void ClearSymbolBank();
+        void ClearSelectedSymbol();
+    }
 }

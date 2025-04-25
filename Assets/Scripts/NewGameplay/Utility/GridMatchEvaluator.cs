@@ -5,8 +5,6 @@ public static class GridMatchEvaluator
 {
     public static List<List<Vector2Int>> FindMatches(IGridService grid)
     {
-        Debug.Log("[GridMatchEvaluator] FindMatches called."); // Debug log
-
         int size = grid.GridSize;
         var visited = new bool[size, size];
         var result = new List<List<Vector2Int>>();
@@ -18,8 +16,6 @@ public static class GridMatchEvaluator
                 if (visited[x, y]) continue;
 
                 string symbol = grid.GetSymbolAt(x, y);
-                Debug.Log($"[GridMatchEvaluator] Checking position ({x},{y}) with symbol '{symbol}'."); // Debug log
-
                 if (string.IsNullOrEmpty(symbol) || symbol == "X") continue;
 
                 var cluster = new List<Vector2Int>();
@@ -27,13 +23,11 @@ public static class GridMatchEvaluator
 
                 if (cluster.Count >= 3)
                 {
-                    Debug.Log($"[GridMatchEvaluator] Found match of size {cluster.Count} for symbol '{symbol}' at ({x},{y})."); // Debug log
                     result.Add(cluster);
                 }
             }
         }
 
-        Debug.Log($"[GridMatchEvaluator] Total matches found: {result.Count}."); // Debug log
         return result;
     }
 

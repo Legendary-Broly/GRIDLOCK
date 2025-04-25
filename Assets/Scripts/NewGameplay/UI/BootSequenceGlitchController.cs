@@ -6,12 +6,14 @@ using URPGlitch;
 public class BootSequenceGlitchController : MonoBehaviour
 {
     [SerializeField] private Volume volume;
-    [SerializeField] private float bootDuration = 11f; // Total duration until "I'll fix that" finishes typing
+    [SerializeField] private float bootDuration = 7f; // Reduced from 11f to 7f since we're starting at 4s
+    [SerializeField] private float initialDelay = 4f; // Time to wait before starting glitch
 
     private AnalogGlitchVolume analogGlitch;
     private DigitalGlitchVolume digitalGlitch;
     private float elapsedTime = 0f;
-    private bool glitchActive = true;
+    private bool glitchActive = false;
+    private bool hasStarted = false;
 
     void Start()
     {
@@ -28,16 +30,28 @@ public class BootSequenceGlitchController : MonoBehaviour
 
     void Update()
     {
+        if (!hasStarted)
+        {
+            elapsedTime += Time.deltaTime;
+            if (elapsedTime >= initialDelay)
+            {
+                hasStarted = true;
+                elapsedTime = 0f;
+                glitchActive = true;
+            }
+            return;
+        }
+
         if (!glitchActive) return;
 
         elapsedTime += Time.deltaTime;
         float t = Mathf.Clamp01(elapsedTime / bootDuration); // Normalize progress from 0 to 1
 
         // Scale analog glitch effects
-        analogGlitch.scanLineJitter.value = Mathf.Lerp(0.0f, 0.05f, t);
-        analogGlitch.verticalJump.value = Mathf.Lerp(0.0f, 0.02f, t);
-        analogGlitch.horizontalShake.value = Mathf.Lerp(0.0f, 0.0f, t);
-        analogGlitch.colorDrift.value = Mathf.Lerp(0.0f, 0.15f, t);
+        analogGlitch.scanLineJitter.value = Mathf.Lerp(0.0f, 0.07f, t);
+        analogGlitch.verticalJump.value = Mathf.Lerp(0.0f, 0.04f, t);
+        analogGlitch.horizontalShake.value = Mathf.Lerp(0.0f, 0.05f, t);
+        analogGlitch.colorDrift.value = Mathf.Lerp(0.0f, 0.2f, t);
 
         // Scale digital glitch (starts at 0 and stays 0)
         digitalGlitch.intensity.value = Mathf.Lerp(0f, 0.005f, t);

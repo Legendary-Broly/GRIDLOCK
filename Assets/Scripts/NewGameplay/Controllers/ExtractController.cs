@@ -1,29 +1,43 @@
 using UnityEngine;
+using NewGameplay.Interfaces;
+using NewGameplay.Services;
 
-public class ExtractController : MonoBehaviour
+
+namespace NewGameplay.Controllers
 {
-    private IExtractService extractService;
-    [SerializeField] private EntropyTrackerView entropyTrackerView;
-    [SerializeField] private ProgressTrackerView progressTrackerView;
-    [SerializeField] private GridView gridView;
-    private IGridService gridService;
-
-    public void Initialize(IExtractService extractService, IGridService gridService)
+    public class ExtractController : MonoBehaviour
     {
-        this.extractService = extractService;
-        this.gridService = gridService;
-        extractService.onGridUpdated += () => gridView.RefreshGrid(gridService);
+        private IExtractService extractService;
+        private IGridService gridService;
+        private IProgressTrackerService progressService;
+        [SerializeField] private EntropyTrackerView entropyTrackerView;
+        [SerializeField] private ProgressTrackerView progressTrackerView;
+        [SerializeField] private GridView gridView;
 
-    }
+        public void Initialize(IExtractService extractService, IGridService gridService, IProgressTrackerService progressService)
+        {
+            this.extractService = extractService;
+            this.gridService = gridService;
+            this.progressService = progressService;
+            extractService.onGridUpdated += RefreshGridView;
+        }
 
-    // Called by EXTRACT button OnClick
-    public void RunExtraction()
-    {
-        extractService.ExtractGrid();
-        gridView.RefreshGrid(gridService);  // Keep refresh here
-        entropyTrackerView.Refresh();
-        progressTrackerView.Refresh();
-        extractService.ClearProtectedTiles();  // ADD THIS LINE (new method)
-        FindFirstObjectByType<RoundManager>().CheckRoundEnd(); // Reinstated the redundant call to CheckRoundEnd
+        private void RefreshGridView()
+        {
+            gridView.RefreshGrid(gridService);
+            entropyTrackerView.Refresh();
+            progressTrackerView.Refresh();
+        }
+
+        // Called by EXTRACT button OnClick
+        public void RunExtraction()
+        {
+            extractService.ExtractGrid();
+            gridView.RefreshGrid(gridService);
+            entropyTrackerView.Refresh();
+            progressTrackerView.Refresh();
+            //extractService.ClearProtectedTiles();
+            FindFirstObjectByType<RoundManager>().CheckRoundEnd();
+        }
     }
 }

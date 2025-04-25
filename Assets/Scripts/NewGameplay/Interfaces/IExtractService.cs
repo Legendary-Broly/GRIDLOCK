@@ -1,14 +1,13 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using System.Linq;
 
-public interface IExtractService
+namespace NewGameplay.Interfaces
 {
-    void ExtractGrid();
-    int CurrentScore { get; }
-    event System.Action onGridUpdated;
-    void ClearProtectedTiles();
+    public interface IExtractService
+    {
+        void ExtractGrid();
+        event System.Action onGridUpdated;
+        int CurrentScore { get; }
+    }
 }

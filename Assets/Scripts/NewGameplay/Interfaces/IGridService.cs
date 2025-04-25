@@ -12,7 +12,9 @@ public interface IGridService
     string GetSymbolAt(int x, int y);
     bool IsTilePlayable(int x, int y);
     int GridSize { get; }
-    void ClearAllExceptViruses(List<Vector2Int> protectedTiles);
+    void ClearAllExceptViruses();
     void ClearAllTiles();
-
+    string[,] GridState { get; }
+    bool[,] TilePlayable { get; }
+    void ProcessPurges();
 }

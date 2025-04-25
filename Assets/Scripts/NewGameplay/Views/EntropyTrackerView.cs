@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using NewGameplay.Interfaces;
 
 public class EntropyTrackerView : MonoBehaviour
 {

@@ -1,29 +1,33 @@
 using UnityEngine;
 using UnityEngine.UI;
+using NewGameplay.Interfaces;
 
-public class GridInputController : MonoBehaviour
+namespace NewGameplay.Controllers
 {
-    [SerializeField] private GridView view;
-    private IGridService grid;
-    private IInjectService inject;
-
-    public void Initialize(IGridService gridService, IInjectService injectService)
+    public class GridInputController : MonoBehaviour
     {
-        grid = gridService;
-        inject = injectService;
-        InjectServiceLocator.Service = inject;
-    }
+        [SerializeField] private GridView view;
+        private IGridService grid;
+        private IInjectService inject;
 
-    public void HandleTileClick(int x, int y)
-    {
-        grid.TryPlaceSymbol(x, y);
-        view.RefreshGrid(grid);
-
-        // Refresh the symbol bank UI after placement
-        var injectController = Object.FindFirstObjectByType<InjectController>();
-        if (injectController != null)
+        public void Initialize(IGridService gridService, IInjectService injectService)
         {
-            injectController.RefreshUI();
+            grid = gridService;
+            inject = injectService;
+            InjectServiceLocator.Service = inject;
+        }
+
+        public void HandleTileClick(int x, int y)
+        {
+            grid.TryPlaceSymbol(x, y);
+            view.RefreshGrid(grid);
+
+            // Refresh the symbol bank UI after placement
+            var injectController = Object.FindFirstObjectByType<InjectController>();
+            if (injectController != null)
+            {
+                injectController.RefreshUI();
+            }
         }
     }
 }

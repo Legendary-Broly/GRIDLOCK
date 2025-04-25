@@ -4,6 +4,13 @@ using UnityEngine.SceneManagement;
 public class PauseMenuController : MonoBehaviour
 {
     [SerializeField] private GameObject pauseMenuPanel;
+    [SerializeField] private TutorialPanelController tutorialPanelController;
+
+    public void ShowTutorialPanel()
+    {
+        tutorialPanelController.ShowTutorial();
+        pauseMenuPanel.SetActive(false); // Close the pause menu when tutorial is shown
+    }
 
     private void Start()
     {

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af82644e4be5c30498f6fb9e1d0b821d, type: 3}
+  m_Name: FirewallMutation
+  m_EditorClassIdentifier: 
+  mutationName: FIREWALLL
+  mutationDescription: Purge symbols can now be placed on the grid without virus
+    adjacency. Each purge on the grid during extract is worth -1 score.
+  mutationIcon: {fileID: 21300000, guid: 84eae3aefd0bff14fb4ff20912f1b4d2, type: 3}
+  mutationType: 3

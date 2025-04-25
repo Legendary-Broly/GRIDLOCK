@@ -2,79 +2,121 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
+using NewGameplay.Interfaces;
+using NewGameplay.Services;
 
-public class InjectController : MonoBehaviour
+namespace NewGameplay.Controllers
 {
-    [SerializeField] private List<Button> symbolButtons;
-    [SerializeField] private List<TextMeshProUGUI> symbolSlots;
-    [SerializeField] private Button injectButton;
-
-    private IInjectService injectService;
-    private IGridService gridService;
-
-    public void Initialize(IInjectService service, IGridService grid)
+    public class InjectController : MonoBehaviour
     {
-        injectService = service;
-        gridService = grid;
+        [SerializeField] private List<Button> symbolButtons;
+        [SerializeField] private List<TextMeshProUGUI> symbolSlots;
+        [SerializeField] private Button injectButton;
 
-        for (int i = 0; i < symbolButtons.Count; i++)
+        private IInjectService injectService;
+        private IGridService gridService;
+
+        public void Initialize(IInjectService service, IGridService grid)
         {
-            int index = i;
-            symbolButtons[i].onClick.AddListener(() => OnSymbolClicked(index));
-        }
+            injectService = service;
+            gridService = grid;
 
-        injectButton.onClick.AddListener(OnInject);
-        RefreshUI();
-    }
-
-    private void OnInject()
-    {
-        injectService.InjectSymbols();
-        RefreshUI();
-
-        gridService.SpreadVirus();
-        FindFirstObjectByType<GridView>().RefreshGrid(gridService);
-    }
-
-    public void RefreshUI()
-    {
-        for (int i = 0; i < symbolSlots.Count; i++)
-        {
-            string symbol = GetSymbolAt(i);
-            symbolSlots[i].text = symbol;
-            symbolButtons[i].interactable = !string.IsNullOrEmpty(symbol);
-        }
-    }
-
-    private void OnSymbolClicked(int index)
-    {
-        injectService.SelectSymbol(index);
-
-        for (int i = 0; i < symbolButtons.Count; i++)
-        {
-            var image = symbolButtons[i].targetGraphic;
-            if (image != null)
+            for (int i = 0; i < symbolButtons.Count; i++)
             {
-                var cb = symbolButtons[i].colors;
-                image.color = (i == index) ? cb.selectedColor : cb.normalColor;
+                int index = i;
+                symbolButtons[i].onClick.AddListener(() => OnSymbolClicked(index));
+            }
+
+            injectButton.onClick.AddListener(OnInject);
+            RefreshUI();
+        }
+
+        private void OnInject()
+        {
+            injectService.InjectSymbols();
+            RefreshUI();
+
+            // Get the entropy service from the bootstrapper
+            var bootstrapper = FindFirstObjectByType<NewGameplayBootstrapper>();
+            if (bootstrapper != null)
+            {
+                var entropyService = bootstrapper.ExposedEntropyService;
+                if (entropyService != null)
+                {
+                    // Base entropy increase of 5%
+                    entropyService.Increase(5);
+
+                    // Count viruses and add 1% per virus
+                    int virusCount = 0;
+                    for (int y = 0; y < gridService.GridSize; y++)
+                    {
+                        for (int x = 0; x < gridService.GridSize; x++)
+                        {
+                            if (gridService.GetSymbolAt(x, y) == "X")
+                            {
+                                virusCount++;
+                            }
+                        }
+                    }
+                    if (virusCount > 0)
+                    {
+                        entropyService.Increase(virusCount);
+                        Debug.Log($"[Inject] Added {virusCount}% entropy from {virusCount} viruses");
+                    }
+
+                    // Refresh the entropy view
+                    var entropyView = FindFirstObjectByType<EntropyTrackerView>();
+                    if (entropyView != null)
+                    {
+                        entropyView.Refresh();
+                    }
+                }
+            }
+
+            gridService.SpreadVirus();
+            FindFirstObjectByType<GridView>().RefreshGrid(gridService);
+        }
+
+        public void RefreshUI()
+        {
+            for (int i = 0; i < symbolSlots.Count; i++)
+            {
+                string symbol = GetSymbolAt(i);
+                symbolSlots[i].text = symbol;
+                symbolButtons[i].interactable = !string.IsNullOrEmpty(symbol);
             }
         }
-    }
 
-    private string GetSymbolAt(int index)
-    {
-        if (injectService is InjectService raw)
-            return raw.CurrentSymbolAt(index);
-        return "?";
-    }
-
-    public void ClearSymbolSlots()
-    {
-        for (int i = 0; i < symbolSlots.Count; i++)
+        private void OnSymbolClicked(int index)
         {
-            symbolSlots[i].text = ""; // Clear the symbol text from UI
-            symbolButtons[i].interactable = false; // Optionally disable buttons
+            injectService.SelectSymbol(index);
+
+            for (int i = 0; i < symbolButtons.Count; i++)
+            {
+                var image = symbolButtons[i].targetGraphic;
+                if (image != null)
+                {
+                    var cb = symbolButtons[i].colors;
+                    image.color = (i == index) ? cb.selectedColor : cb.normalColor;
+                }
+            }
         }
-        injectService.ClearSelectedSymbol(); // Clear the selected symbol
+
+        private string GetSymbolAt(int index)
+        {
+            if (injectService is WeightedInjectService raw)
+                return raw.GetCurrentSymbols()[index];
+            return "?";
+        }
+
+        public void ClearSymbolSlots()
+        {
+            // Clear the UI elements
+            for (int i = 0; i < symbolSlots.Count; i++)
+            {
+                symbolSlots[i].text = "";
+                symbolButtons[i].interactable = false;
+            }
+        }
     }
 }

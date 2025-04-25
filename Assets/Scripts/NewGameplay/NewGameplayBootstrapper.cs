@@ -1,46 +1,84 @@
 using UnityEngine;
+using NewGameplay.Services;
+using NewGameplay.Interfaces;
+using NewGameplay.Controllers;
 
-public class NewGameplayBootstrapper : MonoBehaviour
+namespace NewGameplay
 {
-    public GridService ExposedGridService { get; private set; }
-    public EntropyService ExposedEntropyService { get; private set; }
-
-    [SerializeField] private GridInputController inputController;
-    [SerializeField] private GridView gridView;
-    [SerializeField] private InjectController injectController;
-    [SerializeField] private ExtractController extractController;
-    [SerializeField] private EntropyTrackerView entropyTrackerView;
-    [SerializeField] private ProgressTrackerView progressTrackerView;
-    [SerializeField] private RoundManager roundManager;
-    [SerializeField] private RoundPopupController roundPopupController;
-
-
-
-
-    private void Awake()
+    public class NewGameplayBootstrapper : MonoBehaviour
     {
-        var gridService = new GridService();
-        var progressService = new ProgressTrackerService();
-        var injectService = new InjectService();
-        var roundService = new RoundService(gridService, progressService, injectService); // Pass required arguments
-        var entropyService = new EntropyService();
-        var extractService = new ExtractService(gridService, entropyService, progressService);
+        public GridService ExposedGridService { get; private set; }
+        public EntropyService ExposedEntropyService { get; private set; }
 
-        ExposedEntropyService = entropyService;
-        ExposedGridService = gridService;
+        [SerializeField] private GridInputController inputController;
+        [SerializeField] private GridView gridView;
+        [SerializeField] private InjectController injectController;
+        [SerializeField] private ExtractController extractController;
+        [SerializeField] private EntropyTrackerView entropyTrackerView;
+        [SerializeField] private ProgressTrackerView progressTrackerView;
+        [SerializeField] private RoundManager roundManager;
+        [SerializeField] private RoundPopupController roundPopupController;
+        [SerializeField] private MutationManager mutationManager;
 
-        roundManager.Initialize(roundService, progressService, roundPopupController);
-        progressTrackerView.Initialize(progressService);
-        entropyTrackerView.Initialize(entropyService);
-        gridView.BuildGrid(gridService.GridSize, (x, y) => inputController.HandleTileClick(x, y));
-        inputController.Initialize(gridService, injectService);
-        injectController.Initialize(injectService, gridService);
-        extractController.Initialize(extractService, gridService);
-        roundService.onRoundReset += () => 
+        private void Awake()
         {
-            gridView.RefreshGrid(gridService);  // Refresh grid visuals
-            progressTrackerView.Refresh();      // Refresh progress display
-        };
+            var gridService = new GridService();
+            var progressService = new ProgressTrackerService();
+            var entropyService = new EntropyService();
+            IWeightedInjectService injectService = new WeightedInjectService();
+            
+            // Set the grid service in WeightedInjectService
+            if (injectService is WeightedInjectService weightedInject)
+            {
+                weightedInject.SetGridService(gridService);
+            }
+            
+            var roundService = new RoundService(gridService, progressService, injectService);
+            var scoreService = new ScoreService();
+            var extractService = new ExtractService(gridService, entropyService, scoreService, progressService);
+
+            ExposedEntropyService = entropyService;
+            ExposedGridService = gridService;
+
+            // Create MutationEffectService
+            var mutationEffectService = new MutationEffectService(entropyService, gridService, progressService);
+            
+            // Assign MutationEffectService to MutationManager
+            mutationManager.SetMutationEffectService(mutationEffectService);
+
+            // Set the entropy service in GridService
+            gridService.SetEntropyService(entropyService);
+
+            // Subscribe to entropy changes to update injection weights and show mutation panel
+            entropyService.OnEntropyChanged += (float newValue, bool wasReset) => {
+                injectService.UpdateWeights(newValue);
+                // Also refresh the entropy view when entropy changes
+                entropyTrackerView.Refresh();
+                
+                // Only show mutation panel when entropy resets from hitting 100%
+                if (newValue == 0 && wasReset)
+                {
+                    mutationManager.ShowMutationPanel();
+                }
+            };
+
+            roundManager.Initialize(roundService, progressService, roundPopupController);
+            progressTrackerView.Initialize(progressService);
+            entropyTrackerView.Initialize(entropyService);
+            gridView.BuildGrid(gridService.GridSize, (x, y) => inputController.HandleTileClick(x, y));
+            inputController.Initialize(gridService, injectService);
+            injectController.Initialize(injectService, gridService);
+            extractController.Initialize(extractService, gridService, progressService);
+            
+            // Subscribe to round reset events
+            roundService.onRoundReset += () => 
+            {
+                Debug.Log("[Bootstrapper] Round reset event received, refreshing UI...");
+                gridView.RefreshGrid(gridService);  // Refresh grid visuals
+                progressTrackerView.Refresh();      // Refresh progress display
+                injectController.RefreshUI();       // Refresh symbol bank UI
+            };
+        }
     }
 }
 

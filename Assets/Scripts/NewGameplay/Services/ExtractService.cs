@@ -1,79 +1,88 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
 using System.Linq;
+using UnityEngine;
+using NewGameplay.Interfaces;
 
-public class ExtractService : IExtractService
+namespace NewGameplay.Services
 {
-    private readonly IGridService grid;
-    private readonly IEntropyService entropy;
-    private readonly IProgressTrackerService progress;
-    private List<Vector2Int> protectedTiles = new();
-    public event System.Action onGridUpdated;
-    public int CurrentScore { get; private set; }
-
-    public ExtractService(IGridService grid, IEntropyService entropy, IProgressTrackerService progress)
+    public class ExtractService : IExtractService
     {
-        this.grid = grid;
-        this.entropy = entropy;
-        this.progress = progress;
-    }
-    public void ExtractGrid()
-    {
-        var matches = GridMatchEvaluator.FindMatches(grid);
-        Debug.Log($"[EXTRACT] Found {matches.Count} match groups");
+        private readonly IGridService gridService;
+        private readonly IEntropyService entropyService;
+        private readonly IScoreService scoreService;
+        private readonly IProgressTrackerService progressService;
+        private readonly System.Random rng = new();
+        public event System.Action onGridUpdated;
+        public int CurrentScore { get; private set; }
 
-        int totalScore = 0;
-        foreach (var match in matches)
+        public ExtractService(IGridService gridService, IEntropyService entropyService, IScoreService scoreService, IProgressTrackerService progressService)
         {
-            if (match.Count == 0) continue;
-
-            string symbol = grid.GetSymbolAt(match[0].x, match[0].y);
-            Debug.Log($"[EXTRACT] -> Symbol '{symbol}' -> Size {match.Count}");
-
-            foreach (var pos in match)
-            {
-                Debug.Log($"  - [{pos.x},{pos.y}]");
-            }
-
-            totalScore += SymbolEffectProcessor.Apply(match, grid, entropy);
+            this.gridService = gridService;
+            this.entropyService = entropyService;
+            this.scoreService = scoreService;
+            this.progressService = progressService;
         }
 
-        List<Vector2Int> allMatchedTiles = matches.SelectMany(m => m).ToList();
-        totalScore += SymbolEffectProcessor.ApplyUnmatchedSymbols(grid, allMatchedTiles, entropy);
-
-        progress.ApplyScore(totalScore);
-        CurrentScore = totalScore;
-
-        // First process all effects that need to happen before clearing
-        SymbolEffectProcessor.ProcessAllPurges(grid);             // Purge viruses
-        SymbolEffectProcessor.ProcessAllLoops(grid, protectedTiles); // Duplicate loops
-
-        // Update grid to show effects
-        onGridUpdated?.Invoke();
-        SymbolEffectProcessor.ApplyPassiveEntropyPenalty(grid, entropy);
-
-        // Clear matched symbols
-        foreach (var match in matches)
+        public void ExtractGrid()
         {
-            foreach (var pos in match)
+            Debug.Log($"[ExtractService] Starting extraction. Current entropy: {entropyService.EntropyPercent}%");
+            var matches = GridMatchEvaluator.FindMatches(gridService);
+            Debug.Log($"[ExtractService] Found {matches.Count} match groups");
+
+            int totalScore = 0;
+            foreach (var match in matches)
             {
-                grid.SetSymbol(pos.x, pos.y, null);
+                if (match.Count == 0) continue;
+
+                string symbol = gridService.GetSymbolAt(match[0].x, match[0].y);
+                Debug.Log($"[ExtractService] Processing match: Symbol '{symbol}' -> Size {match.Count}");
+
+                totalScore += SymbolEffectProcessor.Apply(match, gridService, entropyService);
+                Debug.Log($"[ExtractService] After match processing, entropy: {entropyService.EntropyPercent}%");
             }
+
+            List<Vector2Int> allMatchedTiles = matches.SelectMany(m => m).ToList();
+            totalScore += SymbolEffectProcessor.ApplyUnmatchedSymbols(gridService, allMatchedTiles, entropyService);
+            Debug.Log($"[ExtractService] After unmatched symbols, entropy: {entropyService.EntropyPercent}%");
+
+            scoreService.AddScore(totalScore);
+            progressService.ApplyScore(totalScore);
+            CurrentScore = totalScore;
+
+            // Process loops only
+            SymbolEffectProcessor.ProcessAllLoops(gridService);
+
+            // Update grid to show effects
+            onGridUpdated?.Invoke();
+            
+            // If entropy is at 100%, let it reset before applying passive penalty
+            if (entropyService.EntropyPercent >= 100)
+            {
+                Debug.Log($"[ExtractService] Entropy at 100%, allowing reset before passive penalty");
+                // Apply a small increase to trigger the reset
+                entropyService.Increase(1);
+            }
+            
+            Debug.Log($"[ExtractService] Before passive entropy penalty, entropy: {entropyService.EntropyPercent}%");
+            SymbolEffectProcessor.ApplyPassiveEntropyPenalty(gridService, entropyService);
+            Debug.Log($"[ExtractService] After passive entropy penalty, entropy: {entropyService.EntropyPercent}%");
+
+            // Clear matched symbols
+            foreach (var match in matches)
+            {
+                foreach (var pos in match)
+                {
+                    gridService.SetSymbol(pos.x, pos.y, null);
+                }
+            }
+
+            // Clear all non-virus tiles
+            gridService.ClearAllExceptViruses();
+
+            // Final grid update
+            onGridUpdated?.Invoke();
+            Debug.Log($"[ExtractService] Extraction complete. Final entropy: {entropyService.EntropyPercent}%");
         }
-
-        // Clear the grid and protected tiles
-        grid.ClearAllExceptViruses(protectedTiles);
-        protectedTiles.Clear(); // Clear protection after grid is updated
-
-        // Final grid update
-        onGridUpdated?.Invoke();
-    }
-
-    public void ClearProtectedTiles()
-    {
-        protectedTiles.Clear();
     }
 }
