@@ -20,6 +20,8 @@ namespace NewGameplay.Services
         private readonly System.Random rng = new();
         private IEntropyService entropyService;
 
+        public event Action OnGridUpdated;
+
         public int GridSize => gridSize;
 
         public string[,] GridState => gridState;
@@ -67,6 +69,9 @@ namespace NewGameplay.Services
 
             // Check if any loop symbols should transform after placing a new symbol
             CheckLoopTransformations();
+            
+            // Notify listeners of grid update
+            OnGridUpdated?.Invoke();
         }
 
         public void SetSymbol(int x, int y, string symbol)
@@ -80,6 +85,7 @@ namespace NewGameplay.Services
                 tilePlayable[x, y] = true;
                 // Check for loop transformations after purge effect
                 CheckLoopTransformations();
+                OnGridUpdated?.Invoke();
                 return; // Exit early since we've handled everything
             }
             else if (symbol == loopSymbol)
@@ -89,6 +95,7 @@ namespace NewGameplay.Services
                 gridState[x, y] = symbol;
                 HandleLoopEffect(x, y);
                 // No need to check for transformations here since we just handled this loop
+                OnGridUpdated?.Invoke();
                 return;
             }
             else if (symbol == stabilizerSymbol)
@@ -105,6 +112,9 @@ namespace NewGameplay.Services
             {
                 CheckLoopTransformations();
             }
+            
+            // Notify listeners of grid update
+            OnGridUpdated?.Invoke();
         }
 
         private bool HandlePurgeEffect(int x, int y)

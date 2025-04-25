@@ -63,7 +63,7 @@ namespace NewGameplay
             };
 
             roundManager.Initialize(roundService, progressService, roundPopupController);
-            progressTrackerView.Initialize(progressService);
+            progressTrackerView.Initialize(progressService, gridService, entropyService);
             entropyTrackerView.Initialize(entropyService);
             gridView.BuildGrid(gridService.GridSize, (x, y) => inputController.HandleTileClick(x, y));
             inputController.Initialize(gridService, injectService);

@@ -1,11 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
+
 public interface IGridService
 {
+    event Action OnGridUpdated;
     void TryPlaceSymbol(int x, int y);
     void SpreadVirus();
     void SetSymbol(int x, int y, string symbol);

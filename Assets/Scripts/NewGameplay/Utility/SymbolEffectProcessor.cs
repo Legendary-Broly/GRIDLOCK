@@ -148,9 +148,14 @@ namespace NewGameplay.Utility
                     }
 
                     // Handle other special symbols
-                    if (symbol == "Θ" || symbol == "Σ")
+                    switch (symbol)
                     {
-                        score += 1;
+                        case "Θ": // Loop
+                        case "Σ": // Stabilizer
+                        case "Ψ": // Surge - now worth 1 point unmatched
+                            score += 1;
+                            Debug.Log($"[{symbol}] Unmatched symbol at ({x},{y}): +1 point");
+                            break;
                     }
                 }
             }
