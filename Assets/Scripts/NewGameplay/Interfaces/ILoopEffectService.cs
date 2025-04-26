@@ -8,6 +8,6 @@ namespace NewGameplay.Interfaces
         event Action OnLoopTransformed;
         
         void CheckLoopTransformations();
-        void HandleLoopEffect(int x, int y);
+        bool HandleLoopEffect(int x, int y);
     }
 } 

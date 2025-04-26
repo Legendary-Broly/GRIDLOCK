@@ -18,6 +18,8 @@ namespace NewGameplay.Services
         private int ignoreNextChanges = 0; // Number of changes to ignore after reset
         private const int CHANGES_TO_IGNORE = 3; // How many changes to ignore after reset
         private const int VirusGrowthRate = 1;
+        
+        private static float virusGrowthMultiplier = 1f;
 
         public void Increase(int amount)
         {
@@ -141,16 +143,26 @@ namespace NewGameplay.Services
             }
         }
     
-        private float virusGrowthMultiplier = 1f;
-
         public void DoubleVirusGrowthRate()
         {
             virusGrowthMultiplier = 2f;
+            Debug.Log("[EntropyService] Virus growth rate doubled. New multiplier: " + virusGrowthMultiplier);
+            
+            // Raise an event to notify that growth rate changed
+            OnEntropyChanged?.Invoke(EntropyPercent, false);
+        }
+        
+        public void ResetVirusGrowthRate()
+        {
+            virusGrowthMultiplier = 1f;
+            Debug.Log("[EntropyService] Virus growth rate reset to default.");
         }
 
         public int GetVirusGrowthRate()
         {
-            return (int)(VirusGrowthRate * virusGrowthMultiplier);
+            int rate = (int)(VirusGrowthRate * virusGrowthMultiplier);
+            Debug.Log($"[EntropyService] GetVirusGrowthRate called. Current rate: {rate} (base: {VirusGrowthRate}, multiplier: {virusGrowthMultiplier})");
+            return rate;
         }
     }
 }

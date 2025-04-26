@@ -9,6 +9,7 @@ using System.Collections.Generic;
 public class ProgressTrackerView : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI progressText;
+    [SerializeField] private TMP_FontAsset firaCodeFont;
 
     private IProgressTrackerService progress;
     private IGridService gridService;
@@ -27,6 +28,18 @@ public class ProgressTrackerView : MonoBehaviour
     private void Start()
     {
         originalPosition = progressText.transform.localPosition;
+        
+        // Set FiraCode font
+        if (firaCodeFont == null)
+        {
+            // Attempt to load the FiraCode font if not assigned in the inspector
+            firaCodeFont = Resources.Load<TMP_FontAsset>("Fonts & Materials/FiraCode-Regular SDF");
+        }
+        
+        if (firaCodeFont != null)
+        {
+            progressText.font = firaCodeFont;
+        }
     }
 
     public void Initialize(IProgressTrackerService progressService, IGridService grid, IEntropyService entropy)
@@ -195,7 +208,7 @@ public class ProgressTrackerView : MonoBehaviour
 
         // Update display with potential score
         float percentage = ((progress.CurrentScore + potentialScore) * 100f) / progress.RoundTarget;
-        progressText.text = $"Progress: {Mathf.RoundToInt(percentage)}%";
+        progressText.text = $"PROGRESS: {Mathf.RoundToInt(percentage)}%";
 
         // Update color based on percentage
         progressText.color = GetColorForPercentage(percentage);

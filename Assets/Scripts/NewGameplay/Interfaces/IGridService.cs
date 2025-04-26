@@ -15,11 +15,14 @@ public interface IGridService
     string GetSymbolAt(int x, int y);
     bool IsTilePlayable(int x, int y);
     int GridSize { get; }
+    int GridWidth { get; }
+    int GridHeight { get; }
     void ClearAllExceptViruses();
     void ClearAllTiles();
     string[,] GridState { get; }
     bool[,] TilePlayable { get; }
     void ProcessPurges();
     void EnableRowColumnPurge();
-
+    void DisableRowColumnPurge();
+    void TriggerGridUpdate();
 }

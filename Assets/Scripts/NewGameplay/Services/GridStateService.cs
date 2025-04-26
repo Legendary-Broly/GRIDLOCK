@@ -6,23 +6,26 @@ namespace NewGameplay.Services
 {
     public class GridStateService : IGridStateService
     {
-        private readonly int gridSize = 7;
+        private readonly int gridWidth = 7;   // Number of columns
+        private readonly int gridHeight = 8;  // Number of rows
         private readonly string[,] gridState;
         private readonly bool[,] tilePlayable;
 
         public event Action OnGridStateChanged;
 
-        public int GridSize => gridSize;
+        public int GridSize => gridWidth;  // Keeping GridSize as width for compatibility
+        public int GridWidth => gridWidth;
+        public int GridHeight => gridHeight;
         public string[,] GridState => gridState;
         public bool[,] TilePlayable => tilePlayable;
 
         public GridStateService()
         {
-            gridState = new string[gridSize, gridSize];
-            tilePlayable = new bool[gridSize, gridSize];
+            gridState = new string[gridWidth, gridHeight];
+            tilePlayable = new bool[gridWidth, gridHeight];
 
-            for (int y = 0; y < gridSize; y++)
-                for (int x = 0; x < gridSize; x++)
+            for (int y = 0; y < gridHeight; y++)
+                for (int x = 0; x < gridWidth; x++)
                     tilePlayable[x, y] = true;
         }
 
@@ -30,7 +33,7 @@ namespace NewGameplay.Services
 
         public bool IsTilePlayable(int x, int y) => tilePlayable[x, y];
 
-        public bool IsInBounds(int x, int y) => x >= 0 && x < gridSize && y >= 0 && y < gridSize;
+        public bool IsInBounds(int x, int y) => x >= 0 && x < gridWidth && y >= 0 && y < gridHeight;
 
         public void SetSymbol(int x, int y, string symbol)
         {
@@ -46,9 +49,9 @@ namespace NewGameplay.Services
 
         public void ClearAllTiles()
         {
-            for (int y = 0; y < gridSize; y++)
+            for (int y = 0; y < gridHeight; y++)
             {
-                for (int x = 0; x < gridSize; x++)
+                for (int x = 0; x < gridWidth; x++)
                 {
                     gridState[x, y] = null;
                     tilePlayable[x, y] = true;
@@ -59,9 +62,9 @@ namespace NewGameplay.Services
 
         public void ClearAllExceptViruses()
         {
-            for (int y = 0; y < gridSize; y++)
+            for (int y = 0; y < gridHeight; y++)
             {
-                for (int x = 0; x < gridSize; x++)
+                for (int x = 0; x < gridWidth; x++)
                 {
                     if (gridState[x, y] != "X")
                     {

@@ -8,6 +8,14 @@ namespace NewGameplay.Utility
 {
     public static class SymbolEffectProcessor
     {
+        private static IMutationEffectService mutationEffectService;
+
+        public static void SetMutationEffectService(IMutationEffectService service)
+        {
+            mutationEffectService = service;
+            Debug.Log($"[SymbolEffectProcessor] MutationEffectService set: {(service != null ? "Success" : "Null")}");
+        }
+        
         public static int Apply(List<Vector2Int> match, IGridService grid, IEntropyService entropy)
         {
             if (match == null || match.Count == 0) return 0;
@@ -34,8 +42,20 @@ namespace NewGameplay.Utility
                     {
                         score = matchSize; // 1 point per symbol
                         int entropyReduction = matchSize * matchSize; // -1 per symbol, multiplied by match size
-                        entropy.Decrease(entropyReduction);
-                        Debug.Log($"[Σ] Stabilizer: {score} pts ({matchSize} symbols), -{entropyReduction}% Entropy (base -{matchSize} * {matchSize} multiplier)");
+                        
+                        // If "Fear of Change" mutation is active, don't reduce entropy at extraction
+                        bool fearOfChangeActive = mutationEffectService != null && 
+                                                  mutationEffectService.IsMutationActive(MutationType.FearOfChange);
+                        
+                        if (!fearOfChangeActive)
+                        {
+                            entropy.Decrease(entropyReduction);
+                            Debug.Log($"[Σ] Stabilizer: {score} pts ({matchSize} symbols), -{entropyReduction}% Entropy (base -{matchSize} * {matchSize} multiplier)");
+                        }
+                        else
+                        {
+                            Debug.Log($"[Σ] Stabilizer: {score} pts ({matchSize} symbols), No entropy reduction due to Fear of Change mutation");
+                        }
                     }
                     break;
 

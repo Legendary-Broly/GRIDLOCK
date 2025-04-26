@@ -7,7 +7,9 @@ namespace NewGameplay.Interfaces
     {
         event Action OnGridStateChanged;
         
-        int GridSize { get; }
+        int GridSize { get; }  // Kept for backward compatibility
+        int GridWidth { get; }  // Number of columns
+        int GridHeight { get; } // Number of rows
         string[,] GridState { get; }
         bool[,] TilePlayable { get; }
         

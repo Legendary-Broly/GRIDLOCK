@@ -3,27 +3,56 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using URPGlitch;
 using NewGameplay.Services;
+using NewGameplay;
 
 namespace NewGameplay.Utility
 {
-    public class EntropyGlitchController : MonoBehaviour
+    public class GlitchIntensity : MonoBehaviour
     {
         public Volume volume; // Assign Global Volume in inspector
         private AnalogGlitchVolume analogGlitch;
         private DigitalGlitchVolume digitalGlitch;
 
         private EntropyService entropyService;
+        
+        // Optional: Allow direct reference to bootstrapper through inspector
+        [SerializeField] private NewGameplayBootstrapper bootstrapperReference;
 
         private void Start()
         {
             volume.profile.TryGet(out analogGlitch);
             volume.profile.TryGet(out digitalGlitch);
             
-            // Get the EntropyService from the NewGameplayBootstrapper
-            var bootstrapper = FindFirstObjectByType<NewGameplayBootstrapper>();
+            // First try to use direct reference if assigned
+            NewGameplayBootstrapper bootstrapper = bootstrapperReference;
+            
+            // If no direct reference, find it in the scene
+            if (bootstrapper == null)
+            {
+                bootstrapper = Object.FindFirstObjectByType<NewGameplayBootstrapper>();
+                Debug.Log("[GlitchIntensity] Looking up NewGameplayBootstrapper using FindFirstObjectByType");
+            }
+            else
+            {
+                Debug.Log("[GlitchIntensity] Using directly assigned bootstrapper reference");
+            }
+            
             if (bootstrapper != null)
             {
+                Debug.Log("[GlitchIntensity] Found NewGameplayBootstrapper instance");
                 entropyService = bootstrapper.ExposedEntropyService;
+                if (entropyService != null)
+                {
+                    Debug.Log("[GlitchIntensity] Successfully connected to EntropyService");
+                }
+                else
+                {
+                    Debug.LogError("[GlitchIntensity] ExposedEntropyService is null in NewGameplayBootstrapper");
+                }
+            }
+            else
+            {
+                Debug.LogError("[GlitchIntensity] NewGameplayBootstrapper not found in the scene");
             }
             
             if (entropyService == null)

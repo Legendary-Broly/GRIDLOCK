@@ -17,6 +17,7 @@ namespace NewGameplay.Interfaces
         float CurrentEntropy { get; }
         void ModifyEntropy(float amount);
         void DoubleVirusGrowthRate();
+        void ResetVirusGrowthRate();
         int GetVirusGrowthRate();
     }
 }

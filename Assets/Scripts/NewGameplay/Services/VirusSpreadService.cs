@@ -24,7 +24,8 @@ namespace NewGameplay.Services
             virusSpawningStrategy = new VirusSpawningStrategy(
                 entropyService,
                 new System.Random(),
-                gridStateService.GridSize,
+                gridStateService.GridWidth,
+                gridStateService.GridHeight,
                 gridStateService.GridState,
                 gridStateService.TilePlayable
             );
@@ -41,7 +42,11 @@ namespace NewGameplay.Services
             var spawnPositions = virusSpawningStrategy.GetVirusSpawnPositions();
             foreach (var pos in spawnPositions)
             {
+                // Set the tile to virus symbol
                 gridStateService.SetSymbol(pos.x, pos.y, "X");
+                
+                // Mark the tile as not playable
+                gridStateService.SetTilePlayable(pos.x, pos.y, false);
             }
 
             OnVirusSpread?.Invoke();

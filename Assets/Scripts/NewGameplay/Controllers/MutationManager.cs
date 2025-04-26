@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NewGameplay.ScriptableObjects;
 using NewGameplay.Services;
 using NewGameplay.Interfaces;
+using NewGameplay;
 
 public class MutationManager : MonoBehaviour
 {
@@ -10,11 +11,17 @@ public class MutationManager : MonoBehaviour
     [SerializeField] private MutationOption[] mutationOptions;
     [SerializeField] private List<MutationSO> availableMutations;
     [SerializeField] private MutationTracker mutationTracker;  // Drag your MutationTracker GameObject here
-    [SerializeField] private MutationEffectService mutationEffectService;
+    private MutationEffectService mutationEffectService;
 
-    private List<MutationSO> activeMutations = new List<MutationSO>(); 
+    // Changed from List to single reference since we only allow one active mutation
+    private MutationSO activeMutation = null;
 
     private System.Random random = new System.Random();
+
+    // Optional: reference to key components to avoid Find calls
+    [SerializeField] private GridView gridViewReference;
+    [SerializeField] private EntropyTrackerView entropyViewReference;
+    [SerializeField] private NewGameplayBootstrapper bootstrapperReference;
 
     private void Start()
     {
@@ -70,14 +77,73 @@ public class MutationManager : MonoBehaviour
 
     public void ApplyMutationEffect(MutationSO selectedMutation)
     {
-        activeMutations.Add(selectedMutation);
+        Debug.Log($"[MutationManager] Applying mutation: {selectedMutation.MutationType} to service instance: {mutationEffectService?.GetHashCode()}");
+        
+        // Replace the previous active mutation with the new one
+        activeMutation = selectedMutation;
+        
+        // Apply the new mutation effect
         mutationEffectService.ApplyMutationEffect(selectedMutation.MutationType);
+        
+        // Update UI to show only the active mutation
+        UpdateMutationDisplay();
+        
+        // Force immediate update of game state UI to reflect mutation effects
+        ForceGameStateRefresh();
+    }
+    
+    private void UpdateMutationDisplay()
+    {
+        // Create an array with one element if we have an active mutation
+        if (activeMutation != null)
+        {
+            mutationTracker.UpdateMutationDisplay(new[] { activeMutation });
+        }
+        else
+        {
+            mutationTracker.UpdateMutationDisplay(new MutationSO[0]);
+        }
+    }
 
-        mutationTracker.UpdateMutationDisplay(activeMutations.ToArray());
+    private void ForceGameStateRefresh()
+    {
+        // First try direct references if available
+        GridView gridView = gridViewReference;
+        NewGameplayBootstrapper bootstrapper = bootstrapperReference;
+        EntropyTrackerView entropyView = entropyViewReference;
+        
+        // Fall back to finding objects if needed
+        if (gridView == null)
+        {
+            gridView = Object.FindFirstObjectByType<GridView>();
+        }
+        
+        if (bootstrapper == null && gridView != null)
+        {
+            bootstrapper = Object.FindFirstObjectByType<NewGameplayBootstrapper>();
+        }
+        
+        if (entropyView == null)
+        {
+            entropyView = Object.FindFirstObjectByType<EntropyTrackerView>();
+        }
+        
+        // Refresh UI elements
+        if (gridView != null && bootstrapper != null)
+        {
+            Debug.Log("[MutationManager] Forcing immediate grid refresh to apply mutation effect");
+            gridView.RefreshGrid(bootstrapper.ExposedGridService);
+        }
+        
+        if (entropyView != null)
+        {
+            entropyView.Refresh();
+        }
     }
 
     public void SetMutationEffectService(MutationEffectService service)
     {
+        Debug.Log("[MutationManager] SetMutationEffectService called. Service instance: " + service.GetHashCode());
         mutationEffectService = service;
     }
 }

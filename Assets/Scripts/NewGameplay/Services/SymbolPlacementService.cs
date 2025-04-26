@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using NewGameplay.Interfaces;
+using NewGameplay.Utility;
 
 namespace NewGameplay.Services
 {
@@ -9,17 +10,23 @@ namespace NewGameplay.Services
         private readonly IGridStateService gridStateService;
         private readonly IPurgeEffectService purgeEffectService;
         private readonly ILoopEffectService loopEffectService;
+        private readonly IMutationEffectService mutationEffectService;
+        private readonly IEntropyService entropyService;
 
         public event Action OnSymbolPlaced;
 
         public SymbolPlacementService(
             IGridStateService gridStateService,
             IPurgeEffectService purgeEffectService,
-            ILoopEffectService loopEffectService)
+            ILoopEffectService loopEffectService,
+            IMutationEffectService mutationEffectService = null,
+            IEntropyService entropyService = null)
         {
             this.gridStateService = gridStateService;
             this.purgeEffectService = purgeEffectService;
             this.loopEffectService = loopEffectService;
+            this.mutationEffectService = mutationEffectService;
+            this.entropyService = entropyService;
         }
 
         public void TryPlaceSymbol(int x, int y, string symbol)
@@ -30,8 +37,12 @@ namespace NewGameplay.Services
             // Special check for purge symbol - must be adjacent to a virus
             if (symbol == "∆" && !IsAdjacentToSymbol(x, y, "X"))
             {
-                Debug.Log("Purge symbol can only be placed adjacent to a virus");
-                return;
+                // Exception: Firewall mutation allows purge symbols to be placed anywhere
+                if (mutationEffectService == null || !mutationEffectService.IsMutationActive(MutationType.Firewall))
+                {
+                    Debug.Log("Purge symbol can only be placed adjacent to a virus");
+                    return;
+                }
             }
 
             SetSymbol(x, y, symbol);
@@ -69,6 +80,14 @@ namespace NewGameplay.Services
             {
                 loopEffectService.CheckLoopTransformations();
             }
+            
+            // Check for Σ symbol placement (only applies to Σ with Fear of Change mutation)
+            if (symbol == "Σ" && mutationEffectService != null && entropyService != null && 
+                mutationEffectService.IsMutationActive(MutationType.FearOfChange))
+            {
+                entropyService.Decrease(1);  // Apply reduction immediately on placement
+                Debug.Log("[Σ] Stabilizer entropy reduced on placement (Fear of Change active)");
+            }
         }
 
         public bool IsAdjacentToSymbol(int x, int y, string target)
@@ -80,9 +99,12 @@ namespace NewGameplay.Services
 
             foreach (var d in directions)
             {
-                int cx = x + d.x, cy = y + d.y;
-                if (gridStateService.IsInBounds(cx, cy) && gridStateService.GetSymbolAt(cx, cy) == target)
+                int nx = x + d.x;
+                int ny = y + d.y;
+                if (gridStateService.IsInBounds(nx, ny) && gridStateService.GetSymbolAt(nx, ny) == target)
+                {
                     return true;
+                }
             }
             return false;
         }

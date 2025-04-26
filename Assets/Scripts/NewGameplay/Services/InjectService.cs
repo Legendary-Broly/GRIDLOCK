@@ -54,9 +54,8 @@ public class InjectService : NewGameplay.Interfaces.IInjectService
             currentSymbols[i] = "";
         }
         selectedIndex = -1;
-
         // Notify the UI to update
-        var controller = GameObject.FindFirstObjectByType<InjectController>();
+        var controller = UnityEngine.Object.FindFirstObjectByType<InjectController>();
         if (controller != null)
         {
             controller.ClearSymbolSlots();

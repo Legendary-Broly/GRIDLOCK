@@ -54,7 +54,7 @@ public class TerminalLineRenderer : MonoBehaviour
         "",
         "",
         "",
-        "> Warning: 38.2% memory marked “non-consensual”",
+        "> Warning: 38.2% memory marked \"non-consensual\"",
         "> Suggestion: proceed without consent? [Y/n] _",
         "",
         "Y",
@@ -183,7 +183,7 @@ public class TerminalLineRenderer : MonoBehaviour
                 // Stop glitch when "i'll fix that..." finishes typing
                 if (line == "i'll fix that...")
                 {
-                    var glitchController = FindFirstObjectByType<BootSequenceGlitchController>();
+                    var glitchController = Object.FindFirstObjectByType<BootSequenceGlitchController>();
                     if (glitchController != null)
                     {
                         glitchController.StopGlitch();
@@ -195,7 +195,7 @@ public class TerminalLineRenderer : MonoBehaviour
             {
                 delay = GetBootLineDelay(line);
                 syncedDelays.Add(delay);
-                AddRow(line);
+                AddRow(line);   
                 Canvas.ForceUpdateCanvases();
                 LayoutRebuilder.ForceRebuildLayoutImmediate(contentParent.GetComponent<RectTransform>());
                 scrollRect.verticalNormalizedPosition = 0f;
@@ -203,7 +203,7 @@ public class TerminalLineRenderer : MonoBehaviour
                 yield return new WaitForSeconds(delay);
             }
         }
-        FindFirstObjectByType<TerminalInputHandler>().EnableInput();
+        Object.FindFirstObjectByType<TerminalInputHandler>().EnableInput();
     }
 
     private bool IsSlowTypedLine(string line)

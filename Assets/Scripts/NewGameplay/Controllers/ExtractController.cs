@@ -13,6 +13,7 @@ namespace NewGameplay.Controllers
         [SerializeField] private EntropyTrackerView entropyTrackerView;
         [SerializeField] private ProgressTrackerView progressTrackerView;
         [SerializeField] private GridView gridView;
+        [SerializeField] private RoundManager roundManager; // Optional direct reference
 
         public void Initialize(IExtractService extractService, IGridService gridService, IProgressTrackerService progressService)
         {
@@ -36,8 +37,25 @@ namespace NewGameplay.Controllers
             gridView.RefreshGrid(gridService);
             entropyTrackerView.Refresh();
             progressTrackerView.Refresh();
-            //extractService.ClearProtectedTiles();
-            FindFirstObjectByType<RoundManager>().CheckRoundEnd();
+            
+            // First try direct reference if available
+            if (roundManager != null)
+            {
+                roundManager.CheckRoundEnd();
+            }
+            else
+            {
+                // Fall back to finding the object
+                var foundRoundManager = Object.FindFirstObjectByType<RoundManager>();
+                if (foundRoundManager != null)
+                {
+                    foundRoundManager.CheckRoundEnd();
+                }
+                else
+                {
+                    Debug.LogError("[ExtractController] RoundManager not found in the scene");
+                }
+            }
         }
     }
 }

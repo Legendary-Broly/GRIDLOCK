@@ -9,7 +9,11 @@ namespace NewGameplay.Services
     {
         private readonly IGridStateService gridStateService;
         private readonly IEntropyService entropyService;
-        private bool rowColumnPurgeEnabled = false;
+        private static bool rowColumnPurgeEnabled = false;
+        private IMutationEffectService mutationEffectService;
+        
+        // Static instance to maintain reference across scene changes or reloads
+        private static IMutationEffectService persistentMutationService;
 
         public event Action OnPurgeProcessed;
 
@@ -17,11 +21,36 @@ namespace NewGameplay.Services
         {
             this.gridStateService = gridStateService;
             this.entropyService = entropyService;
+            
+            // Check if we have a persistent reference to use
+            if (persistentMutationService != null)
+            {
+                this.mutationEffectService = persistentMutationService;
+                Debug.Log($"[PurgeEffectService] Using persistent MutationEffectService reference: {persistentMutationService.GetHashCode()}");
+            }
+        }
+
+        public void SetMutationEffectService(IMutationEffectService mutationEffectService)
+        {
+            this.mutationEffectService = mutationEffectService;
+            // Also store in static field to keep reference
+            persistentMutationService = mutationEffectService;
+            Debug.Log($"[PurgeEffectService] MutationEffectService set, instance: {mutationEffectService?.GetHashCode()}");
         }
 
         public void ProcessPurges()
         {
-            Debug.Log($"[Purge] rowColumnPurgeEnabled state: {rowColumnPurgeEnabled}");
+            Debug.Log($"[PurgeEffectService] ProcessPurges called, mutationEffectService is {(mutationEffectService == null ? "NULL" : "available")}");
+            
+            // Use both the instance and persistent reference as a failsafe
+            IMutationEffectService serviceToUse = mutationEffectService ?? persistentMutationService;
+            
+            // Check if PurgePlus mutation is active using both flags
+            bool isPurgePlusActive = serviceToUse?.IsMutationActive(MutationType.PurgePlus) ?? false;
+            bool shouldUseRowColumnPurge = isPurgePlusActive || rowColumnPurgeEnabled;
+            
+            Debug.Log($"[Purge] Purge Plus mutation active: {isPurgePlusActive}, Row/Column purge enabled: {rowColumnPurgeEnabled}, shouldUseRowColumnPurge: {shouldUseRowColumnPurge}");
+            
             List<Vector2Int> purgePositions = new();
 
             // First collect all Δ positions
@@ -41,8 +70,10 @@ namespace NewGameplay.Services
             // Then process each Δ
             foreach (var pos in purgePositions)
             {
-                bool purgedAny;
-                if (rowColumnPurgeEnabled)
+                bool purgedAny = false;
+                
+                // Use both row/column and adjacent purge when PurgePlus is active
+                if (shouldUseRowColumnPurge)
                 {
                     Debug.Log($"[Purge] Using row/column purge at ({pos.x},{pos.y})");
                     purgedAny = PurgeRowAndColumn(pos.x, pos.y);
@@ -53,11 +84,9 @@ namespace NewGameplay.Services
                     purgedAny = HandlePurgeEffect(pos.x, pos.y);
                 }
 
-                if (purgedAny)
-                {
-                    gridStateService.SetSymbol(pos.x, pos.y, null);
-                    gridStateService.SetTilePlayable(pos.x, pos.y, true);
-                }
+                // Always consume the purge symbol after activation
+                gridStateService.SetSymbol(pos.x, pos.y, null);
+                gridStateService.SetTilePlayable(pos.x, pos.y, true);
             }
 
             OnPurgeProcessed?.Invoke();
@@ -99,7 +128,7 @@ namespace NewGameplay.Services
 
         public bool PurgeRowAndColumn(int purgeX, int purgeY)
         {
-            bool purgedAny = false;
+            int purgedVirusCount = 0;
 
             // Purge row
             for (int x = 0; x < gridStateService.GridSize; x++)
@@ -108,7 +137,7 @@ namespace NewGameplay.Services
                 {
                     gridStateService.SetSymbol(x, purgeY, null);
                     gridStateService.SetTilePlayable(x, purgeY, true);
-                    purgedAny = true;
+                    purgedVirusCount++;
                 }
             }
 
@@ -119,33 +148,39 @@ namespace NewGameplay.Services
                 {
                     gridStateService.SetSymbol(purgeX, y, null);
                     gridStateService.SetTilePlayable(purgeX, y, true);
-                    purgedAny = true;
+                    purgedVirusCount++;
                 }
             }
 
-            if (purgedAny && entropyService != null)
+            if (purgedVirusCount > 0 && entropyService != null)
             {
-                int purgedCount = 0;
-                for (int x = 0; x < gridStateService.GridSize; x++)
-                    if (gridStateService.GetSymbolAt(x, purgeY) == null) purgedCount++;
-                for (int y = 0; y < gridStateService.GridSize; y++)
-                    if (gridStateService.GetSymbolAt(purgeX, y) == null) purgedCount++;
-                
-                float entropyReduction = 1 + purgedCount;
-                Debug.Log($"[∆+] Attempting to reduce entropy by {entropyReduction}% (base 1 + {purgedCount} viruses)");
+                float entropyReduction = 1 + purgedVirusCount;
+                Debug.Log($"[∆+] Attempting to reduce entropy by {entropyReduction}% (base 1 + {purgedVirusCount} viruses)");
                 entropyService.ModifyEntropy(-entropyReduction);
             }
-
-            return purgedAny;
+            
+            // Always return true so the purge symbol is consumed even if no viruses were purged
+            return true;
         }
 
         public void EnableRowColumnPurge()
         {
             rowColumnPurgeEnabled = true;
+            Debug.Log("[PurgeEffectService] Row/Column purge has been enabled");
+            
+            // Trigger immediate processing of any existing purge symbols
+            ProcessPurges();
+        }
+
+        public void DisableRowColumnPurge()
+        {
+            rowColumnPurgeEnabled = false;
+            Debug.Log("[PurgeEffectService] Row/Column purge has been disabled");
         }
 
         public bool IsRowColumnPurgeEnabled()
         {
+            Debug.Log($"[PurgeEffectService] IsRowColumnPurgeEnabled called, returning: {rowColumnPurgeEnabled}");
             return rowColumnPurgeEnabled;
         }
     }

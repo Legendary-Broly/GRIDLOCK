@@ -8,31 +8,55 @@ namespace NewGameplay.Services
     public class LoopEffectService : ILoopEffectService
     {
         private readonly IGridStateService gridStateService;
+        private readonly IMutationEffectService mutationEffectService;
         private readonly System.Random rng = new();
+        private bool isProcessingLoops = false;
 
         public event Action OnLoopTransformed;
 
-        public LoopEffectService(IGridStateService gridStateService)
+        public LoopEffectService(IGridStateService gridStateService, IMutationEffectService mutationEffectService)
         {
             this.gridStateService = gridStateService;
+            this.mutationEffectService = mutationEffectService;
+        }
+
+        public LoopEffectService(GridStateService gridStateService)
+        {
+            this.gridStateService = gridStateService;
+            this.mutationEffectService = null;
         }
 
         public void CheckLoopTransformations()
         {
-            for (int y = 0; y < gridStateService.GridSize; y++)
+            if (isProcessingLoops) return; // Prevent recursive calls
+            isProcessingLoops = true;
+
+            bool changesMade;
+            do
             {
-                for (int x = 0; x < gridStateService.GridSize; x++)
+                changesMade = false;
+                for (int y = 0; y < gridStateService.GridSize; y++)
                 {
-                    if (gridStateService.GetSymbolAt(x, y) == "Θ")
+                    for (int x = 0; x < gridStateService.GridSize; x++)
                     {
-                        HandleLoopEffect(x, y);
+                        if (gridStateService.GetSymbolAt(x, y) == "Θ")
+                        {
+                            if (HandleLoopEffect(x, y))
+                            {
+                                changesMade = true;
+                            }
+                        }
                     }
                 }
-            }
+            } while (changesMade); // Continue until no more changes are made
+
+            isProcessingLoops = false;
         }
 
-        public void HandleLoopEffect(int x, int y)
+        public bool HandleLoopEffect(int x, int y)
         {
+            bool isInfiniteLoop = mutationEffectService?.IsMutationActive(MutationType.InfiniteLoop) ?? false;
+
             List<Vector2Int> adjacentTiles = new();
             Vector2Int[] directions = new[] {
                 new Vector2Int(1, 0), new Vector2Int(-1, 0),
@@ -52,23 +76,45 @@ namespace NewGameplay.Services
                 }
             }
 
-            // If there are adjacent symbols, transform into one of them immediately
+            // If there are adjacent symbols, transform based on mutation
             if (adjacentTiles.Count > 0)
             {
                 var source = adjacentTiles[rng.Next(adjacentTiles.Count)];
                 var symbol = gridStateService.GetSymbolAt(source.x, source.y);
-                gridStateService.SetSymbol(x, y, symbol);
-                gridStateService.SetTilePlayable(x, y, false);
-                Debug.Log($"[Θ] Loop at ({x},{y}) instantly transformed into '{symbol}'");
+
+                if (isInfiniteLoop)
+                {
+                    // Overwrite the entire row and column (including empty tiles)
+                    for (int i = 0; i < gridStateService.GridSize; i++)
+                    {
+                        // Column overwrite (skip other Θ symbols)
+                        if (gridStateService.GetSymbolAt(x, i) != "Θ")
+                        {
+                            gridStateService.SetSymbol(x, i, symbol);
+                            gridStateService.SetTilePlayable(x, i, false);
+                        }
+
+                        // Row overwrite (skip other Θ symbols)
+                        if (gridStateService.GetSymbolAt(i, y) != "Θ")
+                        {
+                            gridStateService.SetSymbol(i, y, symbol);
+                            gridStateService.SetTilePlayable(i, y, false);
+                        }
+                    }
+                    Debug.Log($"[Θ] Infinite Loop at ({x},{y}) overwrote row and column with '{symbol}'");
+                }
+                else
+                {
+                    gridStateService.SetSymbol(x, y, symbol);
+                    gridStateService.SetTilePlayable(x, y, false);
+                    Debug.Log($"[Θ] Loop at ({x},{y}) transformed into '{symbol}'");
+                }
+
                 OnLoopTransformed?.Invoke();
+                return true; // Indicate that a change was made
             }
-            else
-            {
-                // Keep the loop symbol on the grid if no adjacent symbols
-                gridStateService.SetSymbol(x, y, "Θ");
-                gridStateService.SetTilePlayable(x, y, false);
-                Debug.Log($"[Θ] Loop at ({x},{y}) waiting for adjacent symbols");
-            }
+
+            return false; // No changes were made
         }
     }
-} 
+}
