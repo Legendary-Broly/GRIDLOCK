@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using NewGameplay.Interfaces;
+using NewGameplay.Configuration;
+using NewGameplay.Strategies;
 
 namespace NewGameplay.Services
 {
@@ -19,6 +21,7 @@ namespace NewGameplay.Services
         private readonly bool[,] tilePlayable;
         private readonly System.Random rng = new();
         private IEntropyService entropyService;
+        private VirusSpawningStrategy virusSpawningStrategy;
 
         public event Action OnGridUpdated;
 
@@ -41,6 +44,13 @@ namespace NewGameplay.Services
         public void SetEntropyService(IEntropyService entropyService)
         {
             this.entropyService = entropyService;
+            virusSpawningStrategy = new VirusSpawningStrategy(
+                entropyService,
+                rng,
+                gridSize,
+                gridState,
+                tilePlayable
+            );
         }
 
         public void TryPlaceSymbol(int x, int y)
@@ -79,10 +89,10 @@ namespace NewGameplay.Services
             // Handle symbol placement effects first
             if (symbol == purgeSymbol)
             {
-                HandlePurgeEffect(x, y);
-                // Ensure the tile is playable after purge effect
-                gridState[x, y] = null;
-                tilePlayable[x, y] = true;
+                // Place the purge symbol first
+                gridState[x, y] = purgeSymbol;
+                // Process all purges (this will handle both regular and row/column purges)
+                ProcessPurges();
                 // Check for loop transformations after purge effect
                 CheckLoopTransformations();
                 OnGridUpdated?.Invoke();
@@ -233,111 +243,19 @@ namespace NewGameplay.Services
 
         public void SpreadVirus()
         {
-            List<Vector2Int> existingViruses = new();
-            List<Vector2Int> emptySpots = new();
-            List<Vector2Int> adjacentEmptySpots = new();
-
-            // First, collect all virus positions and empty spots
-            for (int y = 0; y < gridSize; y++)
+            if (entropyService == null)
             {
-                for (int x = 0; x < gridSize; x++)
-                {
-                    if (gridState[x, y] == virusSymbol)
-                        existingViruses.Add(new Vector2Int(x, y));
-                    else if (tilePlayable[x, y])
-                        emptySpots.Add(new Vector2Int(x, y));
-                }
+                Debug.LogError("EntropyService is null! Cannot spread viruses without entropy service.");
+                return;
             }
 
-            // If there are existing viruses, find empty spots adjacent to them
-            if (existingViruses.Count > 0)
+            var spawnPositions = virusSpawningStrategy.GetVirusSpawnPositions();
+            foreach (var pos in spawnPositions)
             {
-                Vector2Int[] directions = new[] {
-                    new Vector2Int(1, 0), new Vector2Int(-1, 0),
-                    new Vector2Int(0, 1), new Vector2Int(0, -1)
-                };
-
-                foreach (var virus in existingViruses)
-                {
-                    foreach (var dir in directions)
-                    {
-                        var adjacentPos = virus + dir;
-                        if (IsInBounds(adjacentPos.x, adjacentPos.y) && 
-                            tilePlayable[adjacentPos.x, adjacentPos.y] &&
-                            gridState[adjacentPos.x, adjacentPos.y] == null)
-                        {
-                            adjacentEmptySpots.Add(adjacentPos);
-                        }
-                    }
-                }
+                SetSymbol(pos.x, pos.y, VirusConfiguration.VIRUS_SYMBOL);
             }
 
-            // Determine number of viruses to spawn based on entropy
-            int virusesToSpawn = 1; // Default is 1
-            if (entropyService != null)
-            {
-                float entropy = entropyService.CurrentEntropy;
-                if (entropy > 0.66f) // 67-100%
-                    virusesToSpawn = 3;
-                else if (entropy > 0.33f) // 34-66%
-                    virusesToSpawn = 2;
-                // else keep default of 1 for 0-33%
-                
-                Debug.Log($"[Virus] Spawning {virusesToSpawn} viruses at {entropy*100:F1}% entropy");
-            }
-
-            // Spawn the determined number of viruses
-            for (int i = 0; i < virusesToSpawn && (adjacentEmptySpots.Count > 0 || emptySpots.Count > 0); i++)
-            {
-                Vector2Int spawnPos;
-
-                // 90% chance to spawn adjacent to existing virus if possible
-                if (adjacentEmptySpots.Count > 0 && (rng.NextDouble() < 0.9 || emptySpots.Count == 0))
-                {
-                    int index = rng.Next(adjacentEmptySpots.Count);
-                    spawnPos = adjacentEmptySpots[index];
-                    adjacentEmptySpots.RemoveAt(index);
-                    // Also remove from emptySpots if it exists there
-                    emptySpots.Remove(spawnPos);
-                    Debug.Log($"[Virus] Spawning virus adjacent to existing at ({spawnPos.x}, {spawnPos.y})");
-                }
-                else if (emptySpots.Count > 0)
-                {
-                    int index = rng.Next(emptySpots.Count);
-                    spawnPos = emptySpots[index];
-                    emptySpots.RemoveAt(index);
-                    Debug.Log($"[Virus] Spawning virus at random position ({spawnPos.x}, {spawnPos.y})");
-                }
-                else
-                {
-                    Debug.Log("[Virus] No valid spawn positions remaining");
-                    break;
-                }
-
-                SetSymbol(spawnPos.x, spawnPos.y, virusSymbol);
-            }
-
-            // Now handle existing viruses spreading
-            foreach (var pos in existingViruses)
-            {
-                if (IsAdjacentToSymbol(pos.x, pos.y, purgeSymbol)) continue;
-
-                Vector2Int[] directions = new[] {
-                    new Vector2Int(1, 0), new Vector2Int(-1, 0),
-                    new Vector2Int(0, 1), new Vector2Int(0, -1)
-                };
-
-                directions = directions.OrderBy(_ => rng.Next()).ToArray();
-                foreach (var dir in directions)
-                {
-                    var t = pos + dir;
-                    if (IsInBounds(t.x, t.y) && tilePlayable[t.x, t.y])
-                    {
-                        SetSymbol(t.x, t.y, virusSymbol);
-                        break;
-                    }
-                }
-            }
+            OnGridUpdated?.Invoke();
         }
 
         private bool IsInBounds(int x, int y) => x >= 0 && x < gridSize && y >= 0 && y < gridSize;
@@ -385,9 +303,10 @@ namespace NewGameplay.Services
 
         public void ProcessPurges()
         {
+            Debug.Log($"[Purge] rowColumnPurgeEnabled state: {rowColumnPurgeEnabled}");
             List<Vector2Int> purgePositions = new();
-            
-            // First collect all ∆ positions
+
+            // First collect all Δ positions
             for (int y = 0; y < gridSize; y++)
             {
                 for (int x = 0; x < gridSize; x++)
@@ -399,11 +318,73 @@ namespace NewGameplay.Services
                 }
             }
 
-            // Then process each ∆
+            Debug.Log($"[Purge] Found {purgePositions.Count} purge symbols to process");
+
+            // Then process each Δ
             foreach (var pos in purgePositions)
             {
-                HandlePurgeEffect(pos.x, pos.y);
+                bool purgedAny;
+                if (rowColumnPurgeEnabled)  // 🔹 Purge+ Mutation active
+                {
+                    Debug.Log($"[Purge] Using row/column purge at ({pos.x},{pos.y})");
+                    purgedAny = PurgeRowAndColumn(pos.x, pos.y);
+                }
+                else
+                {
+                    Debug.Log($"[Purge] Using adjacent purge at ({pos.x},{pos.y})");
+                    purgedAny = HandlePurgeEffect(pos.x, pos.y);
+                }
+
+                // Clean up the purge symbol if it successfully purged anything
+                if (purgedAny)
+                {
+                    gridState[pos.x, pos.y] = null;
+                    tilePlayable[pos.x, pos.y] = true;
+                }
             }
+        }
+
+        private bool PurgeRowAndColumn(int purgeX, int purgeY)
+        {
+            bool purgedAny = false;
+            // 🔹 Purge row
+            for (int x = 0; x < gridSize; x++)
+            {
+                if (gridState[x, purgeY] == virusSymbol)
+                {
+                    gridState[x, purgeY] = null;  // Remove virus
+                    tilePlayable[x, purgeY] = true;  // Make tile playable
+                    purgedAny = true;
+                }
+            }
+
+            // 🔹 Purge column
+            for (int y = 0; y < gridSize; y++)
+            {
+                if (gridState[purgeX, y] == virusSymbol)
+                {
+                    gridState[purgeX, y] = null;  // Remove virus
+                    tilePlayable[purgeX, y] = true;  // Make tile playable
+                    purgedAny = true;
+                }
+            }
+
+            // If we purged any viruses, reduce entropy
+            if (purgedAny && entropyService != null)
+            {
+                // Count how many viruses were purged (we can approximate this as the number of empty tiles in the row + column)
+                int purgedCount = 0;
+                for (int x = 0; x < gridSize; x++)
+                    if (gridState[x, purgeY] == null) purgedCount++;
+                for (int y = 0; y < gridSize; y++)
+                    if (gridState[purgeX, y] == null) purgedCount++;
+                
+                float entropyReduction = 1 + purgedCount;
+                Debug.Log($"[∆+] Attempting to reduce entropy by {entropyReduction}% (base 1 + {purgedCount} viruses)");
+                entropyService.ModifyEntropy(-entropyReduction);
+            }
+
+            return purgedAny;
         }
 
         public void CheckLoopTransformations()
@@ -418,6 +399,18 @@ namespace NewGameplay.Services
                     }
                 }
             }
+        }
+    
+        private bool rowColumnPurgeEnabled = false;
+
+        public void EnableRowColumnPurge()
+        {
+            rowColumnPurgeEnabled = true;
+        }
+
+        public bool IsRowColumnPurgeEnabled()
+        {
+            return rowColumnPurgeEnabled;
         }
     }
 }

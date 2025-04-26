@@ -17,6 +17,7 @@ namespace NewGameplay.Services
         private bool shouldResetOnNextChange = false;
         private int ignoreNextChanges = 0; // Number of changes to ignore after reset
         private const int CHANGES_TO_IGNORE = 3; // How many changes to ignore after reset
+        private const int VirusGrowthRate = 1;
 
         public void Increase(int amount)
         {
@@ -138,6 +139,18 @@ namespace NewGameplay.Services
                 Debug.Log($"[EntropyService] Entropy changed from {oldValue}% to {EntropyPercent}% (WasReset: {wasReset})");
                 OnEntropyChanged?.Invoke(EntropyPercent, wasReset);
             }
+        }
+    
+        private float virusGrowthMultiplier = 1f;
+
+        public void DoubleVirusGrowthRate()
+        {
+            virusGrowthMultiplier = 2f;
+        }
+
+        public int GetVirusGrowthRate()
+        {
+            return (int)(VirusGrowthRate * virusGrowthMultiplier);
         }
     }
 }

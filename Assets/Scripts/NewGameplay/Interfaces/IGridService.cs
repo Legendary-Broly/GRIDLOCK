@@ -20,4 +20,6 @@ public interface IGridService
     string[,] GridState { get; }
     bool[,] TilePlayable { get; }
     void ProcessPurges();
+    void EnableRowColumnPurge();
+
 }

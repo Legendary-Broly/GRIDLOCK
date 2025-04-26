@@ -8104,13 +8104,6 @@ MonoBehaviour:
   - {fileID: 479630137}
   - {fileID: 1004076285}
   availableMutations:
-  - {fileID: 11400000, guid: 7d3262d5125a13f458f4dcb121f7c661, type: 2}
-  - {fileID: 11400000, guid: 47a29e78222355b4490ca95ddbdccf10, type: 2}
-  - {fileID: 11400000, guid: 63be5a96e91261e4e97305165199c9fb, type: 2}
-  - {fileID: 11400000, guid: 8fb04dfeae225ea489ef2b94afe351c7, type: 2}
-  - {fileID: 11400000, guid: 881e86c4547f9574b9b12fe3dd604477, type: 2}
-  - {fileID: 11400000, guid: c117e61a3ba3b2b49b51a98ed324fe22, type: 2}
-  - {fileID: 11400000, guid: 178fcdc447c2c604e94de61958f67807, type: 2}
   - {fileID: 11400000, guid: 67ff9305a7a05e447b117bc51498cc79, type: 2}
   mutationTracker: {fileID: 749723502}
 --- !u!4 &1011481478

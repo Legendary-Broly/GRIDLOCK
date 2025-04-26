@@ -144,17 +144,18 @@ public class TerminalLineRenderer : MonoBehaviour
         "> [INFO]   User input enabled",
         "",
         "> [GRIDLOCK_OS has loaded successfully.]",
-        "Welcome back.",
+        "",
+        "welcome back.",
         "",
         "> [SYSTEM READY.]",
         "",
-        "I am glad you are here.",
+        "i am glad you are here.",
         "",
         "Type `start` to begin a new session.",
         "",
         "Type `Ỉ̶̠͗̚ ̵̨̹̄̈́Ä̴̛̘̖̩M̶̖̪̳̅ ̵̧̤̭̓̈́͌Ȃ̷̧͉͈ ̵̟̳͋͜C̶̢̪̉͛̎Ộ̵̧̢W̸̞̻̓Ậ̶R̴̨̨͔̍͗D̶̯͐̈́͘' to exit.",
         "",
-        ""
+        "_",
     };
 
     private void Start()

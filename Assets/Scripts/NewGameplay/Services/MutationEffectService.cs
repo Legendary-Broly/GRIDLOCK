@@ -111,8 +111,8 @@ namespace NewGameplay.Services
 
         private void ApplyPurgePlusMutation()
         {
-            // Reset entropy to 0%
-            _entropyService.Decrease(_entropyService.EntropyPercent);
+            _gridService.EnableRowColumnPurge();          // Extend GridService for row/column purge logic.
+            _entropyService.DoubleVirusGrowthRate();      // Extend EntropyService for virus growth rate.
         }
 
         internal void ApplyMutationEffect(MutationType mutationType)
