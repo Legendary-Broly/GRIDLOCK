@@ -22,9 +22,28 @@ namespace NewGameplay
 
         private void Awake()
         {
-            var gridService = new GridService();
-            var progressService = new ProgressTrackerService();
+            // Create core services
             var entropyService = new EntropyService();
+            var gridStateService = new GridStateService();
+            var symbolPlacementService = new SymbolPlacementService(
+                gridStateService,
+                new PurgeEffectService(gridStateService, entropyService),
+                new LoopEffectService(gridStateService)
+            );
+            var purgeEffectService = new PurgeEffectService(gridStateService, entropyService);
+            var loopEffectService = new LoopEffectService(gridStateService);
+            var virusSpreadService = new VirusSpreadService(gridStateService);
+
+            // Create the grid service with all its dependencies
+            var gridService = new GridService(
+                gridStateService,
+                symbolPlacementService,
+                purgeEffectService,
+                loopEffectService,
+                virusSpreadService
+            );
+
+            var progressService = new ProgressTrackerService();
             IWeightedInjectService injectService = new WeightedInjectService();
             
             // Set the grid service in WeightedInjectService
