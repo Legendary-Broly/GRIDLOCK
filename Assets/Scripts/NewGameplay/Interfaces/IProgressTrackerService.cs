@@ -8,6 +8,9 @@ public interface IProgressTrackerService
 {
     int CurrentScore { get; }
     int RoundTarget { get; }
+    int CurrentProgress { get; }
+    int CurrentThreshold { get; }
+
     void ApplyScore(int score);
     bool HasMetGoal();
     void ResetProgress();

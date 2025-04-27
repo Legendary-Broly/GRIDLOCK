@@ -9,22 +9,29 @@ namespace NewGameplay.Strategies
     public class VirusSpawningStrategy
     {
         private readonly IEntropyService entropyService;
-        private readonly System.Random rng;
+        private readonly System.Random random;
         private readonly int gridWidth;
         private readonly int gridHeight;
         private readonly string[,] gridState;
         private readonly bool[,] tilePlayable;
 
+        // Static configuration to avoid passing constants around
+        public static class VirusConfiguration
+        {
+            public const string VIRUS_SYMBOL = "X";
+            public const string DATA_FRAGMENT_SYMBOL = "DF";
+        }
+
         public VirusSpawningStrategy(
             IEntropyService entropyService,
-            System.Random rng,
+            System.Random random,
             int gridWidth,
             int gridHeight,
             string[,] gridState,
             bool[,] tilePlayable)
         {
             this.entropyService = entropyService;
-            this.rng = rng;
+            this.random = random;
             this.gridWidth = gridWidth;
             this.gridHeight = gridHeight;
             this.gridState = gridState;
@@ -33,167 +40,132 @@ namespace NewGameplay.Strategies
 
         public List<Vector2Int> GetVirusSpawnPositions()
         {
-            if (entropyService == null)
-            {
-                Debug.LogError("EntropyService is null! Cannot determine virus spawn positions.");
-                return new List<Vector2Int>();
-            }
+            // Calculate how many new viruses to spawn based on growth rate
+            int growthRate = entropyService.GetVirusGrowthRate();
+            int virusCount = 0;
 
-            var existingViruses = GetExistingViruses();
-            var emptySpots = GetEmptySpots();
-            var spawnPositions = new List<Vector2Int>();
-
-            // Step 1: Handle virus growth - each existing virus spreads to one adjacent spot (can overwrite existing symbols)
-            foreach (var virus in existingViruses)
-            {
-                var adjacentSpots = GetAdjacentSpreadableSpots(new List<Vector2Int> { virus });
-                if (adjacentSpots.Count > 0)
-                {
-                    int index = rng.Next(adjacentSpots.Count);
-                    spawnPositions.Add(adjacentSpots[index]);
-                }
-            }
-
-            // Step 2: Handle new virus spawning based on entropy (only in empty spots)
-            int newVirusCount = CalculateVirusCount();
-            if (existingViruses.Count == 0 && emptySpots.Count > 0)
-            {
-                // If no viruses exist, spawn one in a random empty spot
-                spawnPositions.Add(emptySpots[rng.Next(emptySpots.Count)]);
-            }
-            else
-            {
-                // Get all empty spots within 2 tiles of any existing virus
-                var nearbyEmptySpots = GetEmptySpotsWithinRange(existingViruses, 2);
-                
-                // For new viruses, prefer nearby spots but fall back to any empty spot
-                for (int i = 0; i < newVirusCount && (nearbyEmptySpots.Count > 0 || emptySpots.Count > 0); i++)
-                {
-                    List<Vector2Int> targetSpots = nearbyEmptySpots.Count > 0 ? nearbyEmptySpots : emptySpots;
-                    int index = rng.Next(targetSpots.Count);
-                    spawnPositions.Add(targetSpots[index]);
-                    targetSpots.RemoveAt(index);
-                }
-            }
-
-            return spawnPositions;
-        }
-
-        private List<Vector2Int> GetExistingViruses()
-        {
-            var viruses = new List<Vector2Int>();
+            // Count existing viruses to use for base count
             for (int y = 0; y < gridHeight; y++)
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
                     if (gridState[x, y] == VirusConfiguration.VIRUS_SYMBOL)
                     {
-                        viruses.Add(new Vector2Int(x, y));
+                        virusCount++;
                     }
                 }
             }
-            return viruses;
+
+            // Minimum of 1 virus if none exist, otherwise base it on existing count and growth
+            int totalSpawnCount = virusCount > 0 ? (int)(virusCount * growthRate) : 1;
+            Debug.Log($"[VirusSpawning] Calculating virus count: Base count: {virusCount}, Growth rate: {growthRate}, Final count: {totalSpawnCount}");
+
+            return CalculateSpawnPositions(totalSpawnCount);
         }
 
-        private List<Vector2Int> GetEmptySpots()
+        private List<Vector2Int> CalculateSpawnPositions(int count)
         {
-            var emptySpots = new List<Vector2Int>();
+            var result = new List<Vector2Int>();
+            
+            // Try to spawn near existing viruses first
+            var nearVirusPositions = GetEmptyPositionsNearViruses();
+            var processedSpots = new HashSet<Vector2Int>();
+            
+            // First add positions near viruses if available
+            if (nearVirusPositions.Count > 0)
+            {
+                for (int i = 0; i < count && nearVirusPositions.Count > 0; i++)
+                {
+                    int index = random.Next(nearVirusPositions.Count);
+                    var pos = nearVirusPositions[index];
+                    
+                    // Don't spawn on data fragments
+                    if (gridState[pos.x, pos.y] == VirusConfiguration.DATA_FRAGMENT_SYMBOL)
+                    {
+                        nearVirusPositions.RemoveAt(index);
+                        i--; // Retry this iteration
+                        continue;
+                    }
+                    
+                    result.Add(pos);
+                    processedSpots.Add(pos);
+                    nearVirusPositions.RemoveAt(index);
+                }
+            }
+            
+            // If we need more positions, add random positions
+            if (result.Count < count)
+            {
+                var emptyPositions = GetEmptyPositions(processedSpots);
+                
+                while (result.Count < count && emptyPositions.Count > 0)
+                {
+                    int index = random.Next(emptyPositions.Count);
+                    var pos = emptyPositions[index];
+                    
+                    // Don't spawn on data fragments
+                    if (gridState[pos.x, pos.y] == VirusConfiguration.DATA_FRAGMENT_SYMBOL)
+                    {
+                        emptyPositions.RemoveAt(index);
+                        continue;
+                    }
+                    
+                    result.Add(pos);
+                    emptyPositions.RemoveAt(index);
+                }
+            }
+            
+            return result;
+        }
+
+        private List<Vector2Int> GetEmptyPositionsNearViruses()
+        {
+            var result = new List<Vector2Int>();
+            
             for (int y = 0; y < gridHeight; y++)
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
-                    if (tilePlayable[x, y])
+                    if (gridState[x, y] == VirusConfiguration.VIRUS_SYMBOL)
                     {
-                        emptySpots.Add(new Vector2Int(x, y));
-                    }
-                }
-            }
-            return emptySpots;
-        }
-        
-        private List<Vector2Int> GetAdjacentSpreadableSpots(List<Vector2Int> viruses)
-        {
-            var adjacentSpots = new List<Vector2Int>();
-            
-            foreach (var virus in viruses)
-            {
-                foreach (var dir in VirusConfiguration.SPREAD_DIRECTIONS)
-                {
-                    int nx = virus.x + dir.x;
-                    int ny = virus.y + dir.y;
-                    
-                    // Allow spreading to any cell that's in bounds (not just empty ones)
-                    // but don't overwrite existing virus cells
-                    if (IsInBounds(nx, ny) && gridState[nx, ny] != VirusConfiguration.VIRUS_SYMBOL)
-                    {
-                        adjacentSpots.Add(new Vector2Int(nx, ny));
-                    }
-                }
-            }
-            return adjacentSpots;
-        }
-
-        private List<Vector2Int> GetAdjacentEmptySpots(List<Vector2Int> viruses)
-        {
-            var adjacentSpots = new List<Vector2Int>();
-            
-            foreach (var virus in viruses)
-            {
-                foreach (var dir in VirusConfiguration.SPREAD_DIRECTIONS)
-                {
-                    int nx = virus.x + dir.x;
-                    int ny = virus.y + dir.y;
-                    if (IsInBounds(nx, ny) && tilePlayable[nx, ny])
-                    {
-                        adjacentSpots.Add(new Vector2Int(nx, ny));
-                    }
-                }
-            }
-            return adjacentSpots;
-        }
-
-        private int CalculateVirusCount()
-        {
-            int baseVirusCount = entropyService.EntropyPercent switch
-            {
-                < VirusConfiguration.LOW_ENTROPY_THRESHOLD => VirusConfiguration.LOW_ENTROPY_SPAWN_COUNT,
-                < VirusConfiguration.MEDIUM_ENTROPY_THRESHOLD => VirusConfiguration.MEDIUM_ENTROPY_SPAWN_COUNT,
-                _ => VirusConfiguration.HIGH_ENTROPY_SPAWN_COUNT
-            };
-
-            int growthRate = entropyService.GetVirusGrowthRate();
-            int finalCount = baseVirusCount * growthRate;
-            
-            Debug.Log($"[VirusSpawning] Calculating virus count: Base count: {baseVirusCount}, Growth rate: {growthRate}, Final count: {finalCount}");
-            
-            return finalCount;
-        }
-
-        private List<Vector2Int> GetEmptySpotsWithinRange(List<Vector2Int> viruses, int range)
-        {
-            var nearbySpots = new List<Vector2Int>();
-            var processedSpots = new HashSet<Vector2Int>();
-
-            foreach (var virus in viruses)
-            {
-                for (int dx = -range; dx <= range; dx++)
-                {
-                    for (int dy = -range; dy <= range; dy++)
-                    {
-                        int nx = virus.x + dx;
-                        int ny = virus.y + dy;
-                        var pos = new Vector2Int(nx, ny);
+                        // Check adjacent positions
+                        int[] dx = { 0, 1, 0, -1 };
+                        int[] dy = { -1, 0, 1, 0 };
                         
-                        if (IsInBounds(nx, ny) && tilePlayable[nx, ny] && !processedSpots.Contains(pos))
+                        for (int i = 0; i < 4; i++)
                         {
-                            nearbySpots.Add(pos);
-                            processedSpots.Add(pos);
+                            int nx = x + dx[i];
+                            int ny = y + dy[i];
+                            
+                            if (IsInBounds(nx, ny) && gridState[nx, ny] != VirusConfiguration.VIRUS_SYMBOL)
+                            {
+                                result.Add(new Vector2Int(nx, ny));
+                            }
                         }
                     }
                 }
             }
-
-            return nearbySpots;
+            
+            return result;
+        }
+        
+        private List<Vector2Int> GetEmptyPositions(HashSet<Vector2Int> processedSpots)
+        {
+            var result = new List<Vector2Int>();
+            
+            for (int y = 0; y < gridHeight; y++)
+            {
+                for (int x = 0; x < gridWidth; x++)
+                {
+                    Vector2Int pos = new Vector2Int(x, y);
+                    if (IsInBounds(x, y) && tilePlayable[x, y] && !processedSpots.Contains(pos))
+                    {
+                        result.Add(pos);
+                    }
+                }
+            }
+            
+            return result;
         }
 
         private bool IsInBounds(int x, int y) => x >= 0 && x < gridWidth && y >= 0 && y < gridHeight;

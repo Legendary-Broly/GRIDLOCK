@@ -55,6 +55,12 @@ public class ProgressTrackerView : MonoBehaviour
         }
 
         Refresh();
+        
+        // Initial check for round end if already reached goal
+        if (progress.HasMetGoal())
+        {
+            CheckRoundEndOnProgressUpdate();
+        }
     }
 
     private void OnDestroy()
@@ -181,9 +187,9 @@ public class ProgressTrackerView : MonoBehaviour
         }
 
         // Add score for unmatched symbols
-        for (int y = 0; y < gridService.GridSize; y++)
+        for (int y = 0; y < gridService.GridHeight; y++)
         {
-            for (int x = 0; x < gridService.GridSize; x++)
+            for (int x = 0; x < gridService.GridWidth; x++)
             {
                 Vector2Int pos = new Vector2Int(x, y);
                 if (matchedTiles.Contains(pos)) continue;  // Skip matched symbols
@@ -215,6 +221,22 @@ public class ProgressTrackerView : MonoBehaviour
 
         // Update jitter effect
         UpdateJitterEffect(percentage);
+        
+        // Check if we've reached the threshold and should spawn a fragment
+        if (progress.HasMetGoal())
+        {
+            CheckRoundEndOnProgressUpdate();
+        }
+    }
+
+    private void CheckRoundEndOnProgressUpdate()
+    {
+        // Find RoundManager and call CheckRoundEnd if available
+        var roundManager = FindFirstObjectByType<RoundManager>();
+        if (roundManager != null)
+        {
+            roundManager.CheckRoundEnd();
+        }
     }
 
     public void Refresh()

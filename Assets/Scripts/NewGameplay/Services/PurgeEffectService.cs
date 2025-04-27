@@ -55,9 +55,9 @@ namespace NewGameplay.Services
             List<Vector2Int> adjacentToPurgePositions = new();
 
             // First collect all Δ positions
-            for (int y = 0; y < gridStateService.GridSize; y++)
+            for (int y = 0; y < gridStateService.GridHeight; y++)
             {
-                for (int x = 0; x < gridStateService.GridSize; x++)
+                for (int x = 0; x < gridStateService.GridWidth; x++)
                 {
                     if (gridStateService.GetSymbolAt(x, y) == "∆")
                     {
@@ -139,7 +139,7 @@ namespace NewGameplay.Services
             int purgedVirusCount = 0;
 
             // Purge row
-            for (int x = 0; x < gridStateService.GridSize; x++)
+            for (int x = 0; x < gridStateService.GridWidth; x++)
             {
                 if (gridStateService.GetSymbolAt(x, purgeY) == "X")
                 {
@@ -150,7 +150,7 @@ namespace NewGameplay.Services
             }
 
             // Purge column
-            for (int y = 0; y < gridStateService.GridSize; y++)
+            for (int y = 0; y < gridStateService.GridHeight; y++)
             {
                 if (gridStateService.GetSymbolAt(purgeX, y) == "X")
                 {

@@ -4,11 +4,16 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
+using NewGameplay.Interfaces;
+using NewGameplay.Services;
 
 public class ProgressTrackerService : IProgressTrackerService
 {
     public int CurrentScore { get; private set; }
     public int RoundTarget { get; private set; } = 20;  // Initial round target
+
+    public int CurrentProgress => CurrentScore;
+    public int CurrentThreshold => RoundTarget;
 
     public void ApplyScore(int score)
     {

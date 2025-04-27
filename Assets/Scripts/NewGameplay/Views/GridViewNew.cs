@@ -60,15 +60,23 @@ public class GridView : MonoBehaviour
 
                     var symbol = service.GetSymbolAt(x, y);
 
-                    if (string.IsNullOrEmpty(symbol))
+                    if (symbol == "DF")
+                    {
+                        slashText.enabled = true;
+                        symbolText.text = "𝛟";  // Use a unique icon/character for the fragment (⬢ as example)
+                        symbolText.color = Color.yellow; // Highlight fragment with a distinct color
+                    }
+                    else if (string.IsNullOrEmpty(symbol))
                     {
                         slashText.enabled = true;
                         symbolText.text = "";
+                        symbolText.color = Color.white; // Reset color for empty tiles
                     }
                     else
                     {
-                        slashText.enabled = false;
+                        slashText.enabled = true;
                         symbolText.text = symbol;
+                        symbolText.color = Color.white; // Reset color for normal symbols
                     }
 
                     tileButtons[x, y].interactable = service.IsTilePlayable(x, y);

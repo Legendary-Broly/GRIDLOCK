@@ -5,13 +5,14 @@ public static class GridMatchEvaluator
 {
     public static List<List<Vector2Int>> FindMatches(IGridService grid)
     {
-        int size = grid.GridSize;
-        var visited = new bool[size, size];
+        int width = grid.GridWidth;
+        int height = grid.GridHeight;
+        var visited = new bool[width, height];
         var result = new List<List<Vector2Int>>();
 
-        for (int y = 0; y < size; y++)
+        for (int y = 0; y < height; y++)
         {
-            for (int x = 0; x < size; x++)
+            for (int x = 0; x < width; x++)
             {
                 if (visited[x, y]) continue;
 
@@ -33,8 +34,7 @@ public static class GridMatchEvaluator
 
     private static void FloodFill(IGridService grid, int x, int y, string targetSymbol, bool[,] visited, List<Vector2Int> cluster)
     {
-        int size = grid.GridSize;
-        if (x < 0 || y < 0 || x >= size || y >= size) return;
+        if (x < 0 || y < 0 || x >= grid.GridWidth || y >= grid.GridHeight) return;
         if (visited[x, y]) return;
 
         string symbol = grid.GetSymbolAt(x, y);

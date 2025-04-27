@@ -14,6 +14,7 @@ public interface IGridService
     void SetSymbol(int x, int y, string symbol);
     string GetSymbolAt(int x, int y);
     bool IsTilePlayable(int x, int y);
+    bool IsInBounds(int x, int y);
     int GridSize { get; }
     int GridWidth { get; }
     int GridHeight { get; }
@@ -25,4 +26,5 @@ public interface IGridService
     void EnableRowColumnPurge();
     void DisableRowColumnPurge();
     void TriggerGridUpdate();
+    List<Vector2Int> GetAllEmptyTilePositions();
 }

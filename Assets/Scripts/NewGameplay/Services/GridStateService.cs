@@ -49,14 +49,34 @@ namespace NewGameplay.Services
 
         public void ClearAllTiles()
         {
+            // Save data fragment position before clearing
+            Vector2Int? dataFragmentPos = null;
+            
             for (int y = 0; y < gridHeight; y++)
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
+                    if (gridState[x, y] == "DF")
+                    {
+                        dataFragmentPos = new Vector2Int(x, y);
+                    }
+                    
+                    // Clear all tiles regardless of symbol
                     gridState[x, y] = null;
                     tilePlayable[x, y] = true;
                 }
             }
+            
+            // Reapply data fragment if it existed (should be handled by DataFragmentService though)
+            if (dataFragmentPos.HasValue)
+            {
+                Debug.Log($"[GridStateService] Preserving data fragment at {dataFragmentPos.Value}");
+                int x = dataFragmentPos.Value.x;
+                int y = dataFragmentPos.Value.y;
+                gridState[x, y] = "DF";
+                tilePlayable[x, y] = false;
+            }
+            
             OnGridStateChanged?.Invoke();
         }
 
@@ -66,6 +86,7 @@ namespace NewGameplay.Services
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
+                    // Only keep viruses, not data fragments
                     if (gridState[x, y] != "X")
                     {
                         gridState[x, y] = null;

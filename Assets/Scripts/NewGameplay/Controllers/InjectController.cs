@@ -48,9 +48,9 @@ namespace NewGameplay.Controllers
 
                     // Count viruses and add 1% per virus
                     int virusCount = 0;
-                    for (int y = 0; y < gridService.GridSize; y++)
+                    for (int y = 0; y < gridService.GridHeight; y++)
                     {
-                        for (int x = 0; x < gridService.GridSize; x++)
+                        for (int x = 0; x < gridService.GridWidth; x++)
                         {
                             if (gridService.GetSymbolAt(x, y) == "X")
                             {

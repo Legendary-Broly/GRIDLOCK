@@ -1,27 +1,42 @@
 using UnityEngine;
 using System.Collections;
+using NewGameplay;
+using NewGameplay.Interfaces;
 
 public class RoundManager : MonoBehaviour
 {
     private IRoundService roundService;
     private IProgressTrackerService progressService;
     private RoundPopupController popupController;
+    private IDataFragmentService dataFragmentService;
     private bool isRoundTransitioning = false; // Flag to prevent redundant calls
     private bool hasThresholdIncreased = false; // Flag to track if threshold has been increased
 
-    public void Initialize(IRoundService roundService, IProgressTrackerService progressService, RoundPopupController popupController)
+    public void Initialize(IRoundService roundService, IProgressTrackerService progressService, RoundPopupController popupController, IDataFragmentService dataFragmentService)
     {
         this.roundService = roundService;
         this.progressService = progressService;
         this.popupController = popupController;
-        roundService.onRoundReset += () => CheckRoundEnd();  // Ensure it checks after reset
+        this.dataFragmentService = dataFragmentService;
+        roundService.onRoundReset += () => CheckRoundEnd(); 
     }
-
+    
     public void CheckRoundEnd()
     {
         if (isRoundTransitioning || hasThresholdIncreased) return; // Prevent redundant calls
 
-        if (progressService.HasMetGoal())
+        Debug.Log($"[RoundManager] CheckRoundEnd - CurrentProgress: {progressService.CurrentProgress}, CurrentThreshold: {progressService.CurrentThreshold}");
+
+        // Step 1: Check if progress met the threshold and spawn fragment if needed
+        if (progressService.CurrentProgress >= progressService.CurrentThreshold && !dataFragmentService.IsFragmentPresent())
+        {
+            dataFragmentService.SpawnFragment();
+            Debug.Log("[RoundManager] Data Fragment spawned on reaching 100% progress.");
+            return; // Wait for player to surround and extract the fragment
+        }
+
+        // Step 2: If fragment is already present and surrounded, handle round transition
+        if (dataFragmentService.IsFragmentPresent() && dataFragmentService.IsFragmentFullySurrounded())
         {
             isRoundTransitioning = true; // Set flag to true to block further calls
 
@@ -51,6 +66,5 @@ public class RoundManager : MonoBehaviour
             };
         }
     }
-
 }
 

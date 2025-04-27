@@ -35,9 +35,9 @@ namespace NewGameplay.Services
             do
             {
                 changesMade = false;
-                for (int y = 0; y < gridStateService.GridSize; y++)
+                for (int y = 0; y < gridStateService.GridHeight; y++)
                 {
-                    for (int x = 0; x < gridStateService.GridSize; x++)
+                    for (int x = 0; x < gridStateService.GridWidth; x++)
                     {
                         if (gridStateService.GetSymbolAt(x, y) == "Θ")
                         {
@@ -68,9 +68,10 @@ namespace NewGameplay.Services
             {
                 int nx = x + dir.x;
                 int ny = y + dir.y;
-                if (gridStateService.IsInBounds(nx, ny) && 
-                    !string.IsNullOrEmpty(gridStateService.GetSymbolAt(nx, ny)) && 
-                    gridStateService.GetSymbolAt(nx, ny) != "Θ")
+                if (gridStateService.IsInBounds(nx, ny) &&
+                    !string.IsNullOrEmpty(gridStateService.GetSymbolAt(nx, ny)) &&
+                    gridStateService.GetSymbolAt(nx, ny) != "Θ" &&
+                    gridStateService.GetSymbolAt(nx, ny) != "DF")  // Prevent duplicating the fragment
                 {
                     adjacentTiles.Add(new Vector2Int(nx, ny));
                 }
@@ -85,22 +86,28 @@ namespace NewGameplay.Services
                 if (isInfiniteLoop)
                 {
                     // Overwrite the entire row and column (including empty tiles)
-                    for (int i = 0; i < gridStateService.GridSize; i++)
+                    // Row overwrite (vertical)
+                    for (int i = 0; i < gridStateService.GridHeight; i++)
                     {
-                        // Column overwrite (skip other Θ symbols)
+                        // Skip other Θ symbols
                         if (gridStateService.GetSymbolAt(x, i) != "Θ")
                         {
                             gridStateService.SetSymbol(x, i, symbol);
                             gridStateService.SetTilePlayable(x, i, false);
                         }
-
-                        // Row overwrite (skip other Θ symbols)
+                    }
+                    
+                    // Column overwrite (horizontal)
+                    for (int i = 0; i < gridStateService.GridWidth; i++)
+                    {
+                        // Skip other Θ symbols
                         if (gridStateService.GetSymbolAt(i, y) != "Θ")
                         {
                             gridStateService.SetSymbol(i, y, symbol);
                             gridStateService.SetTilePlayable(i, y, false);
                         }
                     }
+                    
                     Debug.Log($"[Θ] Infinite Loop at ({x},{y}) overwrote row and column with '{symbol}'");
                 }
                 else

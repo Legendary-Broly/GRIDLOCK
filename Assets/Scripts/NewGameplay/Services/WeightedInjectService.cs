@@ -52,9 +52,9 @@ namespace NewGameplay.Services
             if (gridService == null) return 0;
 
             int count = 0;
-            for (int y = 0; y < gridService.GridSize; y++)
+            for (int y = 0; y < gridService.GridHeight; y++)
             {
-                for (int x = 0; x < gridService.GridSize; x++)
+                for (int x = 0; x < gridService.GridWidth; x++)
                 {
                     if (gridService.GetSymbolAt(x, y) == "X")
                     {

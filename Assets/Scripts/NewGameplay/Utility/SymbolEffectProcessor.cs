@@ -69,9 +69,9 @@ namespace NewGameplay.Utility
         public static void ApplyPassiveEntropyPenalty(IGridService grid, IEntropyService entropy)
         {
             int count = 0;
-            for (int y = 0; y < grid.GridSize; y++)
+            for (int y = 0; y < grid.GridHeight; y++)
             {
-                for (int x = 0; x < grid.GridSize; x++)
+                for (int x = 0; x < grid.GridWidth; x++)
                 {
                     if (grid.GetSymbolAt(x, y) == "X")
                         count++;
@@ -87,9 +87,9 @@ namespace NewGameplay.Utility
 
         public static void ProcessAllLoops(IGridService grid)
         {
-            for (int y = 0; y < grid.GridSize; y++)
+            for (int y = 0; y < grid.GridHeight; y++)
             {
-                for (int x = 0; x < grid.GridSize; x++)
+                for (int x = 0; x < grid.GridWidth; x++)
                 {
                     if (grid.GetSymbolAt(x, y) == "Θ")
                         DuplicateAdjacentSymbol(x, y, grid);
@@ -121,7 +121,7 @@ namespace NewGameplay.Utility
             {
                 int tx = x + dir.x;
                 int ty = y + dir.y;
-                if (!IsInBounds(tx, ty, grid.GridSize)) continue;
+                if (!IsInBounds(tx, ty, grid)) continue;
 
                 string symbol = grid.GetSymbolAt(tx, ty);
                 // Exclude only Θ and empty, allow viruses ("X")
@@ -142,17 +142,18 @@ namespace NewGameplay.Utility
             }
         }
 
-        private static bool IsInBounds(int x, int y, int size)
+        private static bool IsInBounds(int x, int y, IGridService grid)
         {
-            return x >= 0 && y >= 0 && x < size && y < size;
+            return x >= 0 && y >= 0 && x < grid.GridWidth && y < grid.GridHeight;
         }
+        
         public static int ApplyUnmatchedSymbols(IGridService grid, List<Vector2Int> matchedTiles, IEntropyService entropy)
         {
             int score = 0;
 
-            for (int y = 0; y < grid.GridSize; y++)
+            for (int y = 0; y < grid.GridHeight; y++)
             {
-                for (int x = 0; x < grid.GridSize; x++)
+                for (int x = 0; x < grid.GridWidth; x++)
                 {
                     Vector2Int pos = new Vector2Int(x, y);
                     if (matchedTiles.Contains(pos)) continue;  // Skip matched symbols

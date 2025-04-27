@@ -70,12 +70,32 @@ namespace NewGameplay.Services
 
         public void SetSymbol(int x, int y, string symbol)
         {
+            // Check if we're trying to overwrite a Data Fragment
+            string existingSymbol = gridStateService.GetSymbolAt(x, y);
+            
+            // Special case - allow setting to "DF" for data fragment
+            if (symbol == "DF")
+            {
+                // Direct set for data fragment - bypass normal symbol placement
+                gridStateService.SetSymbol(x, y, symbol);
+                return;
+            }
+            
+            // Regular case - protect DF from being overwritten
+            if (existingSymbol == "DF")
+            {
+                Debug.Log("[GridService] Attempted to overwrite Data Fragment. Action blocked.");
+                return;
+            }
+            
             symbolPlacementService.TryPlaceSymbol(x, y, symbol);
         }
 
         public string GetSymbolAt(int x, int y) => gridStateService.GetSymbolAt(x, y);
 
         public bool IsTilePlayable(int x, int y) => gridStateService.IsTilePlayable(x, y);
+
+        public bool IsInBounds(int x, int y) => gridStateService.IsInBounds(x, y);
 
         public void SpreadVirus()
         {
@@ -147,6 +167,24 @@ namespace NewGameplay.Services
         {
             Debug.Log("[GridService] Manual grid update triggered");
             OnGridUpdated?.Invoke();
+        }
+        
+        public List<Vector2Int> GetAllEmptyTilePositions()
+        {
+            var emptyPositions = new List<Vector2Int>();
+            
+            for (int y = 0; y < gridStateService.GridHeight; y++)
+            {
+                for (int x = 0; x < gridStateService.GridWidth; x++)
+                {
+                    if (string.IsNullOrEmpty(gridStateService.GetSymbolAt(x, y)) && gridStateService.IsTilePlayable(x, y))
+                    {
+                        emptyPositions.Add(new Vector2Int(x, y));
+                    }
+                }
+            }
+            
+            return emptyPositions;
         }
     }
 }

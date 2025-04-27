@@ -14,19 +14,28 @@ namespace NewGameplay.Services
         private readonly IScoreService scoreService;
         private readonly IProgressTrackerService progressService;
         private readonly System.Random rng = new();
+        private readonly IDataFragmentService dataFragmentService;
+
         public event System.Action onGridUpdated;
         public int CurrentScore { get; private set; }
 
-        public ExtractService(IGridService gridService, IEntropyService entropyService, IScoreService scoreService, IProgressTrackerService progressService)
+        public ExtractService(IGridService gridService, IEntropyService entropyService, IScoreService scoreService, IProgressTrackerService progressService, IDataFragmentService dataFragmentService)
         {
             this.gridService = gridService;
             this.entropyService = entropyService;
             this.scoreService = scoreService;
             this.progressService = progressService;
+            this.dataFragmentService = dataFragmentService;
         }
 
         public void ExtractGrid()
         {
+            if (dataFragmentService.GetFragmentPosition().HasValue && !dataFragmentService.IsFragmentFullySurrounded())
+            {
+                Debug.Log("[ExtractService] Data Fragment exists but is not fully surrounded. Extraction blocked.");
+                return;
+            }
+
             Debug.Log($"[ExtractService] Starting extraction. Current entropy: {entropyService.EntropyPercent}%");
             var matches = GridMatchEvaluator.FindMatches(gridService);
             Debug.Log($"[ExtractService] Found {matches.Count} match groups");
