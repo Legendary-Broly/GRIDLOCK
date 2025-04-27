@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using NewGameplay.Interfaces;
 
 public class GridView : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class GridView : MonoBehaviour
     [SerializeField] private Transform gridParent;
 
     private Button[,] tileButtons;
+    private IGridService gridService;
 
     public void BuildGrid(int size, System.Action<int, int> onClick)
     {
@@ -20,6 +22,8 @@ public class GridView : MonoBehaviour
         {
             width = bootstrapper.ExposedGridService.GridWidth;
             height = bootstrapper.ExposedGridService.GridHeight;
+            gridService = bootstrapper.ExposedGridService;
+            gridService.OnGridUpdated += () => RefreshGrid(gridService);
             Debug.Log($"[GridView] Building grid with dimensions: {width}x{height}");
         }
         else
@@ -43,6 +47,14 @@ public class GridView : MonoBehaviour
             }
         }
     }
+
+    private void OnDestroy()
+    {
+        if (gridService != null)
+        {
+            gridService.OnGridUpdated -= () => RefreshGrid(gridService);
+        }
+    }
     
     public void RefreshGrid(IGridService service)
     {
@@ -55,31 +67,45 @@ public class GridView : MonoBehaviour
             {
                 if (x < tileButtons.GetLength(0) && y < tileButtons.GetLength(1))
                 {
-                    var slashText = tileButtons[x, y].GetComponentsInChildren<TextMeshProUGUI>()[0];
-                    var symbolText = tileButtons[x, y].GetComponentsInChildren<TextMeshProUGUI>()[1];
+                    var button = tileButtons[x, y];
+                    if (button == null) continue;
+
+                    var textComponents = button.GetComponentsInChildren<TextMeshProUGUI>();
+                    
+                    if (textComponents.Length < 2)
+                    {
+                        Debug.LogError($"Tile at ({x}, {y}) is missing required TextMeshProUGUI components");
+                        continue;
+                    }
+
+                    var slashText = textComponents[0];
+                    var symbolText = textComponents[1];
 
                     var symbol = service.GetSymbolAt(x, y);
 
                     if (symbol == "DF")
                     {
-                        slashText.enabled = true;
-                        symbolText.text = "𝛟";  // Use a unique icon/character for the fragment (⬢ as example)
-                        symbolText.color = Color.yellow; // Highlight fragment with a distinct color
+                        slashText.enabled = false;
+                        symbolText.text = "⬢";  // Using a hexagon symbol for DF
+                        symbolText.color = Color.yellow;
+                        symbolText.fontSize = 40; // Ensure the symbol is clearly visible
+                        symbolText.enabled = true; // Explicitly enable the text component
+                        Debug.Log($"[GridView] Displaying DF symbol at ({x}, {y})");
                     }
                     else if (string.IsNullOrEmpty(symbol))
                     {
                         slashText.enabled = true;
                         symbolText.text = "";
-                        symbolText.color = Color.white; // Reset color for empty tiles
+                        symbolText.color = Color.white;
                     }
                     else
                     {
                         slashText.enabled = true;
                         symbolText.text = symbol;
-                        symbolText.color = Color.white; // Reset color for normal symbols
+                        symbolText.color = Color.white;
                     }
 
-                    tileButtons[x, y].interactable = service.IsTilePlayable(x, y);
+                    button.interactable = service.IsTilePlayable(x, y);
                 }
             }
         }

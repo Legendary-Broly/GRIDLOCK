@@ -3981,7 +3981,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   volume: {fileID: 2043284741}
-  bootstrapperReference: {fileID: 0}
+  bootstrapperReference: {fileID: 1028974839}
 --- !u!4 &537480275
 Transform:
   m_ObjectHideFlags: 0
@@ -6182,7 +6182,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entropyText: {fileID: 330393482}
-  firaCodeFont: {fileID: 0}
+  firaCodeFont: {fileID: 11400000, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
 --- !u!1 &805594274
 GameObject:
   m_ObjectHideFlags: 0
@@ -7902,9 +7902,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c117e61a3ba3b2b49b51a98ed324fe22, type: 2}
   - {fileID: 11400000, guid: 47a29e78222355b4490ca95ddbdccf10, type: 2}
   mutationTracker: {fileID: 749723502}
-  gridViewReference: {fileID: 0}
-  entropyViewReference: {fileID: 0}
-  bootstrapperReference: {fileID: 0}
+  gridViewReference: {fileID: 2044628735}
+  entropyViewReference: {fileID: 795836075}
+  bootstrapperReference: {fileID: 1028974839}
 --- !u!4 &1011481478
 Transform:
   m_ObjectHideFlags: 0
@@ -10072,7 +10072,7 @@ MonoBehaviour:
   entropyTrackerView: {fileID: 795836075}
   progressTrackerView: {fileID: 1580727597}
   gridView: {fileID: 2044628735}
-  roundManager: {fileID: 0}
+  roundManager: {fileID: 1315484601}
 --- !u!4 &1206357461
 Transform:
   m_ObjectHideFlags: 0
@@ -12312,7 +12312,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   progressText: {fileID: 178106696}
-  firaCodeFont: {fileID: 0}
+  firaCodeFont: {fileID: 11400000, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
 --- !u!1 &1629075157
 GameObject:
   m_ObjectHideFlags: 0

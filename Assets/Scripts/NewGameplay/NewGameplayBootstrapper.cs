@@ -28,19 +28,13 @@ namespace NewGameplay
             var gridStateService = new GridStateService();
             var progressService = new ProgressTrackerService();
 
-            var mutationEffectService = new MutationEffectService(
-                entropyService, 
-                null, // Will set this circular reference later
-                progressService
-            );
-
             var purgeEffectService = new PurgeEffectService(gridStateService, entropyService);
-            var loopEffectService = new LoopEffectService(gridStateService, mutationEffectService);
+            var loopEffectService = new LoopEffectService(gridStateService, null); // Will set mutationEffectService later
             var symbolPlacementService = new SymbolPlacementService(
                 gridStateService,
                 purgeEffectService,
                 loopEffectService,
-                mutationEffectService,
+                null, // Will set mutationEffectService later
                 entropyService
             );
 
@@ -53,9 +47,18 @@ namespace NewGameplay
                 virusSpreadService
             );
 
-            mutationEffectService.SetGridService(gridService);
-
             var dataFragmentService = new DataFragmentService(gridService);
+
+            var mutationEffectService = new MutationEffectService(
+                entropyService, 
+                gridService,
+                progressService,
+                dataFragmentService
+            );
+
+            // Set up circular references
+            loopEffectService.SetMutationEffectService(mutationEffectService);
+            symbolPlacementService.SetMutationEffectService(mutationEffectService);
 
             IWeightedInjectService injectService = new WeightedInjectService();
             if (injectService is WeightedInjectService weightedInject)

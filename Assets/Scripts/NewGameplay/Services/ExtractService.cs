@@ -60,6 +60,12 @@ namespace NewGameplay.Services
             progressService.ApplyScore(totalScore);
             CurrentScore = totalScore;
 
+            // Check if we should spawn a data fragment
+            if (progressService.HasMetGoal())
+            {
+                dataFragmentService.SpawnFragment();
+            }
+
             // Process loops only
             SymbolEffectProcessor.ProcessAllLoops(gridService);
 

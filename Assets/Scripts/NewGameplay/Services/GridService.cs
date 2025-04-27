@@ -76,8 +76,8 @@ namespace NewGameplay.Services
             // Special case - allow setting to "DF" for data fragment
             if (symbol == "DF")
             {
-                // Direct set for data fragment - bypass normal symbol placement
                 gridStateService.SetSymbol(x, y, symbol);
+                Debug.Log($"[GridService] SetSymbol called for DF at ({x},{y})");
                 return;
             }
             
@@ -88,6 +88,14 @@ namespace NewGameplay.Services
                 return;
             }
             
+            // Prevent viruses from overwriting DF
+            if (symbol == "X" && existingSymbol == "DF")
+            {
+                Debug.Log("[GridService] Attempted to place virus on Data Fragment. Action blocked.");
+                return;
+            }
+            
+            Debug.Log($"[GridService] SetSymbol called for symbol '{symbol}' at ({x},{y})");
             symbolPlacementService.TryPlaceSymbol(x, y, symbol);
         }
 
@@ -185,6 +193,11 @@ namespace NewGameplay.Services
             }
             
             return emptyPositions;
+        }
+
+        public void SetTilePlayable(int x, int y, bool playable)
+        {
+            gridStateService.SetTilePlayable(x, y, playable);
         }
     }
 }

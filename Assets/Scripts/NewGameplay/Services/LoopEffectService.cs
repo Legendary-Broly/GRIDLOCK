@@ -8,7 +8,7 @@ namespace NewGameplay.Services
     public class LoopEffectService : ILoopEffectService
     {
         private readonly IGridStateService gridStateService;
-        private readonly IMutationEffectService mutationEffectService;
+        private IMutationEffectService mutationEffectService;
         private readonly System.Random rng = new();
         private bool isProcessingLoops = false;
 
@@ -24,6 +24,11 @@ namespace NewGameplay.Services
         {
             this.gridStateService = gridStateService;
             this.mutationEffectService = null;
+        }
+
+        public void SetMutationEffectService(IMutationEffectService service)
+        {
+            mutationEffectService = service;
         }
 
         public void CheckLoopTransformations()

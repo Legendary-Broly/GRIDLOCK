@@ -10,7 +10,7 @@ namespace NewGameplay.Services
         private readonly IGridStateService gridStateService;
         private readonly IPurgeEffectService purgeEffectService;
         private readonly ILoopEffectService loopEffectService;
-        private readonly IMutationEffectService mutationEffectService;
+        private IMutationEffectService mutationEffectService;
         private readonly IEntropyService entropyService;
 
         public event Action OnSymbolPlaced;
@@ -27,6 +27,11 @@ namespace NewGameplay.Services
             this.loopEffectService = loopEffectService;
             this.mutationEffectService = mutationEffectService;
             this.entropyService = entropyService;
+        }
+
+        public void SetMutationEffectService(IMutationEffectService service)
+        {
+            mutationEffectService = service;
         }
 
         public void TryPlaceSymbol(int x, int y, string symbol)
@@ -69,6 +74,8 @@ namespace NewGameplay.Services
             }
             
             gridStateService.SetSymbol(x, y, symbol);
+            
+            // Set tile playability based on whether the symbol is empty
             gridStateService.SetTilePlayable(x, y, string.IsNullOrEmpty(symbol));
 
             if (symbol != "Θ")

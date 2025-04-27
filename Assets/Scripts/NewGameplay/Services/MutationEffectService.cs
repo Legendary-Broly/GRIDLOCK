@@ -14,6 +14,7 @@ namespace NewGameplay.Services
         private IGridService _gridService;
         private readonly IProgressTrackerService _progressTrackerService;
         private MutationType? _activeMutation;
+        private readonly IDataFragmentService _dataFragmentService;
 
         /// <summary>
         /// Initializes a new instance of the MutationEffectService
@@ -21,14 +22,17 @@ namespace NewGameplay.Services
         /// <param name="entropyService">Service for managing entropy mechanics</param>
         /// <param name="gridService">Service for managing the game grid</param>
         /// <param name="progressTrackerService">Service for tracking game progress</param>
+        /// <param name="dataFragmentService">Service for managing data fragments</param>
         public MutationEffectService(
             IEntropyService entropyService,
             IGridService gridService,
-            IProgressTrackerService progressTrackerService)
+            IProgressTrackerService progressTrackerService,
+            IDataFragmentService dataFragmentService)
         {
             _entropyService = entropyService ?? throw new ArgumentNullException(nameof(entropyService));
             _gridService = gridService; // Allow null initially, will be set later
             _progressTrackerService = progressTrackerService ?? throw new ArgumentNullException(nameof(progressTrackerService));
+            _dataFragmentService = dataFragmentService ?? throw new ArgumentNullException(nameof(dataFragmentService));
             
             Debug.Log("[MutationEffectService] Constructor called. GridService is " + (gridService != null ? "provided" : "null (will be set later)"));
         }
@@ -141,6 +145,12 @@ namespace NewGameplay.Services
             // Increase score by 50% of current score
             int currentScore = _progressTrackerService.CurrentScore;
             _progressTrackerService.ApplyScore(currentScore / 2);
+            
+            // Check if we should spawn a data fragment
+            if (_progressTrackerService.HasMetGoal())
+            {
+                _dataFragmentService.SpawnFragment();
+            }
         }
 
         private void ApplyFirewallMutation()
@@ -166,6 +176,12 @@ namespace NewGameplay.Services
             // Double the current score
             int currentScore = _progressTrackerService.CurrentScore;
             _progressTrackerService.ApplyScore(currentScore);
+            
+            // Check if we should spawn a data fragment
+            if (_progressTrackerService.HasMetGoal())
+            {
+                _dataFragmentService.SpawnFragment();
+            }
         }
 
         private void ApplyPurgePlusMutation()

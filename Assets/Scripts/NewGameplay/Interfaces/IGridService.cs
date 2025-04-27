@@ -27,4 +27,5 @@ public interface IGridService
     void DisableRowColumnPurge();
     void TriggerGridUpdate();
     List<Vector2Int> GetAllEmptyTilePositions();
+    void SetTilePlayable(int x, int y, bool playable);
 }
