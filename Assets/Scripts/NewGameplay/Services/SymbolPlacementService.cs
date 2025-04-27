@@ -34,17 +34,6 @@ namespace NewGameplay.Services
             if (!gridStateService.IsTilePlayable(x, y)) return;
             if (string.IsNullOrEmpty(symbol)) return;
 
-            // Special check for purge symbol - must be adjacent to a virus
-            if (symbol == "∆" && !IsAdjacentToSymbol(x, y, "X"))
-            {
-                // Exception: Firewall mutation allows purge symbols to be placed anywhere
-                if (mutationEffectService == null || !mutationEffectService.IsMutationActive(MutationType.Firewall))
-                {
-                    Debug.Log("Purge symbol can only be placed adjacent to a virus");
-                    return;
-                }
-            }
-
             SetSymbol(x, y, symbol);
             
             // Don't make purge symbol tiles unplayable
@@ -62,7 +51,13 @@ namespace NewGameplay.Services
             if (symbol == "∆")
             {
                 gridStateService.SetSymbol(x, y, symbol);
-                purgeEffectService.ProcessPurges();
+                
+                // Only trigger the purge effect immediately if it's adjacent to a virus
+                if (IsAdjacentToSymbol(x, y, "X"))
+                {
+                    purgeEffectService.ProcessPurges();
+                }
+                
                 loopEffectService.CheckLoopTransformations();
                 return;
             }

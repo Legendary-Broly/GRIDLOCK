@@ -38,6 +38,9 @@ namespace NewGameplay.Services
             this.purgeEffectService = purgeEffectService;
             this.loopEffectService = loopEffectService;
             this.virusSpreadService = virusSpreadService;
+            
+            // Pass the purge effect service to the virus spread service
+            virusSpreadService.SetPurgeEffectService(purgeEffectService);
 
             // Subscribe to events from specialized services
             gridStateService.OnGridStateChanged += HandleGridStateChanged;
@@ -57,23 +60,8 @@ namespace NewGameplay.Services
             var symbol = InjectServiceLocator.Service.SelectedSymbol;
             if (string.IsNullOrEmpty(symbol)) return;
 
-            // First check if this is a purge symbol that needs to be adjacent to a virus
-            if (symbol == "∆" && !symbolPlacementService.IsAdjacentToSymbol(x, y, "X"))
-            {
-                // Exception: Firewall mutation allows purge symbols to be placed anywhere
-                bool firewallActive = false;
-                var bootstrapper = UnityEngine.Object.FindFirstObjectByType<NewGameplayBootstrapper>();
-                if (bootstrapper != null && bootstrapper.ExposedMutationEffectService != null)
-                {
-                    firewallActive = bootstrapper.ExposedMutationEffectService.IsMutationActive(MutationType.Firewall);
-                }
-                
-                if (!firewallActive)
-                {
-                    Debug.Log("[GridService] Purge symbol placement blocked - not adjacent to virus");
-                    return; // Return without clearing the symbol
-                }
-            }
+            // No more adjacency requirement for purge symbols - they can be placed anywhere
+            // and will trigger their effect when a virus becomes adjacent
 
             // If we get here, the placement should succeed
             symbolPlacementService.TryPlaceSymbol(x, y, symbol);

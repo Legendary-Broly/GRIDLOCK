@@ -52,6 +52,7 @@ namespace NewGameplay.Services
             Debug.Log($"[Purge] Purge Plus mutation active: {isPurgePlusActive}, Row/Column purge enabled: {rowColumnPurgeEnabled}, shouldUseRowColumnPurge: {shouldUseRowColumnPurge}");
             
             List<Vector2Int> purgePositions = new();
+            List<Vector2Int> adjacentToPurgePositions = new();
 
             // First collect all Δ positions
             for (int y = 0; y < gridStateService.GridSize; y++)
@@ -60,15 +61,22 @@ namespace NewGameplay.Services
                 {
                     if (gridStateService.GetSymbolAt(x, y) == "∆")
                     {
-                        purgePositions.Add(new Vector2Int(x, y));
+                        Vector2Int pos = new Vector2Int(x, y);
+                        purgePositions.Add(pos);
+                        
+                        // Check if this purge is adjacent to a virus
+                        if (IsAdjacentToVirus(x, y))
+                        {
+                            adjacentToPurgePositions.Add(pos);
+                        }
                     }
                 }
             }
 
-            Debug.Log($"[Purge] Found {purgePositions.Count} purge symbols to process");
+            Debug.Log($"[Purge] Found {purgePositions.Count} purge symbols, {adjacentToPurgePositions.Count} adjacent to viruses");
 
-            // Then process each Δ
-            foreach (var pos in purgePositions)
+            // Only process purges that are adjacent to viruses
+            foreach (var pos in adjacentToPurgePositions)
             {
                 bool purgedAny = false;
                 
@@ -84,7 +92,7 @@ namespace NewGameplay.Services
                     purgedAny = HandlePurgeEffect(pos.x, pos.y);
                 }
 
-                // Always consume the purge symbol after activation
+                // Only consume the purge symbol if it was adjacent to a virus
                 gridStateService.SetSymbol(pos.x, pos.y, null);
                 gridStateService.SetTilePlayable(pos.x, pos.y, true);
             }
@@ -182,6 +190,25 @@ namespace NewGameplay.Services
         {
             Debug.Log($"[PurgeEffectService] IsRowColumnPurgeEnabled called, returning: {rowColumnPurgeEnabled}");
             return rowColumnPurgeEnabled;
+        }
+
+        private bool IsAdjacentToVirus(int x, int y)
+        {
+            Vector2Int[] directions = new[] {
+                new Vector2Int(1, 0), new Vector2Int(-1, 0),
+                new Vector2Int(0, 1), new Vector2Int(0, -1)
+            };
+
+            foreach (var dir in directions)
+            {
+                int nx = x + dir.x;
+                int ny = y + dir.y;
+                if (gridStateService.IsInBounds(nx, ny) && gridStateService.GetSymbolAt(nx, ny) == "X")
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 } 
