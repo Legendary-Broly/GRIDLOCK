@@ -5,6 +5,7 @@ using NewGameplay.Services;
 using NewGameplay.Interfaces;
 using NewGameplay;
 
+
 public class MutationManager : MonoBehaviour
 {
     [SerializeField] private GameObject mutationPanel;
@@ -19,7 +20,7 @@ public class MutationManager : MonoBehaviour
     private System.Random random = new System.Random();
 
     // Optional: reference to key components to avoid Find calls
-    [SerializeField] private GridView gridViewReference;
+    [SerializeField] private GridViewNew gridViewReference;
     [SerializeField] private EntropyTrackerView entropyViewReference;
     [SerializeField] private NewGameplayBootstrapper bootstrapperReference;
 
@@ -108,14 +109,14 @@ public class MutationManager : MonoBehaviour
     private void ForceGameStateRefresh()
     {
         // First try direct references if available
-        GridView gridView = gridViewReference;
+        GridViewNew gridView = gridViewReference;
         NewGameplayBootstrapper bootstrapper = bootstrapperReference;
         EntropyTrackerView entropyView = entropyViewReference;
         
         // Fall back to finding objects if needed
         if (gridView == null)
         {
-            gridView = Object.FindFirstObjectByType<GridView>();
+            gridView = Object.FindFirstObjectByType<GridViewNew>();
         }
         
         if (bootstrapper == null && gridView != null)
@@ -141,9 +142,5 @@ public class MutationManager : MonoBehaviour
         }
     }
 
-    public void SetMutationEffectService(MutationEffectService service)
-    {
-        Debug.Log("[MutationManager] SetMutationEffectService called. Service instance: " + service.GetHashCode());
-        mutationEffectService = service;
-    }
+
 }

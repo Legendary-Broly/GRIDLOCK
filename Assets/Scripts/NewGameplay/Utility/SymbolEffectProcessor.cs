@@ -1,187 +1,88 @@
-// --- SymbolEffectProcessor.cs ---
 using System.Collections.Generic;
-using NewGameplay.Interfaces;
 using UnityEngine;
+using NewGameplay.Interfaces;
+using NewGameplay.Enums;
+using NewGameplay.Models;
+using System.Linq;
 using NewGameplay.Services;
 
 namespace NewGameplay.Utility
 {
     public static class SymbolEffectProcessor
     {
-        private static IMutationEffectService mutationEffectService;
-
-        public static void SetMutationEffectService(IMutationEffectService service)
-        {
-            mutationEffectService = service;
-            Debug.Log($"[SymbolEffectProcessor] MutationEffectService set: {(service != null ? "Success" : "Null")}");
-        }
         
-        public static int Apply(List<Vector2Int> match, IGridService grid, IEntropyService entropy)
+        // Called at the end of extraction phase
+        public static void ApplyPassiveEntropyPenalty(IGridService gridService, IEntropyService entropyService)
         {
-            if (match == null || match.Count == 0) return 0;
+            int virusCount = 0;
+            for (int x = 0; x < gridService.GridWidth; x++)
+            {
+                for (int y = 0; y < gridService.GridHeight; y++)
+                {
+                    if (gridService.GetSymbolAt(x, y) == "X")
+                        virusCount++;
+                }
+            }
 
-            string symbol = grid.GetSymbolAt(match[0].x, match[0].y);
-            int matchSize = match.Count;
-            int score = 0;
+            int penalty = virusCount / 5; // 1% entropy for every 5 viruses
+            if (penalty > 0)
+            {
+                entropyService.Increase(penalty);
+                Debug.Log($"[SymbolEffectProcessor] Applied passive entropy penalty: +{penalty}% due to {virusCount} viruses.");
+            }
+        }
 
+        // New method: handle effects immediately on placement
+        public static void ApplySymbolEffectAtPlacement(string symbol, int x, int y, IGridService gridService, IEntropyService entropyService, ITileElementService tileElementService)
+        {
             switch (symbol)
             {
-                case "Ψ": // Surge
-                    int basePoints = 1 * matchSize; // 1 point per symbol
-                    score = basePoints * matchSize; // Apply match multiplier
-                    Debug.Log($"[Ψ] Surge: {score} pts ({basePoints} base * {matchSize}x multiplier)");
+                case "Θ": // Loop
+                    // No special effect on placement
                     break;
 
-                case "∆": // Purge
-                    // Temporarily disabled EXTRACT-based purge handling
-                    Debug.Log($"[∆] Purge triggered for {matchSize} symbols - EXTRACT handling disabled");
+                case "Ψ": // Scout
+                    Debug.Log($"[SymbolEffectProcessor] Scout placed at ({x},{y}) — revealing nearby tiles and increasing entropy.");
+                    entropyService?.Increase(5);
+                    RevealRandomHiddenTiles(gridService, x, y, 3);
                     break;
 
                 case "Σ": // Stabilizer
-                    if (matchSize >= 3) // Only reduce entropy for matches of 3 or more
-                    {
-                        score = matchSize; // 1 point per symbol
-                        int entropyReduction = matchSize * matchSize; // -1 per symbol, multiplied by match size
-                        
-                        // If "Fear of Change" mutation is active, don't reduce entropy at extraction
-                        bool fearOfChangeActive = mutationEffectService != null && 
-                                                  mutationEffectService.IsMutationActive(MutationType.FearOfChange);
-                        
-                        if (!fearOfChangeActive)
-                        {
-                            entropy.Decrease(entropyReduction);
-                            Debug.Log($"[Σ] Stabilizer: {score} pts ({matchSize} symbols), -{entropyReduction}% Entropy (base -{matchSize} * {matchSize} multiplier)");
-                        }
-                        else
-                        {
-                            Debug.Log($"[Σ] Stabilizer: {score} pts ({matchSize} symbols), No entropy reduction due to Fear of Change mutation");
-                        }
-                    }
+                    Debug.Log($"[SymbolEffectProcessor] Stabilizer placed at ({x},{y}) — decreasing entropy.");
+                    entropyService?.Decrease(5);
                     break;
 
-                default:
-                    Debug.LogWarning($"[SymbolEffect] Unknown symbol '{symbol}' encountered");
+                case "∆": // Purge
+                    // Purge behavior is handled separately inside placement logic (virus removal), no special side effect needed
                     break;
             }
-            return score;
         }
 
-        public static void ApplyPassiveEntropyPenalty(IGridService grid, IEntropyService entropy)
+        private static void RevealRandomHiddenTiles(IGridService gridService, int centerX, int centerY, int count)
         {
-            int count = 0;
-            for (int y = 0; y < grid.GridHeight; y++)
+            List<(int x, int y)> hiddenTiles = new List<(int x, int y)>();
+
+            for (int j = 0; j < gridService.GridHeight; j++)
             {
-                for (int x = 0; x < grid.GridWidth; x++)
+                for (int i = 0; i < gridService.GridWidth; i++)
                 {
-                    if (grid.GetSymbolAt(x, y) == "X")
-                        count++;
-                }
-            }
-
-            if (count > 0)
-            {
-                entropy.Increase(count);
-                Debug.Log($"[X] Passive virus penalty applied: +{count}% Entropy from {count} viruses");
-            }
-        }
-
-        public static void ProcessAllLoops(IGridService grid)
-        {
-            for (int y = 0; y < grid.GridHeight; y++)
-            {
-                for (int x = 0; x < grid.GridWidth; x++)
-                {
-                    if (grid.GetSymbolAt(x, y) == "Θ")
-                        DuplicateAdjacentSymbol(x, y, grid);
-                }
-            }
-        }
-        public static void ProcessAllPurges(IGridService grid)
-        {
-            grid.ProcessPurges();
-        }
-
-        private static void PurgeAdjacentViruses(int x, int y, IGridService grid)
-        {
-            // This method is no longer needed as purging is handled by GridService
-            Debug.LogWarning("PurgeAdjacentViruses is deprecated. Use GridService.ProcessPurges instead.");
-        }
-
-        private static void DuplicateAdjacentSymbol(int x, int y, IGridService grid)
-        {
-            Vector2Int[] directions = new Vector2Int[]
-            {
-                new Vector2Int(1, 0), new Vector2Int(-1, 0),
-                new Vector2Int(0, 1), new Vector2Int(0, -1)
-            };
-
-            List<string> nearbySymbols = new();
-
-            foreach (var dir in directions)
-            {
-                int tx = x + dir.x;
-                int ty = y + dir.y;
-                if (!IsInBounds(tx, ty, grid)) continue;
-
-                string symbol = grid.GetSymbolAt(tx, ty);
-                // Exclude only Θ and empty, allow viruses ("X")
-                if (!string.IsNullOrEmpty(symbol) && symbol != "Θ")
-                    nearbySymbols.Add(symbol);
-            }
-
-            if (nearbySymbols.Count > 0)
-            {
-                string duplicate = nearbySymbols[Random.Range(0, nearbySymbols.Count)];
-                grid.SetSymbol(x, y, duplicate); // Replace Θ with the duplicated symbol
-                Debug.Log($"[Θ] Replaced Θ at ({x},{y}) with '{duplicate}'");
-            }
-            else
-            {
-                grid.SetSymbol(x, y, null); // Clear if nothing valid to duplicate
-                Debug.Log($"[Θ] No symbols to duplicate near ({x},{y}), cleared Θ");
-            }
-        }
-
-        private static bool IsInBounds(int x, int y, IGridService grid)
-        {
-            return x >= 0 && y >= 0 && x < grid.GridWidth && y < grid.GridHeight;
-        }
-        
-        public static int ApplyUnmatchedSymbols(IGridService grid, List<Vector2Int> matchedTiles, IEntropyService entropy)
-        {
-            int score = 0;
-
-            for (int y = 0; y < grid.GridHeight; y++)
-            {
-                for (int x = 0; x < grid.GridWidth; x++)
-                {
-                    Vector2Int pos = new Vector2Int(x, y);
-                    if (matchedTiles.Contains(pos)) continue;  // Skip matched symbols
-
-                    string symbol = grid.GetSymbolAt(x, y);
-                    if (string.IsNullOrEmpty(symbol)) continue;
-
-                    // Never protect purge symbols
-                    if (symbol == "∆")
+                    if (gridService.GetTileState(i, j) == TileState.Hidden)
                     {
-                        grid.SetSymbol(x, y, null);
-                        continue;
-                    }
-
-                    // Handle other special symbols
-                    switch (symbol)
-                    {
-                        case "Θ": // Loop
-                        case "Σ": // Stabilizer
-                        case "Ψ": // Surge - now worth 1 point unmatched
-                            score += 1;
-                            Debug.Log($"[{symbol}] Unmatched symbol at ({x},{y}): +1 point");
-                            break;
+                        hiddenTiles.Add((i, j));
                     }
                 }
             }
+            hiddenTiles = hiddenTiles.OrderBy(_ => UnityEngine.Random.value).ToList();
 
-            return score;
+            for (int i = 0; i < Mathf.Min(count, hiddenTiles.Count); i++)
+            {
+                var (rx, ry) = hiddenTiles[i];
+                gridService.RevealTile(rx, ry);
+
+                // Manually refresh tile view
+                gridService.RefreshTile(rx, ry);
+
+            }
         }
     }
 }

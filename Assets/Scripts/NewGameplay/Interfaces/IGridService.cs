@@ -5,27 +5,33 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
+using NewGameplay.Models;
 
-public interface IGridService
+namespace NewGameplay.Interfaces
 {
-    event Action OnGridUpdated;
-    void TryPlaceSymbol(int x, int y);
-    void SpreadVirus();
-    void SetSymbol(int x, int y, string symbol);
-    string GetSymbolAt(int x, int y);
-    bool IsTilePlayable(int x, int y);
-    bool IsInBounds(int x, int y);
-    int GridSize { get; }
-    int GridWidth { get; }
-    int GridHeight { get; }
-    void ClearAllExceptViruses();
-    void ClearAllTiles();
-    string[,] GridState { get; }
-    bool[,] TilePlayable { get; }
-    void ProcessPurges();
-    void EnableRowColumnPurge();
-    void DisableRowColumnPurge();
-    void TriggerGridUpdate();
-    List<Vector2Int> GetAllEmptyTilePositions();
-    void SetTilePlayable(int x, int y, bool playable);
+    public interface IGridService
+    {
+        event Action OnGridUpdated;
+        void TryPlaceSymbol(int x, int y);
+        void TryPlaceSymbol(int x, int y, string symbol);
+        void SpreadVirus();
+        void SetSymbol(int x, int y, string symbol);
+        string GetSymbolAt(int x, int y);
+        bool IsTilePlayable(int x, int y);
+        bool IsInBounds(int x, int y);
+        int GridSize { get; }
+        int GridWidth { get; }
+        int GridHeight { get; }
+        void ClearAllExceptViruses();
+        void ClearAllTiles();
+        string[,] GridState { get; }
+        bool[,] TilePlayable { get; }
+        void TriggerGridUpdate();
+        List<Vector2Int> GetAllEmptyTilePositions();
+        void SetTilePlayable(int x, int y, bool playable);
+        void RevealTile(int x, int y);
+        bool IsTileRevealed(int x, int y);
+        TileState GetTileState(int x, int y);
+        void RefreshTile(int x, int y);
+    }
 }

@@ -1,4 +1,5 @@
 using System;
+using NewGameplay.Models;
 using UnityEngine;
 
 namespace NewGameplay.Interfaces
@@ -12,7 +13,6 @@ namespace NewGameplay.Interfaces
         int GridHeight { get; } // Number of rows
         string[,] GridState { get; }
         bool[,] TilePlayable { get; }
-        
         string GetSymbolAt(int x, int y);
         bool IsTilePlayable(int x, int y);
         bool IsInBounds(int x, int y);
@@ -20,5 +20,8 @@ namespace NewGameplay.Interfaces
         void SetTilePlayable(int x, int y, bool playable);
         void ClearAllTiles();
         void ClearAllExceptViruses();
+        TileState GetTileState(int x, int y);
+        void SetTileState(int x, int y, TileState newState);
+        void InitializeTileStates(int width, int height);
     }
 } 

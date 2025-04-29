@@ -8,6 +8,6 @@ namespace NewGameplay.Interfaces
     {
         void ExtractGrid();
         event System.Action onGridUpdated;
-        int CurrentScore { get; }
+        //int CurrentScore { get; }
     }
 }

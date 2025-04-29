@@ -15,11 +15,18 @@ namespace NewGameplay.Controllers
 
         private IInjectService injectService;
         private IGridService gridService;
+        private IEntropyService entropyService;
 
         public void Initialize(IInjectService service, IGridService grid)
         {
             injectService = service;
             gridService = grid;
+
+            var bootstrapper = FindFirstObjectByType<NewGameplayBootstrapper>();
+            if (bootstrapper != null)
+            {
+                entropyService = bootstrapper.ExposedEntropyService;
+            }
 
             for (int i = 0; i < symbolButtons.Count; i++)
             {
@@ -33,48 +40,25 @@ namespace NewGameplay.Controllers
 
         private void OnInject()
         {
+            if (injectService == null) return;
+
             injectService.InjectSymbols();
             RefreshUI();
 
-            // Get the entropy service from the bootstrapper
-            var bootstrapper = FindFirstObjectByType<NewGameplayBootstrapper>();
-            if (bootstrapper != null)
+            if (entropyService != null)
             {
-                var entropyService = bootstrapper.ExposedEntropyService;
-                if (entropyService != null)
-                {
-                    // Base entropy increase of 5%
-                    entropyService.Increase(5);
-
-                    // Count viruses and add 1% per virus
-                    int virusCount = 0;
-                    for (int y = 0; y < gridService.GridHeight; y++)
-                    {
-                        for (int x = 0; x < gridService.GridWidth; x++)
-                        {
-                            if (gridService.GetSymbolAt(x, y) == "X")
-                            {
-                                virusCount++;
-                            }
-                        }
-                    }
-                    if (virusCount > 0)
-                    {
-                        entropyService.Increase(virusCount);
-                        Debug.Log($"[Inject] Added {virusCount}% entropy from {virusCount} viruses");
-                    }
-
-                    // Refresh the entropy view
-                    var entropyView = FindFirstObjectByType<EntropyTrackerView>();
-                    if (entropyView != null)
-                    {
-                        entropyView.Refresh();
-                    }
-                }
+                entropyService.Increase(5); // Base 5% entropy increase per inject
+            }
+            else
+            {
+                Debug.LogWarning("[InjectController] EntropyService not found when injecting symbols.");
             }
 
-            gridService.SpreadVirus();
-            FindFirstObjectByType<GridView>().RefreshGrid(gridService);
+            var gridView = FindFirstObjectByType<GridViewNew>();
+            if (gridView != null)
+            {
+                gridView.RefreshGrid(gridService);
+            }
         }
 
         public void RefreshUI()
@@ -111,7 +95,6 @@ namespace NewGameplay.Controllers
 
         public void ClearSymbolSlots()
         {
-            // Clear the UI elements
             for (int i = 0; i < symbolSlots.Count; i++)
             {
                 symbolSlots[i].text = "";

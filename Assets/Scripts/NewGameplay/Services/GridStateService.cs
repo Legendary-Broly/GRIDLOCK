@@ -1,6 +1,8 @@
 using System;
 using UnityEngine;
 using NewGameplay.Interfaces;
+using NewGameplay.Models;
+
 
 namespace NewGameplay.Services
 {
@@ -10,7 +12,7 @@ namespace NewGameplay.Services
         private readonly int gridHeight = 8;  // Number of rows
         private readonly string[,] gridState;
         private readonly bool[,] tilePlayable;
-
+        private TileState[,] tileStates;
         public event Action OnGridStateChanged;
 
         public int GridSize => gridWidth;  // Keeping GridSize as width for compatibility
@@ -27,6 +29,18 @@ namespace NewGameplay.Services
             for (int y = 0; y < gridHeight; y++)
                 for (int x = 0; x < gridWidth; x++)
                     tilePlayable[x, y] = true;
+        }
+        public void InitializeTileStates(int width, int height)
+        {
+            tileStates = new TileState[width, height];
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    tileStates[x, y] = TileState.Hidden; // default starting state
+                }
+            }
         }
 
         public string GetSymbolAt(int x, int y) => gridState[x, y];
@@ -75,6 +89,17 @@ namespace NewGameplay.Services
                 }
             }
             OnGridStateChanged?.Invoke();
+        }
+        public TileState GetTileState(int x, int y)
+        {
+            if (!IsInBounds(x, y)) return TileState.Hidden;
+            return tileStates[x, y];
+        }
+
+        public void SetTileState(int x, int y, TileState newState)
+        {
+            if (!IsInBounds(x, y)) return;
+            tileStates[x, y] = newState;
         }
     }
 } 

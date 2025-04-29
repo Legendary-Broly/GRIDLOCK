@@ -2,6 +2,9 @@ using UnityEngine;
 using NewGameplay.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
+using NewGameplay.Models;
+using NewGameplay.Enums;
+using System;
 
 namespace NewGameplay.Services
 {
@@ -10,51 +13,66 @@ namespace NewGameplay.Services
         private readonly IGridService gridService;
         private Vector2Int? fragmentPosition;
         private const string FRAGMENT_SYMBOL = "DF";
-
+        private readonly IGridStateService gridStateService;
+        private GridViewNew gridView;
         public DataFragmentService(IGridService gridService)
         {
             this.gridService = gridService;
         }
+        public void SetGridView(GridViewNew view)
+        {
+            gridView = view;
+        }
 
         public void SpawnFragment()
         {
-            if (fragmentPosition.HasValue) return;  // Prevent multiple spawns
-
-            var emptyPositions = gridService.GetAllEmptyTilePositions();
-            if (emptyPositions.Count == 0)
+            if (fragmentPosition.HasValue)
             {
-                Debug.LogWarning("[DataFragmentService] Cannot spawn data fragment - no empty positions available");
+                Debug.Log("[DataFragmentService] Fragment already exists, skipping spawn.");
                 return;
             }
 
-            fragmentPosition = emptyPositions[Random.Range(0, emptyPositions.Count)];
-            
-            // First set the symbol
-            gridService.SetSymbol(fragmentPosition.Value.x, fragmentPosition.Value.y, FRAGMENT_SYMBOL);
-            
-            // Then make the tile unplayable
-            gridService.SetTilePlayable(fragmentPosition.Value.x, fragmentPosition.Value.y, false);
-            
-            // Force a grid update to ensure the view is refreshed
-            if (gridService is GridService gs)
+            int width = gridService.GridWidth;
+            int height = gridService.GridHeight;
+
+            List<Vector2Int> validPositions = new List<Vector2Int>();
+
+            for (int y = 1; y < height - 1; y++) // Avoid first/last row
             {
-                Debug.Log($"[DataFragmentService] Triggering grid update for DF at {fragmentPosition.Value}");
-                gs.TriggerGridUpdate();
-            }
-            
-            Debug.Log($"[DataFragmentService] Spawned fragment at position {fragmentPosition.Value}");
-            Debug.Log($"[DataFragmentService] SetSymbol at {fragmentPosition.Value} to {FRAGMENT_SYMBOL}. Current symbol: {gridService.GetSymbolAt(fragmentPosition.Value.x, fragmentPosition.Value.y)}");
-            
-            // Log the entire grid state for debugging
-            for (int y = 0; y < gridService.GridHeight; y++)
-            {
-                string row = "";
-                for (int x = 0; x < gridService.GridWidth; x++)
+                for (int x = 1; x < width - 1; x++) // Avoid first/last column
                 {
-                    row += gridService.GetSymbolAt(x, y) ?? " ";
+                    if (!gridService.IsTilePlayable(x, y)) continue;
+
+                    string symbol = gridService.GetSymbolAt(x, y);
+
+                    // Accept empty or virus tiles only
+                    if (string.IsNullOrEmpty(symbol) || symbol == "X")
+                    {
+                        validPositions.Add(new Vector2Int(x, y));
+                    }
                 }
-                Debug.Log($"[DataFragmentService] Grid row {y}: {row}");
             }
+
+            if (validPositions.Count == 0)
+            {
+                Debug.LogWarning("[DataFragmentService] No valid positions found for Data Fragment spawn.");
+                return;
+            }
+
+            // Randomly select valid position
+            Vector2Int selectedPosition = validPositions[UnityEngine.Random.Range(0, validPositions.Count)];
+            fragmentPosition = selectedPosition;
+
+            // Place symbol and mark the tile as revealed
+            gridService.SetSymbol(selectedPosition.x, selectedPosition.y, "DF");
+            gridService.SetTilePlayable(selectedPosition.x, selectedPosition.y, false);
+            gridStateService.SetTileState(selectedPosition.x, selectedPosition.y, TileState.Revealed);
+
+            Debug.Log($"[DataFragmentService] Spawned Data Fragment at {selectedPosition}");
+
+            // Force immediate visual update
+            gridView?.RefreshTileAt(selectedPosition.x, selectedPosition.y);
+
         }
 
         public bool IsFragmentFullySurrounded()
@@ -71,15 +89,15 @@ namespace NewGameplay.Services
             {
                 Vector2Int checkPos = pos + dir;
                 if (!gridService.IsInBounds(checkPos.x, checkPos.y) ||
-                    string.IsNullOrEmpty(gridService.GetSymbolAt(checkPos.x, checkPos.y)) ||
-                    gridService.GetSymbolAt(checkPos.x, checkPos.y) == "X") // Exclude viruses
+                    !gridService.IsTileRevealed(checkPos.x, checkPos.y))
                 {
-                    return false;  // Found an empty or virus adjacent tile
+                    return false;  // Adjacent tile is not revealed
                 }
             }
 
-            return true;  // All adjacent tiles are filled with non-virus symbols
+            return true;  // All adjacent tiles are revealed
         }
+
 
         public Vector2Int? GetFragmentPosition()
         {

@@ -7,6 +7,7 @@ using NewGameplay.Configuration;
 using NewGameplay.Strategies;
 using NewGameplay.Utility;
 using NewGameplay;
+using NewGameplay.Models;
 
 namespace NewGameplay.Services
 {
@@ -15,28 +16,33 @@ namespace NewGameplay.Services
         private readonly IGridStateService gridStateService;
         private readonly ISymbolPlacementService symbolPlacementService;
         private readonly IPurgeEffectService purgeEffectService;
-        private readonly ILoopEffectService loopEffectService;
         private readonly IVirusSpreadService virusSpreadService;
-
+        public string GetSymbolAt(int x, int y) => gridStateService.GetSymbolAt(x, y);
+        public bool IsTilePlayable(int x, int y) => gridStateService.IsTilePlayable(x, y);
+        public bool IsInBounds(int x, int y) => gridStateService.IsInBounds(x, y);
+        private TileState[,] tileStates;
         public event Action OnGridUpdated;
-
         public int GridSize => gridStateService.GridSize;
         public int GridWidth => gridStateService.GridWidth;
         public int GridHeight => gridStateService.GridHeight;
         public string[,] GridState => gridStateService.GridState;
         public bool[,] TilePlayable => gridStateService.TilePlayable;
+        public void TryPlaceSymbol(int x, int y, string symbol)
+        {
+            symbolPlacementService.TryPlaceSymbol(x, y, symbol);
+        }
 
         public GridService(
             IGridStateService gridStateService,
             ISymbolPlacementService symbolPlacementService,
             IPurgeEffectService purgeEffectService,
-            ILoopEffectService loopEffectService,
+
             IVirusSpreadService virusSpreadService)
         {
             this.gridStateService = gridStateService;
             this.symbolPlacementService = symbolPlacementService;
             this.purgeEffectService = purgeEffectService;
-            this.loopEffectService = loopEffectService;
+
             this.virusSpreadService = virusSpreadService;
             
             // Pass the purge effect service to the virus spread service
@@ -45,9 +51,42 @@ namespace NewGameplay.Services
             // Subscribe to events from specialized services
             gridStateService.OnGridStateChanged += HandleGridStateChanged;
             symbolPlacementService.OnSymbolPlaced += HandleSymbolPlaced;
-            purgeEffectService.OnPurgeProcessed += HandlePurgeProcessed;
-            loopEffectService.OnLoopTransformed += HandleLoopTransformed;
+
+
             virusSpreadService.OnVirusSpread += HandleVirusSpread;
+        }
+        // Inside GridService.cs
+        
+        private GridViewNew gridView;
+        public void SetGridView(GridViewNew view)
+        {
+            this.gridView = view;
+        }
+        public void RefreshTile(int x, int y)
+        {
+            gridView?.RefreshTileAt(x, y);
+        }
+
+        public void InitializeTileStates(int width, int height)
+        {
+            gridStateService.InitializeTileStates(width, height);
+        }
+
+        public void RevealTile(int x, int y)
+        {
+            if (IsInBounds(x, y))
+            {
+                gridStateService.SetTileState(x, y, TileState.Revealed);
+            }
+        }
+
+        public bool IsTileRevealed(int x, int y)
+        {
+            if (IsInBounds(x, y))
+            {
+                return gridStateService.GetTileState(x, y) == TileState.Revealed;
+            }
+            return false;
         }
 
         public void SetEntropyService(IEntropyService entropyService)
@@ -80,30 +119,25 @@ namespace NewGameplay.Services
                 Debug.Log($"[GridService] SetSymbol called for DF at ({x},{y})");
                 return;
             }
-            
+
             // Regular case - protect DF from being overwritten
             if (existingSymbol == "DF")
             {
                 Debug.Log("[GridService] Attempted to overwrite Data Fragment. Action blocked.");
                 return;
             }
-            
+
             // Prevent viruses from overwriting DF
             if (symbol == "X" && existingSymbol == "DF")
             {
                 Debug.Log("[GridService] Attempted to place virus on Data Fragment. Action blocked.");
                 return;
             }
-            
-            Debug.Log($"[GridService] SetSymbol called for symbol '{symbol}' at ({x},{y})");
-            symbolPlacementService.TryPlaceSymbol(x, y, symbol);
+
+            // ✅ FIX: Use gridStateService directly — avoid recursive call
+            gridStateService.SetSymbol(x, y, symbol);
+            Debug.Log($"[GridService] SetSymbol placed symbol '{symbol}' at ({x},{y})");
         }
-
-        public string GetSymbolAt(int x, int y) => gridStateService.GetSymbolAt(x, y);
-
-        public bool IsTilePlayable(int x, int y) => gridStateService.IsTilePlayable(x, y);
-
-        public bool IsInBounds(int x, int y) => gridStateService.IsInBounds(x, y);
 
         public void SpreadVirus()
         {
@@ -118,31 +152,6 @@ namespace NewGameplay.Services
         public void ClearAllTiles()
         {
             gridStateService.ClearAllTiles();
-        }
-
-        public void ProcessPurges()
-        {
-            purgeEffectService.ProcessPurges();
-        }
-
-        public void CheckLoopTransformations()
-        {
-            loopEffectService.CheckLoopTransformations();
-        }
-
-        public void EnableRowColumnPurge()
-        {
-            purgeEffectService.EnableRowColumnPurge();
-        }
-
-        public void DisableRowColumnPurge()
-        {
-            purgeEffectService.DisableRowColumnPurge();
-        }
-
-        public bool IsRowColumnPurgeEnabled()
-        {
-            return purgeEffectService.IsRowColumnPurgeEnabled();
         }
 
         private void HandleGridStateChanged()
@@ -198,6 +207,14 @@ namespace NewGameplay.Services
         public void SetTilePlayable(int x, int y, bool playable)
         {
             gridStateService.SetTilePlayable(x, y, playable);
+        }
+        public TileState GetTileState(int x, int y)
+        {
+            if (IsInBounds(x, y))
+            {
+                return gridStateService.GetTileState(x, y);
+            }
+            return TileState.Hidden; // Default fallback
         }
     }
 }

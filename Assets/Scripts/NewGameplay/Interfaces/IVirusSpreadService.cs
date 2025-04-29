@@ -10,5 +10,7 @@ namespace NewGameplay.Interfaces
         void SpreadVirus();
         void SetEntropyService(IEntropyService entropyService);
         void SetPurgeEffectService(IPurgeEffectService purgeEffectService);
+        void SetSymbolPlacementService(ISymbolPlacementService symbolPlacementService);
+        void TrySpreadFromExistingViruses();
     }
 } 

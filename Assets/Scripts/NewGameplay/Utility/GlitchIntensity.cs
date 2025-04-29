@@ -4,6 +4,8 @@ using UnityEngine.Rendering.Universal;
 using URPGlitch;
 using NewGameplay.Services;
 using NewGameplay;
+using System.Collections;
+using System.Linq;
 
 namespace NewGameplay.Utility
 {
@@ -18,15 +20,15 @@ namespace NewGameplay.Utility
         // Optional: Allow direct reference to bootstrapper through inspector
         [SerializeField] private NewGameplayBootstrapper bootstrapperReference;
 
-        private void Start()
+        private IEnumerator Start()
         {
+            yield return null; // Wait 1 frame to ensure Bootstrapper fully initialized
+
             volume.profile.TryGet(out analogGlitch);
             volume.profile.TryGet(out digitalGlitch);
-            
-            // First try to use direct reference if assigned
+
             NewGameplayBootstrapper bootstrapper = bootstrapperReference;
-            
-            // If no direct reference, find it in the scene
+
             if (bootstrapper == null)
             {
                 bootstrapper = Object.FindFirstObjectByType<NewGameplayBootstrapper>();
@@ -36,7 +38,7 @@ namespace NewGameplay.Utility
             {
                 Debug.Log("[GlitchIntensity] Using directly assigned bootstrapper reference");
             }
-            
+
             if (bootstrapper != null)
             {
                 Debug.Log("[GlitchIntensity] Found NewGameplayBootstrapper instance");
@@ -54,11 +56,11 @@ namespace NewGameplay.Utility
             {
                 Debug.LogError("[GlitchIntensity] NewGameplayBootstrapper not found in the scene");
             }
-            
+
             if (entropyService == null)
             {
                 Debug.LogError("EntropyService not found! Make sure NewGameplayBootstrapper is properly initialized in the scene.");
-                enabled = false; // Disable this component if we can't find the service
+                enabled = false;
             }
         }
 

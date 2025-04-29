@@ -14,6 +14,9 @@ namespace NewGameplay.Services
         private IGridService _gridService;
         private readonly IProgressTrackerService _progressTrackerService;
         private MutationType? _activeMutation;
+        private object value;
+        private ProgressTrackerService progressService;
+
         private readonly IDataFragmentService _dataFragmentService;
 
         /// <summary>
@@ -37,6 +40,14 @@ namespace NewGameplay.Services
             Debug.Log("[MutationEffectService] Constructor called. GridService is " + (gridService != null ? "provided" : "null (will be set later)"));
         }
 
+        public MutationEffectService(EntropyService entropyService, object value, ProgressTrackerService progressService)
+        {
+            _entropyService = entropyService;
+            this.value = value;
+            this.progressService = progressService;
+        }
+
+
         /// <summary>
         /// Clears the current active mutation effects
         /// </summary>
@@ -59,7 +70,7 @@ namespace NewGameplay.Services
                         // Reset virus growth rate
                         _entropyService.ResetVirusGrowthRate();
                         // Disable row/column purge
-                        _gridService.DisableRowColumnPurge();
+                        //_gridService.DisableRowColumnPurge();
                         break;
                     // Add other mutation-specific cleanup as needed
                 }
@@ -187,7 +198,7 @@ namespace NewGameplay.Services
         private void ApplyPurgePlusMutation()
         {
             _activeMutation = MutationType.PurgePlus;  // Set the active mutation type
-            _gridService.EnableRowColumnPurge();          // Extend GridService for row/column purge logic.
+            //_gridService.EnableRowColumnPurge();          // Extend GridService for row/column purge logic.
             _entropyService.DoubleVirusGrowthRate();      // Extend EntropyService for virus growth rate.
         }
 

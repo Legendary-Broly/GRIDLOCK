@@ -155,74 +155,32 @@ public class ProgressTrackerView : MonoBehaviour
 
     private void UpdatePotentialScore()
     {
-        var matches = GridMatchEvaluator.FindMatches(gridService);
         int potentialScore = 0;
 
-        // Track which tiles are part of matches
-        List<Vector2Int> matchedTiles = new List<Vector2Int>();
-        foreach (var match in matches)
-        {
-            matchedTiles.AddRange(match);
-        }
-
-        // Calculate potential score from matches
-        foreach (var match in matches)
-        {
-            if (match.Count == 0) continue;
-
-            string symbol = gridService.GetSymbolAt(match[0].x, match[0].y);
-            int matchSize = match.Count;
-
-            switch (symbol)
-            {
-                case "Ψ": // Surge
-                    int basePoints = matchSize;
-                    potentialScore += basePoints * matchSize;
-                    break;
-                case "Σ": // Stabilizer
-                    if (matchSize >= 3)
-                        potentialScore += matchSize;
-                    break;
-            }
-        }
-
-        // Add score for unmatched symbols
         for (int y = 0; y < gridService.GridHeight; y++)
         {
             for (int x = 0; x < gridService.GridWidth; x++)
             {
-                Vector2Int pos = new Vector2Int(x, y);
-                if (matchedTiles.Contains(pos)) continue;  // Skip matched symbols
-
                 string symbol = gridService.GetSymbolAt(x, y);
                 if (string.IsNullOrEmpty(symbol)) continue;
 
-                // Score unmatched symbols (excluding Purge symbols)
-                if (symbol != "∆")
+                switch (symbol)
                 {
-                    switch (symbol)
-                    {
-                        case "Θ": // Loop
-                        case "Σ": // Stabilizer
-                        case "Ψ": // Surge
-                            potentialScore += 1;
-                            break;
-                    }
+                    case "Θ": // Loop
+                    case "Σ": // Stabilizer
+                    case "Ψ": // Scout
+                        potentialScore += 1;
+                        break;
                 }
             }
         }
 
-        // Update display with potential score
         float percentage = ((progress.CurrentScore + potentialScore) * 100f) / progress.RoundTarget;
         progressText.text = $"PROGRESS: {Mathf.RoundToInt(percentage)}%";
-
-        // Update color based on percentage
         progressText.color = GetColorForPercentage(percentage);
 
-        // Update jitter effect
         UpdateJitterEffect(percentage);
-        
-        // Check if we've reached the threshold and should spawn a fragment
+
         if (progress.HasMetGoal())
         {
             CheckRoundEndOnProgressUpdate();

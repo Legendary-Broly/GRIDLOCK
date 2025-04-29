@@ -9,5 +9,6 @@ namespace NewGameplay.Interfaces
         void ClearSelectedSymbol(string symbol);
         void ClearSymbolBank();
         void ClearSelectedSymbol();
+
     }
 }

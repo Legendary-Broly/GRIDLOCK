@@ -10073,6 +10073,7 @@ MonoBehaviour:
   progressTrackerView: {fileID: 1580727597}
   gridView: {fileID: 2044628735}
   roundManager: {fileID: 1315484601}
+  extractButton: {fileID: 612511825}
 --- !u!4 &1206357461
 Transform:
   m_ObjectHideFlags: 0
@@ -15991,7 +15992,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02104a8d238465d4d83609fe52d249c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilePrefab: {fileID: 125028872983614588, guid: 909a29bf736c0ed4b84c577f87c95aae, type: 3}
+  gridTilePrefab: {fileID: 125028872983614588, guid: 909a29bf736c0ed4b84c577f87c95aae, type: 3}
   gridParent: {fileID: 2044628732}
 --- !u!1 &2056354268
 GameObject:
