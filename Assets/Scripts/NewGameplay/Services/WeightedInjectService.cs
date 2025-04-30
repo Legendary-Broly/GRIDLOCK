@@ -31,7 +31,6 @@ namespace NewGameplay.Services
             {
                 { "Ψ", new SymbolWeight("Ψ", 10f, 10f, 10f) },
                 { "∆", new SymbolWeight("∆", 10f, 10f, 60f) },
-                { "Θ", new SymbolWeight("Θ", 50f, 50f, 50f) },
                 { "Σ", new SymbolWeight("Σ", 10f, 10f, 10f) }
             };
 

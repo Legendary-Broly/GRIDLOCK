@@ -20,6 +20,7 @@ namespace NewGameplay.Services
         private GridViewNew gridView;
         private IGridService gridService;
         private bool initialVirusSpawned = false;
+        private Vector2Int? lastPurgedPosition = null;
         
         public event Action OnSymbolPlaced;
 
@@ -64,10 +65,26 @@ namespace NewGameplay.Services
 
         public void TryPlaceSymbol(int x, int y, string symbol)
         {
-            if (string.IsNullOrEmpty(symbol)) return;
+            Debug.Log($"[SymbolPlacement] Attempting to place symbol '{symbol}' at ({x},{y})");
+            lastPurgedPosition = null;  // Reset at start of new placement
+            
+            if (string.IsNullOrEmpty(symbol))
+            {
+                Debug.Log("[SymbolPlacement] Symbol is null or empty, returning");
+                return;
+            }
 
-            // Allow purge to bypass playability check
-            if (symbol != "∆" && !gridStateService.IsTilePlayable(x, y)) return;
+            // Check playability unless it's a purge
+            if (!gridStateService.IsTilePlayable(x, y) && symbol != "∆")
+            {
+                Debug.Log($"[SymbolPlacement] Tile ({x},{y}) is not playable and symbol is not purge, returning");
+                return;
+            }
+
+            // Debug current state
+            string currentSymbol = gridStateService.GetSymbolAt(x, y);
+            bool hasVirus = virusSpreadService?.HasVirusAt(x, y) ?? false;
+            Debug.Log($"[SymbolPlacement] Current state at ({x},{y}): Symbol='{currentSymbol}', HasVirus={hasVirus}");
 
             // Trigger tile element effects first
             if (tileElementService != null)
@@ -81,36 +98,43 @@ namespace NewGameplay.Services
             }
 
             // Special case: purge placed on virus
-            if (symbol == "∆" && gridStateService.GetSymbolAt(x, y) == "X")
+            if (symbol == "∆" && virusSpreadService?.HasVirusAt(x, y) == true)
             {
-                Debug.Log($"[Purge] Purge placed on virus at ({x},{y}). Virus removed.");
-                gridStateService.SetSymbol(x, y, null); // Remove the virus
+                Debug.Log($"[Purge] Purge removing virus at ({x},{y})");
+                virusSpreadService.RemoveVirusAt(x, y);
+                gridStateService.SetSymbol(x, y, null);  // Clear visual
+                gridStateService.SetTilePlayable(x, y, false);
+                lastPurgedPosition = new Vector2Int(x, y);  // Track this position
+                Debug.Log($"[Purge] After removal - Symbol: '{gridStateService.GetSymbolAt(x, y)}', HasVirus: {virusSpreadService.HasVirusAt(x, y)}");
             }
-
-            // Place the symbol
-            gridStateService.SetSymbol(x, y, symbol);
-
-            // Lock tile after placement
-            gridStateService.SetTilePlayable(x, y, false);
-
-            // Handle initial virus spawn
-            if (!initialVirusSpawned)
+            else
             {
-                Vector2Int? nestPos = tileElementService.GetVirusNestPosition();
-                if (nestPos.HasValue)
+                Debug.Log($"[SymbolPlacement] Placing symbol '{symbol}' normally at ({x},{y})");
+                // Place the symbol normally
+                gridStateService.SetSymbol(x, y, symbol);
+                gridStateService.SetTilePlayable(x, y, false);
+
+                // Handle initial virus spawn (only for non-purge symbols)
+                if (!initialVirusSpawned && symbol != "∆")
                 {
-                    var pos = nestPos.Value;
-                    gridService.SetSymbol(pos.x, pos.y, "X");
-                    gridService.SetTilePlayable(pos.x, pos.y, false);
-                    Debug.Log($"[VirusSpawn] Initial virus spawned at ({pos.x},{pos.y})");
-                    initialVirusSpawned = true;
+                    Vector2Int? nestPos = tileElementService.GetVirusNestPosition();
+                    if (nestPos.HasValue)
+                    {
+                        var pos = nestPos.Value;
+                        gridService.SetSymbol(pos.x, pos.y, "X");
+                        gridService.SetTilePlayable(pos.x, pos.y, false);
+                        Debug.Log($"[VirusSpawn] Initial virus spawned at ({pos.x},{pos.y})");
+                        initialVirusSpawned = true;
+                    }
                 }
             }
+
             // Spread virus after every placement
             virusSpreadService.TrySpreadFromExistingViruses();
             SymbolEffectProcessor.ApplySymbolEffectAtPlacement(symbol, x, y, gridService, entropyService, tileElementService);
             // Notify listeners
             OnSymbolPlaced?.Invoke();
+            Debug.Log($"[SymbolPlacement] Final state at ({x},{y}): Symbol='{gridStateService.GetSymbolAt(x, y)}', HasVirus={virusSpreadService.HasVirusAt(x, y)}");
         }
 
         private void RevealRandomHiddenTiles(int centerX, int centerY, int count)

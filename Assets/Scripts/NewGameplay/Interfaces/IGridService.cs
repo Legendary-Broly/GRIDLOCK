@@ -29,9 +29,12 @@ namespace NewGameplay.Interfaces
         void TriggerGridUpdate();
         List<Vector2Int> GetAllEmptyTilePositions();
         void SetTilePlayable(int x, int y, bool playable);
-        void RevealTile(int x, int y);
+        void RevealTile(int x, int y, bool forceReveal = false);
+
         bool IsTileRevealed(int x, int y);
         TileState GetTileState(int x, int y);
         void RefreshTile(int x, int y);
+        bool CanRevealTile(int x, int y);
+        bool IsFirstRevealDone();
     }
 }

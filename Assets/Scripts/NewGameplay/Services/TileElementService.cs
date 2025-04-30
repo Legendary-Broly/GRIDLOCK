@@ -5,7 +5,6 @@ using NewGameplay.Enums;
 using System.Linq;
 using NewGameplay.Models;
 
-
 namespace NewGameplay.Services
 {
     public class TileElementService : ITileElementService
@@ -18,9 +17,13 @@ namespace NewGameplay.Services
         private readonly IEntropyService entropyService;
         private Vector2Int? virusNestPosition = null;
 
+        public int GridWidth => gridWidth;
+
+        public int GridHeight => gridHeight;
+
         public TileElementService(
-            int gridWidth, 
-            int gridHeight, 
+            int gridWidth,
+            int gridHeight,
             List<TileElementSO> configs,
             IProgressTrackerService progressService,
             IEntropyService entropyService)
@@ -35,18 +38,15 @@ namespace NewGameplay.Services
 
         public void GenerateElements()
         {
-            // Clear grid
             for (int y = 0; y < gridHeight; y++)
                 for (int x = 0; x < gridWidth; x++)
                     gridElements[x, y] = TileElementType.Empty;
 
-            // List of all possible positions
-            List<UnityEngine.Vector2Int> positions = new List<UnityEngine.Vector2Int>();
+            List<Vector2Int> positions = new List<Vector2Int>();
             for (int y = 0; y < gridHeight; y++)
                 for (int x = 0; x < gridWidth; x++)
-                    positions.Add(new UnityEngine.Vector2Int(x, y));
+                    positions.Add(new Vector2Int(x, y));
 
-            // Shuffle positions
             for (int i = positions.Count - 1; i > 0; i--)
             {
                 int j = UnityEngine.Random.Range(0, i + 1);
@@ -56,8 +56,6 @@ namespace NewGameplay.Services
             }
 
             int currentPosition = 0;
-
-            // Dictionary to track how many of each type to place
             var elementCounts = new Dictionary<TileElementType, int>
             {
                 { TileElementType.VirusNest, 1 },
@@ -67,10 +65,8 @@ namespace NewGameplay.Services
                 { TileElementType.CodeShardConstructor, 6 },
                 { TileElementType.CodeShardArgument, 6 },
                 { TileElementType.CodeShardCloser, 6 }
-                // Empty tiles will fill the remaining spaces
             };
 
-            // Place each element type according to its count
             foreach (var elementCount in elementCounts)
             {
                 for (int i = 0; i < elementCount.Value && currentPosition < positions.Count; i++)
@@ -86,30 +82,20 @@ namespace NewGameplay.Services
                     currentPosition++;
                 }
             }
-            // The remaining positions will stay Empty (default)
-            // Debug log the placement
-            Debug.Log($"[TileElementService] Placed elements. Total positions used: {currentPosition}");
-            for (int y = 0; y < gridHeight; y++)
-            {
-                string row = "";
-                for (int x = 0; x < gridWidth; x++)
-                {
-                    row += $"{gridElements[x, y]}, ";
-                }
-                Debug.Log($"Row {y}: {row}");
-            }
         }
+
         public Vector2Int? GetVirusNestPosition()
         {
             return virusNestPosition;
         }
+
         public TileElementType GetElementAt(int x, int y) => gridElements[x, y];
 
         public void TriggerElementEffect(int x, int y)
         {
             var element = gridElements[x, y];
             var config = elementConfigs.FirstOrDefault(e => e.elementType == element);
-            
+
             if (config == null)
             {
                 Debug.LogWarning($"[TileElementService] No configuration found for element type {element} at ({x},{y})");
@@ -120,38 +106,35 @@ namespace NewGameplay.Services
             {
                 case TileElementType.ProgressTile:
                     Debug.Log($"[TileElementService] Triggering progress boost: {config.progressPercent}%");
-                    // Convert percentage to actual score (1% = 1 point)
                     int scoreIncrease = Mathf.RoundToInt(config.progressPercent);
                     progressService.ApplyScore(scoreIncrease);
                     break;
-                    
+
                 case TileElementType.EntropyIncreaser:
                     Debug.Log($"[TileElementService] Increasing entropy by {config.entropyChange}");
                     entropyService.Increase(Mathf.Abs(config.entropyChange));
                     break;
-                    
+
                 case TileElementType.EntropyReducer:
                     Debug.Log($"[TileElementService] Reducing entropy by {config.entropyChange}");
                     entropyService.Decrease(Mathf.Abs(config.entropyChange));
                     break;
-                    
+
                 case TileElementType.CodeShardConstructor:
                     Debug.Log("Construct code shard.");
                     break;
-                    
+
                 case TileElementType.CodeShardArgument:
                     Debug.Log("Add argument to code shard.");
                     break;
-                    
+
                 case TileElementType.CodeShardCloser:
                     Debug.Log("Close code shard.");
                     break;
-                    
+
                 case TileElementType.VirusNest:
                     Debug.Log("[TileElementService] Virus Nest triggered — spawning virus.");
-
-                    // Forcefully spawn a virus on this tile
-                    gridElements[x, y] = TileElementType.Empty; // Clear the nest after triggering
+                    gridElements[x, y] = TileElementType.Empty;
 
                     var gridService = Object.FindFirstObjectByType<NewGameplayBootstrapper>()?.ExposedGridService;
                     if (gridService != null)
@@ -165,8 +148,33 @@ namespace NewGameplay.Services
                     }
                     break;
             }
-            
-            gridElements[x, y] = TileElementType.Empty; // Clear after triggering
+
+            // gridElements[x, y] = TileElementType.Empty;
+        }
+
+        public void TriggerElementEffectForFirstVirus()
+        {
+            if (virusNestPosition.HasValue)
+            {
+                Vector2Int pos = virusNestPosition.Value;
+                Debug.Log($"[TileElementService] Spawning virus from nest at {pos}");
+                gridElements[pos.x, pos.y] = TileElementType.Empty;
+
+                var gridService = Object.FindFirstObjectByType<NewGameplayBootstrapper>()?.ExposedGridService;
+                if (gridService != null)
+                {
+                    gridService.SetSymbol(pos.x, pos.y, "X");
+                    gridService.SetTilePlayable(pos.x, pos.y, false);
+                }
+                else
+                {
+                    Debug.LogError("[TileElementService] Could not access GridService to spawn virus.");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[TileElementService] No virus nest position found.");
+            }
         }
 
         public TileElementSO GetElementSOAt(int x, int y)

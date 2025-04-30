@@ -166,7 +166,6 @@ public class ProgressTrackerView : MonoBehaviour
 
                 switch (symbol)
                 {
-                    case "Θ": // Loop
                     case "Σ": // Stabilizer
                     case "Ψ": // Scout
                         potentialScore += 1;

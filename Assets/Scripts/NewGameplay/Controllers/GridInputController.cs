@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using NewGameplay.Interfaces;
 using NewGameplay.Services;
 using System.Linq;
-
+using NewGameplay.Models;
 namespace NewGameplay.Controllers
 {
     public class GridInputController : MonoBehaviour
@@ -12,74 +12,54 @@ namespace NewGameplay.Controllers
         private IGridService grid;
         private IInjectService inject;
         private IInjectService injectService;
-        private bool hasPlacedFirstSymbol = false;
-        public void Initialize(IGridService gridService, IInjectService injectService)
+        //private bool hasPlacedFirstSymbol = false;
+        private ITileElementService tileElementService;
+        private IEntropyService entropyService;
+        private SymbolPlacementService symbolPlacementService;
+        public void Initialize(
+            IGridService gridService,
+            IInjectService injectService,
+            ITileElementService tileElementService,
+            IEntropyService entropyService,
+            GridViewNew gridView,
+            SymbolPlacementService symbolPlacementService)
         {
-            grid = gridService;
-            inject = injectService;
-            InjectServiceLocator.Service = inject;
+            this.grid = gridService;
             this.injectService = injectService;
+            this.tileElementService = tileElementService;
+            this.entropyService = entropyService;
+            this.view = gridView;
+            this.symbolPlacementService = symbolPlacementService;
+
+            InjectServiceLocator.Service = injectService;
         }
 
         public void HandleTileClick(int x, int y)
         {
-            var selectedSymbol = injectService.SelectedSymbol;
-            if (string.IsNullOrEmpty(selectedSymbol))
+            string selectedSymbol = injectService?.SelectedSymbol;
+
+            // Handle symbol placement first
+            if (!string.IsNullOrEmpty(selectedSymbol))
             {
-                Debug.Log("[HandleTileClick] No symbol selected, ignoring click.");
-                return;
+                Debug.Log($"[GridInput] Attempting to place symbol '{selectedSymbol}' at ({x},{y})");
+                symbolPlacementService?.TryPlaceSymbol(x, y, selectedSymbol);
+                injectService.ClearSelectedSymbol(selectedSymbol);
+                var injectController = FindFirstObjectByType<InjectController>();
+                injectController?.RefreshUI();
+                view.RefreshGrid(grid);
+                return;  // Return here to prevent default tile reveal
             }
 
-            // Before placement, check adjacency rules
-            if (hasPlacedFirstSymbol)
-            {
-                if (!IsAdjacentToPlacedSymbol(x, y))
-                {
-                    Debug.Log("[HandleTileClick] Cannot place symbol here, not adjacent to existing symbols.");
-                    return;
-                }
-            }
-            
-            grid.TryPlaceSymbol(x, y, selectedSymbol);
+            // Default tile reveal (only if no symbol was placed)
             grid.RevealTile(x, y);
-            view.RefreshTileAt(x, y);
-            injectService.ClearSelectedSymbol(selectedSymbol);
-            
-            var injectController = Object.FindFirstObjectByType<InjectController>();
-            if (injectController != null)
+            view.RefreshGrid(grid);
+
+            string symbol = grid.GetSymbolAt(x, y);
+            if (symbol == "X")
             {
-                injectController.RefreshUI();
+                Debug.Log($"[GridInput] Revealed a virus at ({x},{y})! Entropy increased.");
+                entropyService.Increase(10);
             }
-
-            hasPlacedFirstSymbol = true; // After successful placement, set the flag
-        }
-        private bool IsAdjacentToPlacedSymbol(int x, int y)
-        {
-            // Directions: up, down, left, right
-            int[,] directions = new int[,]
-            {
-                { 0, 1 },
-                { 0, -1 },
-                { 1, 0 },
-                { -1, 0 }
-            };
-
-            for (int i = 0; i < directions.GetLength(0); i++)
-            {
-                int checkX = x + directions[i, 0];
-                int checkY = y + directions[i, 1];
-
-                if (!grid.IsInBounds(checkX, checkY))
-                    continue;
-
-                string neighborSymbol = grid.GetSymbolAt(checkX, checkY);
-                if (!string.IsNullOrEmpty(neighborSymbol))
-                {
-                    return true; // Found adjacent placed symbol
-                }
-            }
-
-            return false;
         }
     }
 }

@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   elementType: 2
   entropyChange: 5
-  progressPercent: 0
+  progressPercent: 2
   displayText: E+
   displayColor: {r: 1, g: 0.631607, b: 0, a: 1}

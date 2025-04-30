@@ -12,5 +12,8 @@ namespace NewGameplay.Interfaces
         void SetPurgeEffectService(IPurgeEffectService purgeEffectService);
         void SetSymbolPlacementService(ISymbolPlacementService symbolPlacementService);
         void TrySpreadFromExistingViruses();
+        bool HasVirusAt(int x, int y);
+        void RemoveVirusAt(int x, int y);
+
     }
 } 

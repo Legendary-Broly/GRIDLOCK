@@ -9,7 +9,7 @@ using NewGameplay.Controllers;
 
 public class InjectService : NewGameplay.Interfaces.IInjectService
 {
-    private readonly List<string> availableSymbols = new() { "∆", "Θ", "Ψ", "Σ" };
+    private readonly List<string> availableSymbols = new() { "∆", "Ψ", "Σ" };
     private readonly string[] currentSymbols = new string[3];
     private readonly System.Random rng = new();
     public string CurrentSymbolAt(int index) => currentSymbols[index];
@@ -71,5 +71,10 @@ public class InjectService : NewGameplay.Interfaces.IInjectService
     public void ClearSelectedSymbol()
     {
         selectedIndex = -1;
+    }
+
+    public string GetSelectedSymbol()
+    {
+        throw new NotImplementedException();
     }
 }

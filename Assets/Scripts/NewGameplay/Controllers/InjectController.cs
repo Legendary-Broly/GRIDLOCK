@@ -4,6 +4,7 @@ using TMPro;
 using System.Collections.Generic;
 using NewGameplay.Interfaces;
 using NewGameplay.Services;
+using NewGameplay.Utility;
 
 namespace NewGameplay.Controllers
 {
@@ -73,15 +74,41 @@ namespace NewGameplay.Controllers
 
         private void OnSymbolClicked(int index)
         {
-            injectService.SelectSymbol(index);
+            string symbol = GetSymbolAt(index);
+            if (string.IsNullOrEmpty(symbol)) return;
 
+            // ∆ = Purge — keep existing placement logic
+            if (symbol == "∆")
+            {
+                injectService.SelectSymbol(index);
+            }
+            else
+            {
+                // Trigger effect immediately (no grid placement)
+                var bootstrapper = FindFirstObjectByType<NewGameplayBootstrapper>();
+                var grid = bootstrapper?.ExposedGridService;
+                var entropy = bootstrapper?.ExposedEntropyService;
+                var tileElements = bootstrapper?.ExposedTileElementService;
+
+                if (grid != null && entropy != null && tileElements != null)
+                {
+                    Debug.Log($"[InjectController] Triggering effect for symbol {symbol} immediately (no placement)");
+                    SymbolEffectProcessor.ApplySymbolEffectAtPlacement(symbol, -1, -1, grid, entropy, tileElements);
+                }
+
+                // Clear used symbol and refresh UI
+                injectService.ClearSelectedSymbol(symbol);
+                RefreshUI();
+            }
+
+            // Update visual selection (for ∆ only)
             for (int i = 0; i < symbolButtons.Count; i++)
             {
                 var image = symbolButtons[i].targetGraphic;
                 if (image != null)
                 {
                     var cb = symbolButtons[i].colors;
-                    image.color = (i == index) ? cb.selectedColor : cb.normalColor;
+                    image.color = (i == index && symbol == "∆") ? cb.selectedColor : cb.normalColor;
                 }
             }
         }

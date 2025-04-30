@@ -3,7 +3,6 @@ using NewGameplay.Interfaces;
 using NewGameplay.Services;
 using UnityEngine.UI;
 using NewGameplay.Models;
-using NewGameplay.Views;
 
 namespace NewGameplay.Controllers
 {

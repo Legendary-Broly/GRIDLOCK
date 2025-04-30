@@ -37,14 +37,11 @@ namespace NewGameplay.Utility
         {
             switch (symbol)
             {
-                case "Θ": // Loop
-                    // No special effect on placement
-                    break;
 
                 case "Ψ": // Scout
-                    Debug.Log($"[SymbolEffectProcessor] Scout placed at ({x},{y}) — revealing nearby tiles and increasing entropy.");
+                    Debug.Log($"[SymbolEffectProcessor] Scout triggered — revealing nearby tiles and increasing entropy.");
                     entropyService?.Increase(5);
-                    RevealRandomHiddenTiles(gridService, x, y, 3);
+                    RevealRandomHiddenTiles(gridService, x, y, 3, forceReveal: true);
                     break;
 
                 case "Σ": // Stabilizer
@@ -58,9 +55,9 @@ namespace NewGameplay.Utility
             }
         }
 
-        private static void RevealRandomHiddenTiles(IGridService gridService, int centerX, int centerY, int count)
+        private static void RevealRandomHiddenTiles(IGridService gridService, int centerX, int centerY, int count, bool forceReveal = false)
         {
-            List<(int x, int y)> hiddenTiles = new List<(int x, int y)>();
+            List<(int x, int y)> hiddenTiles = new();
 
             for (int j = 0; j < gridService.GridHeight; j++)
             {
@@ -72,16 +69,14 @@ namespace NewGameplay.Utility
                     }
                 }
             }
+
             hiddenTiles = hiddenTiles.OrderBy(_ => UnityEngine.Random.value).ToList();
 
             for (int i = 0; i < Mathf.Min(count, hiddenTiles.Count); i++)
             {
                 var (rx, ry) = hiddenTiles[i];
-                gridService.RevealTile(rx, ry);
-
-                // Manually refresh tile view
+                gridService.RevealTile(rx, ry, forceReveal: forceReveal);
                 gridService.RefreshTile(rx, ry);
-
             }
         }
     }

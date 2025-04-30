@@ -12,6 +12,7 @@ namespace NewGameplay
     {
         public GridService ExposedGridService { get; private set; }
         public EntropyService ExposedEntropyService { get; private set; }
+        public TileElementService ExposedTileElementService { get; private set; }
 
         [SerializeField] private GridInputController inputController;
         [SerializeField] private GridViewNew gridView;
@@ -75,7 +76,8 @@ namespace NewGameplay
             );
             tileElementService.GenerateElements();
             symbolPlacementService.SetTileElementService(tileElementService);
-
+            gridService.SetTileElementService(tileElementService);
+            ExposedTileElementService = tileElementService;
             // === Injection and Extraction ===
             IWeightedInjectService injectService = new WeightedInjectService();
             if (injectService is WeightedInjectService weightedInject)
@@ -94,10 +96,11 @@ namespace NewGameplay
             roundManager.Initialize(roundService, progressService, roundPopupController, dataFragmentService);
             progressTrackerView.Initialize(progressService, gridService, entropyService);
             entropyTrackerView.Initialize(entropyService);
-            gridView.Initialize(gridService, tileElementService);
+            gridView.Initialize(gridService, tileElementService, virusSpreadService);
             gridView.BuildGrid(gridService.GridWidth, gridService.GridHeight, (x, y) => inputController.HandleTileClick(x, y));
             gridService.InitializeTileStates(gridService.GridWidth, gridService.GridHeight);
-            inputController.Initialize(gridService, injectService);
+            gridView.RefreshGrid(gridService);
+            inputController.Initialize(gridService, injectService, tileElementService, entropyService, gridView, symbolPlacementService);
             injectController.Initialize(injectService, gridService);
             extractController.Initialize(extractService, gridService, progressService, dataFragmentService);
 
