@@ -102,9 +102,9 @@ namespace NewGameplay.Services
                 case MutationType.OmegaSurge:
                     ApplyOmegaSurgeMutation();
                     break;
-                case MutationType.FeedbackLoop:
-                    ApplyFeedbackLoopMutation();
-                    break;
+                //case MutationType.FeedbackLoop:
+                //    ApplyFeedbackLoopMutation();
+                //    break;
                 case MutationType.Firewall:
                     ApplyFirewallMutation();
                     break;
@@ -114,9 +114,9 @@ namespace NewGameplay.Services
                 case MutationType.Contagion:
                     ApplyContagionMutation();
                     break;
-                case MutationType.InfiniteLoop:
-                    ApplyInfiniteLoopMutation();
-                    break;
+                //case MutationType.InfiniteLoop:
+                //    ApplyInfiniteLoopMutation();
+                //    break;
                 case MutationType.PurgePlus:
                     ApplyPurgePlusMutation();
                     break;
@@ -151,18 +151,18 @@ namespace NewGameplay.Services
             _entropyService.ModifyEntropy(0.3f);
         }
 
-        private void ApplyFeedbackLoopMutation()
-        {
-            // Increase score by 50% of current score
-            int currentScore = _progressTrackerService.CurrentScore;
-            _progressTrackerService.ApplyScore(currentScore / 2);
+        //private void ApplyFeedbackLoopMutation()
+        //{
+        //    // Increase score by 50% of current score
+        //    int currentScore = _progressTrackerService.CurrentScore;
+        //    _progressTrackerService.ApplyScore(currentScore / 2);
             
             // Check if we should spawn a data fragment
-            if (_progressTrackerService.HasMetGoal())
-            {
-                _dataFragmentService.SpawnFragment();
-            }
-        }
+        //    if (_progressTrackerService.HasMetGoal())
+        //    {
+        //        _dataFragmentService.SpawnFragment();
+        //    }
+        //}
 
         private void ApplyFirewallMutation()
         {
@@ -182,18 +182,18 @@ namespace NewGameplay.Services
             _gridService.SpreadVirus();
         }
 
-        private void ApplyInfiniteLoopMutation()
-        {
-            // Double the current score
-            int currentScore = _progressTrackerService.CurrentScore;
-            _progressTrackerService.ApplyScore(currentScore);
+        //private void ApplyInfiniteLoopMutation()
+        //{
+        //    // Double the current score
+        //    int currentScore = _progressTrackerService.CurrentScore;
+        //    _progressTrackerService.ApplyScore(currentScore);
             
             // Check if we should spawn a data fragment
-            if (_progressTrackerService.HasMetGoal())
-            {
-                _dataFragmentService.SpawnFragment();
-            }
-        }
+        //    if (_progressTrackerService.HasMetGoal())
+        //    {
+        //        _dataFragmentService.SpawnFragment();
+        //    }
+        //}
 
         private void ApplyPurgePlusMutation()
         {

@@ -1,17 +1,22 @@
-// RoundService.cs
 using NewGameplay;
 using NewGameplay.Interfaces;
-
+using NewGameplay.Services;
+using NewGameplay.Controllers;
 public class RoundService : IRoundService
 {
     private readonly IGridService grid;
-    private IProgressTrackerService progress;
-    private readonly IInjectService inject;
+    private readonly IProgressTrackerService progress;
+    private readonly IWeightedInjectService inject;
     private readonly IDataFragmentService dataFragmentService;
+
     public event System.Action onRoundReset;
     private bool isResetting = false;
-
-    public RoundService(IGridService grid, IProgressTrackerService progress, IInjectService inject, IDataFragmentService dataFragmentService)
+    
+    public RoundService(
+        IGridService grid, 
+        IProgressTrackerService progress, 
+        IWeightedInjectService inject, 
+        IDataFragmentService dataFragmentService)
     {
         this.grid = grid;
         this.progress = progress;
@@ -26,20 +31,36 @@ public class RoundService : IRoundService
 
         try
         {
-            // Clear the symbol bank first and ensure it's cleared
+            // Step 1: Clear all player-injected symbols
             inject.ClearSymbolBank();
-            
-            // Then clear the grid
+
+            // Step 2: Clear all tiles including state and symbols
             grid.ClearAllTiles();
-            
-            // Reset progress for the next round
+
+            // Step 3: Reset data fragment progress
             progress.ResetProgress();
-            
-            // Clear the data fragment
-            dataFragmentService.ClearFragment();
-            
-            // Finally, trigger UI updates
+
+            // Step 4: Reset all tiles to hidden state
+            if (grid is GridService gridService)
+            {
+                gridService.InitializeTileStates(gridService.GridWidth, gridService.GridHeight);
+                
+                // Step 5: Regenerate tile elements
+                if (gridService.TileElementService != null)
+                {
+                    gridService.TileElementService.GenerateElements();
+                }
+            }
+
+            // Step 6: Refresh grid observers (UI, views, etc.)
+            grid.TriggerGridUpdate();
+
+            // Step 7: Notify UI or any other listeners
             onRoundReset?.Invoke();
+
+            // Step 8: Lock grid interaction
+            grid.LockInteraction(); // ← this method should exist in GridService
+
         }
         finally
         {
@@ -49,14 +70,6 @@ public class RoundService : IRoundService
 
     public void TriggerRoundReset()
     {
-        onRoundReset?.Invoke();  // Notify UI listeners
-    }
-
-    public void CheckDataFragmanentSpawn()
-    {
-        if (!dataFragmentService.IsFragmentPresent() && progress.HasMetGoal())
-        {
-            dataFragmentService.SpawnFragment();
-        }
+        onRoundReset?.Invoke();
     }
 }

@@ -10,6 +10,7 @@ public class TileSlotView : MonoBehaviour
     [SerializeField] private Image arrowBottom;
     [SerializeField] private Image arrowLeft;
     [SerializeField] private Image arrowRight;
+    [SerializeField] private GameObject playerRevealHighlight;
 
     private IVirusSpreadService virusSpreadService;
     private ITileElementService tileElementService;
@@ -41,6 +42,11 @@ public class TileSlotView : MonoBehaviour
         SetArrow(arrowBottom, GetHintTypeAt(x, y + 1, w, h));
         SetArrow(arrowLeft,   GetHintTypeAt(x - 1, y, w, h));
         SetArrow(arrowRight,  GetHintTypeAt(x + 1, y, w, h));
+    }
+    public void SetPlayerRevealed(bool state)
+    {
+        if (playerRevealHighlight != null)
+            playerRevealHighlight.SetActive(state);
     }
 
     private VisualTileHintType GetHintType(TileElementType type, int x, int y)
@@ -83,10 +89,19 @@ public class TileSlotView : MonoBehaviour
         }
     }
 
-    public void HideArrowTop()    { if (arrowTop    != null) arrowTop.enabled = false; }
-    public void HideArrowBottom() { if (arrowBottom != null) arrowBottom.enabled = false; }
-    public void HideArrowLeft()   { if (arrowLeft   != null) arrowLeft.enabled = false; }
-    public void HideArrowRight()  { if (arrowRight  != null) arrowRight.enabled = false; }
+    public void HideArrowTop() => arrowTop.enabled = false;
+    public void HideArrowBottom() => arrowBottom.enabled = false;
+    public void HideArrowLeft() => arrowLeft.enabled = false;
+    public void HideArrowRight() => arrowRight.enabled = false;
+
+    public void HideAllArrows()
+    {
+        HideArrowTop();
+        HideArrowBottom();
+        HideArrowLeft();
+        HideArrowRight();
+    }
+
     private VisualTileHintType GetHintTypeAt(int x, int y, int w, int h)
     {
         if (x < 0 || x >= w || y < 0 || y >= h)

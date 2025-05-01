@@ -7,7 +7,6 @@ using NewGameplay.Utility;
 using NewGameplay.Models;
 using NewGameplay.Services;
 
-
 namespace NewGameplay.Services
 {
     public class ExtractService : IExtractService
@@ -21,8 +20,6 @@ namespace NewGameplay.Services
         public ExtractService(
             IGridService gridService,
             IEntropyService entropyService,
-            IScoreService scoreService, // still injected if needed elsewhere
-            IProgressTrackerService progressService, // still injected if needed elsewhere
             IDataFragmentService dataFragmentService)
         {
             this.gridService = gridService;
@@ -32,13 +29,6 @@ namespace NewGameplay.Services
 
         public void ExtractGrid()
         {
-            if (dataFragmentService.GetFragmentPosition().HasValue &&
-                !dataFragmentService.IsFragmentFullySurrounded())
-            {
-                Debug.Log("[ExtractService] Data Fragment exists but is not fully surrounded. Extraction blocked.");
-                return;
-            }
-
             // Apply passive penalty
             if (entropyService.EntropyPercent >= 100)
             {
@@ -53,5 +43,4 @@ namespace NewGameplay.Services
             Debug.Log("[ExtractService] Extraction complete. Grid cleared except viruses.");
         }
     }
-
 }

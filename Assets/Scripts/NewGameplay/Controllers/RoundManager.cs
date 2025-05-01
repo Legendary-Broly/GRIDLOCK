@@ -1,70 +1,98 @@
 using UnityEngine;
-using System.Collections;
-using NewGameplay;
 using NewGameplay.Interfaces;
+using NewGameplay.Controllers;
+using NewGameplay.Services;
+using System;
 
-public class RoundManager : MonoBehaviour
+namespace NewGameplay.Controllers
 {
-    private IRoundService roundService;
-    private IProgressTrackerService progressService;
-    private RoundPopupController popupController;
-    private IDataFragmentService dataFragmentService;
-    private bool isRoundTransitioning = false; // Flag to prevent redundant calls
-    private bool hasThresholdIncreased = false; // Flag to track if threshold has been increased
-
-    public void Initialize(IRoundService roundService, IProgressTrackerService progressService, RoundPopupController popupController, IDataFragmentService dataFragmentService)
+    public class RoundManager
     {
-        this.roundService = roundService;
-        this.progressService = progressService;
-        this.popupController = popupController;
-        this.dataFragmentService = dataFragmentService;
-        roundService.onRoundReset += () => CheckRoundEnd(); 
-    }
-    
-    public void CheckRoundEnd()
-    {
-        if (isRoundTransitioning || hasThresholdIncreased) return; // Prevent redundant calls
+        private IProgressTrackerService progressService;
+        private IDataFragmentService dataFragmentService;
+        private RoundPopupManager popupManager;
+        private GridViewNew gridView;
+        private IGridService gridService;
+        private IRoundService roundService;
 
-        Debug.Log($"[RoundManager] CheckRoundEnd - CurrentProgress: {progressService.CurrentProgress}, CurrentThreshold: {progressService.CurrentThreshold}");
+        private int currentRound = 1;
+        public event Action OnRoundStarted;
 
-        // Step 1: Check if progress met the threshold and spawn fragment if needed
-        if (progressService.CurrentProgress >= progressService.CurrentThreshold && !dataFragmentService.IsFragmentPresent())
+        public RoundManager(
+            IProgressTrackerService progress,
+            IDataFragmentService dataFragmentService,
+            RoundPopupManager popupManager,
+            IRoundService roundService,
+            IGridService gridService,
+            GridViewNew gridView)
         {
-            dataFragmentService.SpawnFragment();
-            Debug.Log("[RoundManager] Data Fragment spawned on reaching 100% progress.");
-            return; // Wait for player to surround and extract the fragment
+            this.progressService = progress;
+            this.dataFragmentService = dataFragmentService;
+            this.popupManager = popupManager;
+            this.roundService = roundService;
+            this.gridService = gridService;
+            this.gridView = gridView;
+
+            popupManager.onContinue += BeginNewRound;
         }
 
-        // Step 2: If fragment is already present and surrounded, handle round transition
-        if (dataFragmentService.IsFragmentPresent() && dataFragmentService.IsFragmentFullySurrounded())
+        public void Initialize(IRoundService roundService, IProgressTrackerService progressService, RoundPopupManager popupManager, IDataFragmentService dataFragmentService)
         {
-            isRoundTransitioning = true; // Set flag to true to block further calls
+            this.roundService = roundService;
+            this.progressService = progressService;
+            this.popupManager = popupManager;
+            this.dataFragmentService = dataFragmentService;
+        }
 
-            int currentRound = progressService.RoundTarget / 20; // Shows the current round
-            popupController.ShowPopup(currentRound); // Show round transition popup
+        public void StartFirstRound()
+        {
+            Debug.Log("[RoundManager] Starting first round");
+            currentRound = 1;
+            progressService.SetRequiredFragments(1); // First round always requires 1 fragment
+            dataFragmentService.SpawnFragments(3);
+            OnRoundStarted?.Invoke();
+        }
 
-            // Clear previous delegate to prevent multiple invocations
-            popupController.onContinue = null;
+        public void CheckRoundEnd()
+        {
+            bool goalMet = progressService.HasMetGoal();
+            bool noInfectedFragments = !dataFragmentService.AnyRevealedFragmentsContainVirus();
 
-            // When the player continues:
-            popupController.onContinue = () =>
+            if (goalMet && noInfectedFragments)
             {
-                Debug.Log("Popup continue clicked. Increasing threshold."); // Debug log
-                // Increment threshold after the popup
-                if (!hasThresholdIncreased) // Double-check to ensure single increment
+                popupManager.ShowPopup(currentRound);
+            }
+        }
+
+        public void BeginNewRound()
+        {
+            Debug.Log("[RoundManager] Beginning new round...");
+
+            // Subscribe to the event BEFORE triggering the reset
+            roundService.onRoundReset += () =>
+            {
+                currentRound++;
+                Debug.Log($"[RoundManager] Starting round {currentRound}");
+                
+                // Set required fragments based on round number (1->1, 2->2, 3->3)
+                int requiredFragments = Mathf.Clamp(currentRound, 1, 3);
+                Debug.Log($"[RoundManager] Setting required fragments for round {currentRound} to {requiredFragments}");
+                progressService.SetRequiredFragments(requiredFragments);
+
+                dataFragmentService.SpawnFragments(3);
+                gridView.RefreshGrid(gridService);
+
+                // Find and refresh the progress tracker view
+                var progressTrackerView = UnityEngine.Object.FindFirstObjectByType<ProgressTrackerView>();
+                if (progressTrackerView != null)
                 {
-                    progressService.IncreaseThreshold();  // Increase threshold by 20 points
-                    hasThresholdIncreased = true; // Mark threshold as increased
+                    Debug.Log("[RoundManager] Refreshing progress tracker view");
+                    progressTrackerView.Refresh();
                 }
-
-                Debug.Log("Threshold increased. Resetting round."); // Debug log
-                // Reset the round's game state
-                roundService.ResetRound();
-
-                isRoundTransitioning = false; // Reset flag after round transition
-                hasThresholdIncreased = false; // Reset threshold flag for the next round
             };
+
+            // Now trigger the reset which will call ResetRound() internally
+            roundService.ResetRound();
         }
     }
 }
-

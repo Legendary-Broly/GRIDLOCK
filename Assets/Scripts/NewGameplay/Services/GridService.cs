@@ -9,7 +9,7 @@ using NewGameplay.Utility;
 using NewGameplay;
 using NewGameplay.Models;
 using NewGameplay.Enums;
-
+using NewGameplay.Controllers;
 namespace NewGameplay.Services
 {
     public class GridService : IGridService
@@ -19,8 +19,14 @@ namespace NewGameplay.Services
         private readonly IPurgeEffectService purgeEffectService;
         private readonly IVirusSpreadService virusSpreadService;
         private ITileElementService tileElementService;
+        private IProgressTrackerService progressService;
+
+        public ITileElementService TileElementService => tileElementService;
 
         private bool hasSpawnedInitialVirus = false;
+        private Vector2Int? lastRevealedTile = null;
+        private Vector2Int? previousRevealedTile = null;
+        private bool gridInteractionLocked = true;
 
         public string GetSymbolAt(int x, int y) => gridStateService.GetSymbolAt(x, y);
         public bool IsTilePlayable(int x, int y) => gridStateService.IsTilePlayable(x, y);
@@ -32,7 +38,11 @@ namespace NewGameplay.Services
         public int GridWidth => gridStateService.GridWidth;
         public int GridHeight => gridStateService.GridHeight;
         public string[,] GridState => gridStateService.GridState;
-        public bool[,] TilePlayable => gridStateService.TilePlayable;
+        public bool[,] TilePlayable => gridStateService.TilePlayable;private GameOverController gameOverController;
+        public void SetGameOverController(GameOverController controller)
+        {
+            this.gameOverController = controller;
+        }
 
         public GridService(
             IGridStateService gridStateService,
@@ -46,7 +56,6 @@ namespace NewGameplay.Services
             this.virusSpreadService = virusSpreadService;
 
             virusSpreadService.SetPurgeEffectService(purgeEffectService);
-
             gridStateService.OnGridStateChanged += HandleGridStateChanged;
             symbolPlacementService.OnSymbolPlaced += HandleSymbolPlaced;
             virusSpreadService.OnVirusSpread += HandleVirusSpread;
@@ -67,6 +76,15 @@ namespace NewGameplay.Services
         {
             gridView?.RefreshTileAt(x, y);
         }
+        public void LockInteraction()
+        {
+            gridInteractionLocked = true;
+        }
+        public void UnlockInteraction()
+        {
+            Debug.Log("[GridService] Grid interaction unlocked.");
+            gridInteractionLocked = false;
+        }
 
         public void InitializeTileStates(int width, int height)
         {
@@ -75,8 +93,9 @@ namespace NewGameplay.Services
 
         public void RevealTile(int x, int y, bool forceReveal = false)
         {
-            if (!IsInBounds(x, y) || IsTileRevealed(x, y))
-                return;
+            if (gridInteractionLocked && !forceReveal) return;
+            
+            if (!IsInBounds(x, y) || IsTileRevealed(x, y)) return;
 
             bool isFirstReveal = true;
             for (int yy = 0; yy < GridHeight; yy++)
@@ -92,13 +111,22 @@ namespace NewGameplay.Services
                 if (!isFirstReveal) break;
             }
 
-            if (!isFirstReveal && !IsAdjacentToRevealed(x, y) && !forceReveal)
+            if (!isFirstReveal && !IsAdjacentToLastRevealed(x, y) && !forceReveal)
             {
-                Debug.Log($"[GridService] Tile ({x},{y}) is not adjacent to any revealed tiles. Reveal blocked.");
+                Debug.Log($"[GridService] Tile ({x},{y}) is not adjacent to the last revealed tile. Reveal blocked.");
                 return;
             }
 
-            // --- 🔽 Only reaches this point if reveal is allowed 🔽 ---
+            previousRevealedTile = lastRevealedTile;
+            lastRevealedTile = new Vector2Int(x, y);
+            // ✅ Trigger fail only if this tile was revealed directly and contains a virus
+            if (gridStateService.GetSymbolAt(x, y) == "X")
+            {
+                Debug.Log("[GridService] Virus revealed by player — triggering fail state.");
+                TriggerFailState();
+                return;
+            }
+
             gridStateService.SetTileState(x, y, TileState.Revealed);
             RefreshTile(x, y);
 
@@ -109,16 +137,18 @@ namespace NewGameplay.Services
             }
 
             tileElementService?.TriggerElementEffect(x, y);
+            if (gridStateService.GetSymbolAt(x, y) == "DF")
+            {
+                progressService?.IncrementFragmentsFound();
+            }
             virusSpreadService?.TrySpreadFromExistingViruses();
         }
+
         public bool IsTileRevealed(int x, int y)
         {
-            if (IsInBounds(x, y))
-            {
-                return gridStateService.GetTileState(x, y) == TileState.Revealed;
-            }
-            return false;
+            return IsInBounds(x, y) && gridStateService.GetTileState(x, y) == TileState.Revealed;
         }
+
         public bool IsFirstRevealDone()
         {
             for (int y = 0; y < GridHeight; y++)
@@ -127,24 +157,21 @@ namespace NewGameplay.Services
                         return true;
             return false;
         }
-        private bool IsAdjacentToRevealed(int x, int y)
+
+        private bool IsAdjacentToLastRevealed(int x, int y)
         {
-            Vector2Int[] directions = new[]
-            {
-                Vector2Int.up, Vector2Int.down,
-                Vector2Int.left, Vector2Int.right
-            };
+            if (!lastRevealedTile.HasValue) return false;
+            Vector2Int last = lastRevealedTile.Value;
+            if (previousRevealedTile.HasValue && previousRevealedTile.Value == new Vector2Int(x, y)) return false;
+            return Mathf.Abs(x - last.x) + Mathf.Abs(y - last.y) == 1;
+        }
 
-            foreach (var dir in directions)
-            {
-                int nx = x + dir.x;
-                int ny = y + dir.y;
-
-                if (IsInBounds(nx, ny) && IsTileRevealed(nx, ny))
-                    return true;
-            }
-
-            return false;
+        public bool CanRevealTile(int x, int y)
+        {
+            if (gridInteractionLocked) return false;
+            if (!IsInBounds(x, y) || IsTileRevealed(x, y)) return false;
+            if (!lastRevealedTile.HasValue) return true; // First reveal allowed anywhere
+            return IsAdjacentToLastRevealed(x, y);
         }
 
         public void SetEntropyService(IEntropyService entropyService)
@@ -154,11 +181,11 @@ namespace NewGameplay.Services
 
         public void TryPlaceSymbol(int x, int y)
         {
-            var symbol = InjectServiceLocator.Service.SelectedSymbol;
+            var symbol = InjectServiceLocator.Service?.SelectedSymbol;
             if (string.IsNullOrEmpty(symbol)) return;
 
             symbolPlacementService.TryPlaceSymbol(x, y, symbol);
-            InjectServiceLocator.Service.ClearSelectedSymbol(symbol);
+            InjectServiceLocator.Service?.ClearSelectedSymbol(symbol);
         }
 
         public void TryPlaceSymbol(int x, int y, string symbol)
@@ -206,6 +233,8 @@ namespace NewGameplay.Services
         public void ClearAllTiles()
         {
             gridStateService.ClearAllTiles();
+            lastRevealedTile = null;
+            previousRevealedTile = null;
         }
 
         private void HandleGridStateChanged()
@@ -242,6 +271,7 @@ namespace NewGameplay.Services
                         emptyPositions.Add(new Vector2Int(x, y));
                     }
                 }
+
             }
 
             return emptyPositions;
@@ -254,28 +284,24 @@ namespace NewGameplay.Services
 
         public TileState GetTileState(int x, int y)
         {
-            if (IsInBounds(x, y))
-            {
-                return gridStateService.GetTileState(x, y);
-            }
-            return TileState.Hidden;
+            return IsInBounds(x, y) ? gridStateService.GetTileState(x, y) : TileState.Hidden;
         }
-        public bool CanRevealTile(int x, int y)
+
+        public void SetProgressService(IProgressTrackerService service)
         {
-            if (!IsInBounds(x, y) || IsTileRevealed(x, y)) return false;
-
-            // First reveal is always allowed
-            for (int yy = 0; yy < GridHeight; yy++)
-            {
-                for (int xx = 0; xx < GridWidth; xx++)
-                {
-                    if (GetTileState(xx, yy) == TileState.Revealed)
-                        return IsAdjacentToRevealed(x, y);
-                }
-            }
-
-            return true;
+            this.progressService = service;
         }
+    
+        private void TriggerFailState()
+        {
+            Debug.Log("[GridService] FAIL: Player revealed a virus — game over.");
 
+            for (int y = 0; y < GridHeight; y++)
+                for (int x = 0; x < GridWidth; x++)
+                    gridStateService.SetTilePlayable(x, y, false);
+
+            OnGridUpdated?.Invoke();
+            gameOverController?.ShowGameOver();
+        }
     }
 }

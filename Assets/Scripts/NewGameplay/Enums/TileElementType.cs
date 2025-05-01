@@ -13,6 +13,6 @@ namespace NewGameplay.Enums
         CodeShardConstructor,
         CodeShardArgument,
         CodeShardCloser,
-        VirusNest
+        VirusNest,
     }
 }

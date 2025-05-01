@@ -105,6 +105,14 @@ namespace NewGameplay.Services
                 gridStateService.SetSymbol(x, y, null);  // Clear visual
                 gridStateService.SetTilePlayable(x, y, false);
                 lastPurgedPosition = new Vector2Int(x, y);  // Track this position
+
+                // Reveal the tile if it's adjacent to the last revealed tile
+                if (gridService.CanRevealTile(x, y))
+                {
+                    Debug.Log($"[Purge] Revealing tile at ({x},{y}) after virus removal");
+                    gridService.RevealTile(x, y);
+                }
+
                 Debug.Log($"[Purge] After removal - Symbol: '{gridStateService.GetSymbolAt(x, y)}', HasVirus: {virusSpreadService.HasVirusAt(x, y)}");
             }
             else

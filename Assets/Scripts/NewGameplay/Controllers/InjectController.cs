@@ -14,11 +14,12 @@ namespace NewGameplay.Controllers
         [SerializeField] private List<TextMeshProUGUI> symbolSlots;
         [SerializeField] private Button injectButton;
 
-        private IInjectService injectService;
+        private IWeightedInjectService injectService;
+
         private IGridService gridService;
         private IEntropyService entropyService;
 
-        public void Initialize(IInjectService service, IGridService grid)
+        public void Initialize(IWeightedInjectService service, IGridService grid)
         {
             injectService = service;
             gridService = grid;

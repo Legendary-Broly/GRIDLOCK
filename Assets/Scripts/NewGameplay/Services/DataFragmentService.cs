@@ -11,116 +11,66 @@ namespace NewGameplay.Services
     public class DataFragmentService : IDataFragmentService
     {
         private readonly IGridService gridService;
-        private Vector2Int? fragmentPosition;
+        private List<Vector2Int> fragmentPositions = new();
         private const string FRAGMENT_SYMBOL = "DF";
-        private readonly IGridStateService gridStateService;
         private GridViewNew gridView;
+        private ITileElementService tileElementService;
+
         public DataFragmentService(IGridService gridService)
         {
             this.gridService = gridService;
         }
+
         public void SetGridView(GridViewNew view)
         {
             gridView = view;
         }
 
-        public void SpawnFragment()
+        public void SetTileElementService(ITileElementService service)
         {
-            if (fragmentPosition.HasValue)
-            {
-                Debug.Log("[DataFragmentService] Fragment already exists, skipping spawn.");
-                return;
-            }
-
-            int width = gridService.GridWidth;
-            int height = gridService.GridHeight;
-
-            List<Vector2Int> validPositions = new List<Vector2Int>();
-
-            for (int y = 1; y < height - 1; y++) // Avoid first/last row
-            {
-                for (int x = 1; x < width - 1; x++) // Avoid first/last column
-                {
-                    if (!gridService.IsTilePlayable(x, y)) continue;
-
-                    string symbol = gridService.GetSymbolAt(x, y);
-
-                    // Accept empty or virus tiles only
-                    if (string.IsNullOrEmpty(symbol) || symbol == "X")
-                    {
-                        validPositions.Add(new Vector2Int(x, y));
-                    }
-                }
-            }
-
-            if (validPositions.Count == 0)
-            {
-                Debug.LogWarning("[DataFragmentService] No valid positions found for Data Fragment spawn.");
-                return;
-            }
-
-            // Randomly select valid position
-            Vector2Int selectedPosition = validPositions[UnityEngine.Random.Range(0, validPositions.Count)];
-            fragmentPosition = selectedPosition;
-
-            // Place symbol and mark the tile as revealed
-            gridService.SetSymbol(selectedPosition.x, selectedPosition.y, "DF");
-            gridService.SetTilePlayable(selectedPosition.x, selectedPosition.y, false);
-            gridStateService.SetTileState(selectedPosition.x, selectedPosition.y, TileState.Revealed);
-
-            Debug.Log($"[DataFragmentService] Spawned Data Fragment at {selectedPosition}");
-
-            // Force immediate visual update
-            gridView?.RefreshTileAt(selectedPosition.x, selectedPosition.y);
-
+            tileElementService = service;
+            Debug.Log($"[DataFragmentService] TileElementService set: {(service != null ? "valid" : "null")}");
         }
 
-        public bool IsFragmentFullySurrounded()
+        public void SpawnFragments(int count)
         {
-            if (!fragmentPosition.HasValue) return false;
+            fragmentPositions.Clear();
 
-            Vector2Int pos = fragmentPosition.Value;
-            Vector2Int[] directions = new Vector2Int[]
+            var positions = gridService.GetAllEmptyTilePositions();
+            Debug.Log($"[DataFragmentService] Found {positions.Count} empty positions before filtering");
+            
+            // Filter positions to only include tiles with Empty element type
+            if (tileElementService != null)
             {
-                Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
-            };
-
-            foreach (var dir in directions)
-            {
-                Vector2Int checkPos = pos + dir;
-                if (!gridService.IsInBounds(checkPos.x, checkPos.y) ||
-                    !gridService.IsTileRevealed(checkPos.x, checkPos.y))
-                {
-                    return false;  // Adjacent tile is not revealed
-                }
-            }
-
-            return true;  // All adjacent tiles are revealed
-        }
-
-
-        public Vector2Int? GetFragmentPosition()
-        {
-            return fragmentPosition;
-        }
-
-        public void ClearFragment()
-        {
-            if (fragmentPosition.HasValue)
-            {
-                Debug.Log($"[DataFragmentService] Clearing fragment at position {fragmentPosition.Value}");
-                gridService.SetSymbol(fragmentPosition.Value.x, fragmentPosition.Value.y, "");
-                fragmentPosition = null;
+                positions = positions.Where(pos => tileElementService.GetElementAt(pos.x, pos.y) == TileElementType.Empty).ToList();
+                Debug.Log($"[DataFragmentService] After filtering for empty elements: {positions.Count} positions remain");
             }
             else
             {
-                Debug.Log("[DataFragmentService] ClearFragment called but no fragment was present");
+                Debug.LogWarning("[DataFragmentService] TileElementService is null, skipping element type filtering");
             }
+            
+            positions = positions.OrderBy(_ => UnityEngine.Random.value).ToList();
+
+            for (int i = 0; i < count && i < positions.Count; i++)
+            {
+                var pos = positions[i];
+                fragmentPositions.Add(pos);
+                gridService.SetSymbol(pos.x, pos.y, FRAGMENT_SYMBOL);
+                gridService.SetTilePlayable(pos.x, pos.y, false);
+            }
+
+            Debug.Log($"[DataFragmentService] Spawned {fragmentPositions.Count} fragments.");
         }
 
-        public bool IsFragmentPresent()
+        public int GetRevealedFragmentCount()
         {
-            return fragmentPosition.HasValue;
+            return fragmentPositions.Count(pos => gridService.IsTileRevealed(pos.x, pos.y));
+        }
+
+        public bool AnyRevealedFragmentsContainVirus()
+        {
+            return fragmentPositions.Any(pos => gridService.GetSymbolAt(pos.x, pos.y) == "X" && gridService.IsTileRevealed(pos.x, pos.y));
         }
     }
 }

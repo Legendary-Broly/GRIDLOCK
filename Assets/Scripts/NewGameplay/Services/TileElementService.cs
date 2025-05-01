@@ -13,8 +13,8 @@ namespace NewGameplay.Services
         private readonly int gridWidth;
         private readonly int gridHeight;
         private readonly List<TileElementSO> elementConfigs;
-        private readonly IProgressTrackerService progressService;
         private readonly IEntropyService entropyService;
+        private IGridService gridService;
         private Vector2Int? virusNestPosition = null;
 
         public int GridWidth => gridWidth;
@@ -25,15 +25,18 @@ namespace NewGameplay.Services
             int gridWidth,
             int gridHeight,
             List<TileElementSO> configs,
-            IProgressTrackerService progressService,
             IEntropyService entropyService)
         {
             this.gridWidth = gridWidth;
             this.gridHeight = gridHeight;
             this.elementConfigs = configs;
-            this.progressService = progressService;
             this.entropyService = entropyService;
             gridElements = new TileElementType[gridWidth, gridHeight];
+        }
+
+        public void SetGridService(IGridService service)
+        {
+            this.gridService = service;
         }
 
         public void GenerateElements()
@@ -59,7 +62,6 @@ namespace NewGameplay.Services
             var elementCounts = new Dictionary<TileElementType, int>
             {
                 { TileElementType.VirusNest, 1 },
-                { TileElementType.ProgressTile, 7 },
                 { TileElementType.EntropyIncreaser, 6 },
                 { TileElementType.EntropyReducer, 6 },
                 { TileElementType.CodeShardConstructor, 6 },
@@ -84,13 +86,6 @@ namespace NewGameplay.Services
             }
         }
 
-        public Vector2Int? GetVirusNestPosition()
-        {
-            return virusNestPosition;
-        }
-
-        public TileElementType GetElementAt(int x, int y) => gridElements[x, y];
-
         public void TriggerElementEffect(int x, int y)
         {
             var element = gridElements[x, y];
@@ -104,12 +99,6 @@ namespace NewGameplay.Services
 
             switch (element)
             {
-                case TileElementType.ProgressTile:
-                    Debug.Log($"[TileElementService] Triggering progress boost: {config.progressPercent}%");
-                    int scoreIncrease = Mathf.RoundToInt(config.progressPercent);
-                    progressService.ApplyScore(scoreIncrease);
-                    break;
-
                 case TileElementType.EntropyIncreaser:
                     Debug.Log($"[TileElementService] Increasing entropy by {config.entropyChange}");
                     entropyService.Increase(Mathf.Abs(config.entropyChange));
@@ -136,7 +125,6 @@ namespace NewGameplay.Services
                     Debug.Log("[TileElementService] Virus Nest triggered — spawning virus.");
                     gridElements[x, y] = TileElementType.Empty;
 
-                    var gridService = Object.FindFirstObjectByType<NewGameplayBootstrapper>()?.ExposedGridService;
                     if (gridService != null)
                     {
                         gridService.SetSymbol(x, y, "X");
@@ -144,12 +132,10 @@ namespace NewGameplay.Services
                     }
                     else
                     {
-                        Debug.LogError("[TileElementService] Could not find GridService to spawn virus.");
+                        Debug.LogError("[TileElementService] GridService not set - cannot spawn virus.");
                     }
                     break;
             }
-
-            // gridElements[x, y] = TileElementType.Empty;
         }
 
         public void TriggerElementEffectForFirstVirus()
@@ -160,7 +146,6 @@ namespace NewGameplay.Services
                 Debug.Log($"[TileElementService] Spawning virus from nest at {pos}");
                 gridElements[pos.x, pos.y] = TileElementType.Empty;
 
-                var gridService = Object.FindFirstObjectByType<NewGameplayBootstrapper>()?.ExposedGridService;
                 if (gridService != null)
                 {
                     gridService.SetSymbol(pos.x, pos.y, "X");
@@ -168,7 +153,7 @@ namespace NewGameplay.Services
                 }
                 else
                 {
-                    Debug.LogError("[TileElementService] Could not access GridService to spawn virus.");
+                    Debug.LogError("[TileElementService] GridService not set - cannot spawn virus.");
                 }
             }
             else
@@ -176,6 +161,10 @@ namespace NewGameplay.Services
                 Debug.LogWarning("[TileElementService] No virus nest position found.");
             }
         }
+
+        public Vector2Int? GetVirusNestPosition() => virusNestPosition;
+
+        public TileElementType GetElementAt(int x, int y) => gridElements[x, y];
 
         public TileElementSO GetElementSOAt(int x, int y)
         {

@@ -15,6 +15,7 @@ namespace NewGameplay.Services
         private readonly Dictionary<string, int> consecutiveMisses;
         private int selectedIndex = -1;
         private IGridService gridService;
+        private bool hasRevealedInitialTile = false;
 
         public event Action<string[]> OnSymbolsInjected;
 
@@ -25,8 +26,7 @@ namespace NewGameplay.Services
             rng = new System.Random();
             currentSymbols = new string[3];
             consecutiveMisses = new Dictionary<string, int>();
-            
-            // Initialize symbol weights with base, min, and max weights
+
             symbolWeights = new Dictionary<string, SymbolWeight>
             {
                 { "Ψ", new SymbolWeight("Ψ", 10f, 10f, 10f) },
@@ -34,7 +34,6 @@ namespace NewGameplay.Services
                 { "Σ", new SymbolWeight("Σ", 10f, 10f, 10f) }
             };
 
-            // Initialize consecutive misses tracking
             foreach (var symbol in symbolWeights.Keys)
             {
                 consecutiveMisses[symbol] = 0;
@@ -56,9 +55,7 @@ namespace NewGameplay.Services
                 for (int x = 0; x < gridService.GridWidth; x++)
                 {
                     if (gridService.GetSymbolAt(x, y) == "X")
-                    {
                         count++;
-                    }
                 }
             }
             return count;
@@ -76,17 +73,36 @@ namespace NewGameplay.Services
             foreach (var symbol in symbolWeights.Keys)
             {
                 if (!drawnSymbols.Contains(symbol))
-                {
                     consecutiveMisses[symbol]++;
-                }
                 else
-                {
                     consecutiveMisses[symbol] = 0;
-                }
             }
 
             selectedIndex = -1;
             OnSymbolsInjected?.Invoke(currentSymbols);
+
+            // Reveal one random tile on first inject
+            if (!hasRevealedInitialTile && gridService != null && !gridService.IsFirstRevealDone())
+            {
+                var hidden = new List<Vector2Int>();
+                for (int y = 0; y < gridService.GridHeight; y++)
+                {
+                    for (int x = 0; x < gridService.GridWidth; x++)
+                    {
+                        if (!gridService.IsTileRevealed(x, y))
+                            hidden.Add(new Vector2Int(x, y));
+                    }
+                }
+
+                if (hidden.Count > 0)
+                {
+                    var chosen = hidden[rng.Next(hidden.Count)];
+                    Debug.Log($"[Inject] Revealing first tile at {chosen}");
+                    gridService.RevealTile(chosen.x, chosen.y, forceReveal: true);
+                    gridService.UnlockInteraction();
+                    hasRevealedInitialTile = true;
+                }
+            }
         }
 
         private string DrawWeightedSymbol()
@@ -94,29 +110,24 @@ namespace NewGameplay.Services
             var adjustedWeights = new Dictionary<string, float>();
             float totalWeight = 0f;
 
-            // Count viruses to adjust purge weight
             int virusCount = CountVirusesOnGrid();
 
             foreach (var kvp in symbolWeights)
             {
                 float weight = kvp.Value.BaseWeight;
-                
-                // Adjust purge symbol weight based on virus count
+
                 if (kvp.Key == "∆")
                 {
-                    // Scale weight more aggressively: base weight + (virus count * 5)
-                    // This means each virus adds 5 to the weight
                     weight = Mathf.Min(60f, weight + (virusCount * 5f));
                     Debug.Log($"[∆] Adjusted weight to {weight} based on {virusCount} viruses");
                 }
-                // Apply soft guarantees
                 else if (kvp.Key == "∆" && consecutiveMisses[kvp.Key] >= 3)
                 {
-                    weight *= 1.5f; // +50% boost
+                    weight *= 1.5f;
                 }
                 else if (kvp.Key == "Σ" && consecutiveMisses[kvp.Key] >= 4)
                 {
-                    weight *= 1.7f; // +70% boost
+                    weight *= 1.7f;
                 }
 
                 adjustedWeights[kvp.Key] = weight;
@@ -130,20 +141,16 @@ namespace NewGameplay.Services
             {
                 currentSum += kvp.Value;
                 if (roll <= currentSum)
-                {
                     return kvp.Key;
-                }
             }
 
-            return adjustedWeights.Keys.First(); // Fallback
+            return adjustedWeights.Keys.First(); // fallback
         }
 
         public void SelectSymbol(int index)
         {
             if (index >= 0 && index < currentSymbols.Length)
-            {
                 selectedIndex = index;
-            }
         }
 
         public void ClearSelectedSymbol(string symbol)
@@ -162,9 +169,7 @@ namespace NewGameplay.Services
         public void ClearSymbolBank()
         {
             for (int i = 0; i < currentSymbols.Length; i++)
-            {
                 currentSymbols[i] = "";
-            }
             selectedIndex = -1;
         }
 
@@ -191,4 +196,4 @@ namespace NewGameplay.Services
             return currentSymbols.ToArray();
         }
     }
-} 
+}

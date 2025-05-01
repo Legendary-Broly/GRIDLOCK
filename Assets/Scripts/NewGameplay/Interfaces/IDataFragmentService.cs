@@ -1,14 +1,11 @@
 using UnityEngine;
 
-namespace NewGameplay
+namespace NewGameplay.Interfaces
 {
     public interface IDataFragmentService
     {
-        void SpawnFragment();
-        bool IsFragmentFullySurrounded();
-        Vector2Int? GetFragmentPosition();
-        bool IsFragmentPresent();
-        void ClearFragment();
+        void SpawnFragments(int count);
+        int GetRevealedFragmentCount();
+        bool AnyRevealedFragmentsContainVirus();
     }
-
 }

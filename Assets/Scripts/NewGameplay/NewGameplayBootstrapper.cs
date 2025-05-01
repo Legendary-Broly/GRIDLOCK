@@ -13,15 +13,17 @@ namespace NewGameplay
         public GridService ExposedGridService { get; private set; }
         public EntropyService ExposedEntropyService { get; private set; }
         public TileElementService ExposedTileElementService { get; private set; }
-
+        public IProgressTrackerService ExposedProgressService { get; private set; }
+        private RoundManager roundManager;
+        private GameOverController gameOverController;
         [SerializeField] private GridInputController inputController;
         [SerializeField] private GridViewNew gridView;
         [SerializeField] private InjectController injectController;
         [SerializeField] private ExtractController extractController;
         [SerializeField] private EntropyTrackerView entropyTrackerView;
         [SerializeField] private ProgressTrackerView progressTrackerView;
-        [SerializeField] private RoundManager roundManager;
-        [SerializeField] private RoundPopupController roundPopupController;
+        //[SerializeField] private RoundManager roundManager;
+        [SerializeField] private RoundPopupManager roundPopupManager;
         [SerializeField] private MutationManager mutationManager;
 
         private void Awake()
@@ -53,6 +55,8 @@ namespace NewGameplay
             gridService.SetGridView(gridView);
 
             var progressService = new ProgressTrackerService(dataFragmentService);
+            ExposedProgressService = progressService;
+            gridService.SetProgressService(progressService);
             var mutationEffectService = new MutationEffectService(entropyService, gridService, progressService);
 
             var purgeEffectService = new PurgeEffectService(gridStateService, gridService);
@@ -71,13 +75,15 @@ namespace NewGameplay
                 gridService.GridWidth,
                 gridService.GridHeight,
                 tileElementConfigs,
-                progressService,
                 entropyService
             );
             tileElementService.GenerateElements();
+            tileElementService.SetGridService(gridService);
             symbolPlacementService.SetTileElementService(tileElementService);
             gridService.SetTileElementService(tileElementService);
+            dataFragmentService.SetTileElementService(tileElementService);
             ExposedTileElementService = tileElementService;
+
             // === Injection and Extraction ===
             IWeightedInjectService injectService = new WeightedInjectService();
             if (injectService is WeightedInjectService weightedInject)
@@ -86,14 +92,14 @@ namespace NewGameplay
             }
 
             var roundService = new RoundService(gridService, progressService, injectService, dataFragmentService);
-            var scoreService = new ScoreService(mutationEffectService);
-            var extractService = new ExtractService(gridService, entropyService, scoreService, progressService, dataFragmentService);
+            var extractService = new ExtractService(gridService, entropyService, dataFragmentService);
 
             // === Scene Wireup ===
             ExposedEntropyService = entropyService;
             ExposedGridService = gridService;
 
-            roundManager.Initialize(roundService, progressService, roundPopupController, dataFragmentService);
+            roundManager = new RoundManager(progressService, dataFragmentService, roundPopupManager, roundService, gridService, gridView);
+            roundManager.StartFirstRound(); // Triggers SetRequiredFragments + SpawnFragments
             progressTrackerView.Initialize(progressService, gridService, entropyService);
             entropyTrackerView.Initialize(entropyService);
             gridView.Initialize(gridService, tileElementService, virusSpreadService);
@@ -102,7 +108,9 @@ namespace NewGameplay
             gridView.RefreshGrid(gridService);
             inputController.Initialize(gridService, injectService, tileElementService, entropyService, gridView, symbolPlacementService);
             injectController.Initialize(injectService, gridService);
-            extractController.Initialize(extractService, gridService, progressService, dataFragmentService);
+            extractController.Initialize(progressService, dataFragmentService, roundManager);
+            gridService.SetGameOverController(gameOverController);
+
 
             // === Entropy Events ===
             entropyService.OnEntropyChanged += (float newValue, bool wasReset) => {
@@ -111,15 +119,6 @@ namespace NewGameplay
                 if (newValue == 0 && wasReset)
                 {
                     mutationManager.ShowMutationPanel();
-                }
-            };
-
-            // === Progress → Fragment Trigger ===
-            progressService.OnProgressGoalReached += () =>
-            {
-                if (!dataFragmentService.GetFragmentPosition().HasValue)
-                {
-                    dataFragmentService.SpawnFragment();
                 }
             };
 

@@ -1,18 +1,19 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using System.Linq;
-public interface IProgressTrackerService
-{
-    int CurrentScore { get; }
-    int RoundTarget { get; }
-    int CurrentProgress { get; }
-    int CurrentThreshold { get; }
 
-    void ApplyScore(int score);
-    bool HasMetGoal();
-    void ResetProgress();
-    void IncreaseThreshold();
+namespace NewGameplay.Interfaces
+{
+    public interface IProgressTrackerService
+    {
+        event System.Action OnProgressGoalReached;
+        event System.Action OnProgressChanged;
+        
+        int FragmentsFound { get; }
+        int RequiredFragments { get; }
+        
+        void SetRequiredFragments(int count);
+        void IncrementFragmentsFound();
+        bool HasMetGoal();
+        void ResetProgress();
+    }
 }

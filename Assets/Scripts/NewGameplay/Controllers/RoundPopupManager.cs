@@ -2,7 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public class RoundPopupController : MonoBehaviour
+public class RoundPopupManager : MonoBehaviour
 {
     [SerializeField] private GameObject popupPanel;
     [SerializeField] private TextMeshProUGUI messageText;

@@ -12,6 +12,7 @@ namespace NewGameplay.Services
         private readonly IGridStateService gridStateService;
         private IEntropyService entropyServiceInternal;
         private HashSet<Vector2Int> recentlyPurgedPositions = new HashSet<Vector2Int>();
+        private int purgeActionCount = 0;
         public event Action OnVirusSpread;
         public VirusSpreadService(IGridStateService gridStateService)
         {
@@ -69,8 +70,13 @@ namespace NewGameplay.Services
                 Debug.Log("[VirusSpreadService] No valid virus spread targets found.");
             }
 
-            // Clear recently purged positions after spread attempt
-            recentlyPurgedPositions.Clear();
+            // Increment action count and clear purged positions after 2 actions
+            purgeActionCount++;
+            if (purgeActionCount >= 2)
+            {
+                recentlyPurgedPositions.Clear();
+                purgeActionCount = 0;
+            }
         }
 
         private List<Vector2Int> GetAllVirusPositions()
@@ -118,7 +124,7 @@ namespace NewGameplay.Services
             this.entropyServiceInternal = entropyService;
         }
 
-        private IPurgeEffectService purgeEffectService; // add this field
+        private IPurgeEffectService purgeEffectService;
 
         public void SetPurgeEffectService(IPurgeEffectService purgeEffectService)
         {
@@ -129,14 +135,17 @@ namespace NewGameplay.Services
         {
             throw new NotImplementedException();
         }
+
         public bool HasVirusAt(int x, int y)
         {
             return gridStateService.GetSymbolAt(x, y) == "X";
         }
+
         public void RemoveVirusAt(int x, int y)
         {
             gridStateService.SetSymbol(x, y, null);
             recentlyPurgedPositions.Add(new Vector2Int(x, y));
+            purgeActionCount = 0; // Reset counter when new purge occurs
         }
     }
 }

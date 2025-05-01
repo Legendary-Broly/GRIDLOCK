@@ -36,5 +36,7 @@ namespace NewGameplay.Interfaces
         void RefreshTile(int x, int y);
         bool CanRevealTile(int x, int y);
         bool IsFirstRevealDone();
+        void UnlockInteraction();
+        void LockInteraction();
     }
 }

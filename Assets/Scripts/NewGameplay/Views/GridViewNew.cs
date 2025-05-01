@@ -107,7 +107,6 @@ public class GridViewNew : MonoBehaviour
 
         if (virusSpreadService.HasVirusAt(x, y))
         {
-            Debug.Log($"[GridView] Virus detected at ({x}, {y})");
             return TileElementType.VirusNest; // TEMP: treat virus as VirusNest for now
         }
 
@@ -128,6 +127,7 @@ public class GridViewNew : MonoBehaviour
         var slashText = tile.transform.Find("Button/SlashText")?.GetComponent<TextMeshProUGUI>();
         var backgroundText = tile.transform.Find("Button/ElementText")?.GetComponent<TextMeshProUGUI>();
         var button = tile.transform.Find("Button")?.GetComponent<Button>();
+        var slotView = tile.GetComponent<TileSlotView>();
 
         if (symbolText == null || slashText == null || backgroundText == null || button == null)
         {
@@ -139,35 +139,43 @@ public class GridViewNew : MonoBehaviour
         string symbol = gridService.GetSymbolAt(x, y);
         var elementSO = tileElementService.GetElementSOAt(x, y);
 
-        // Determine if this tile should be interactable
-        bool isFirst = !gridService.IsFirstRevealDone();
-        bool canReveal = tileState == TileState.Revealed || isFirst || gridService.CanRevealTile(x, y);
-
-        button.interactable = canReveal;
-
+        // Reset visuals
+        symbolText.text = "";
+        backgroundText.text = "";
+        backgroundText.color = Color.white;
+        symbolText.color = Color.white;
         slashText.enabled = true;
+        button.colors = originalColorBlocks[x, y];
+        slotView?.HideAllArrows();
 
+        // Determine interaction
+        bool isFirst = !gridService.IsFirstRevealDone();
+        bool canReveal = tileState == TileState.Hidden && (isFirst || gridService.CanRevealTile(x, y));
+        bool isPurgeSelected = InjectServiceLocator.Service?.SelectedSymbol == "∆";
+        button.interactable = canReveal || (tileState == TileState.Revealed && isPurgeSelected);
+
+        // State handling
         if (tileState == TileState.Hidden)
         {
-            symbolText.text = "{*}";
+            symbolText.text = gridService.CanRevealTile(x, y) ? "+" : "";
             backgroundText.text = "";
+            slotView?.SetPlayerRevealed(false);
         }
         else if (tileState == TileState.Revealed)
         {
+            // Show highlight for player-revealed tile
+            slotView?.SetPlayerRevealed(true);
+
             if (elementSO != null)
             {
                 backgroundText.text = elementSO.displayText;
                 backgroundText.color = elementSO.displayColor;
             }
-            else
-            {
-                backgroundText.text = "";
-            }
 
             if (symbol == "DF")
             {
                 slashText.enabled = false;
-                symbolText.text = "𝛟";
+                symbolText.text = "ǂ";
                 symbolText.color = Color.yellow;
             }
             else if (!string.IsNullOrEmpty(symbol))
@@ -182,25 +190,13 @@ public class GridViewNew : MonoBehaviour
                 symbolText.color = new Color(1f, 1f, 1f, 0.2f);
             }
 
-            // Set directional indicators if the tile is revealed
-            var slotView = tile.GetComponent<TileSlotView>();
             if (slotView != null)
             {
-                int w = gridService.GridWidth;
-                int h = gridService.GridHeight;
-
-                TileElementType top    = GetElementIncludingVirus(x, y - 1);
-                TileElementType bottom = GetElementIncludingVirus(x, y + 1);
-                TileElementType left   = GetElementIncludingVirus(x - 1, y);
-                TileElementType right  = GetElementIncludingVirus(x + 1, y);
-
-
                 slotView.SetDirectionalIndicators(x, y);
 
-                // Update neighboring tiles to hide arrows pointing at this tile
                 void HideArrowIfValid(int nx, int ny, System.Action<TileSlotView> hideAction)
                 {
-                    if (nx >= 0 && nx < w && ny >= 0 && ny < h)
+                    if (nx >= 0 && nx < gridService.GridWidth && ny >= 0 && ny < gridService.GridHeight)
                     {
                         if (gridService.GetTileState(nx, ny) == TileState.Revealed)
                         {
@@ -210,16 +206,15 @@ public class GridViewNew : MonoBehaviour
                     }
                 }
 
-                HideArrowIfValid(x, y - 1, v => v.HideArrowBottom()); // tile above → arrow down
-                HideArrowIfValid(x, y + 1, v => v.HideArrowTop());    // tile below → arrow up
-                HideArrowIfValid(x - 1, y, v => v.HideArrowRight());  // tile left  → arrow right
-                HideArrowIfValid(x + 1, y, v => v.HideArrowLeft());   // tile right → arrow left
-                // Also remove arrows on *this* tile that point to already revealed neighbors
+                HideArrowIfValid(x, y - 1, v => v.HideArrowBottom());
+                HideArrowIfValid(x, y + 1, v => v.HideArrowTop());
+                HideArrowIfValid(x - 1, y, v => v.HideArrowRight());
+                HideArrowIfValid(x + 1, y, v => v.HideArrowLeft());
+
                 if (gridService.GetTileState(x, y - 1) == TileState.Revealed) slotView.HideArrowTop();
                 if (gridService.GetTileState(x, y + 1) == TileState.Revealed) slotView.HideArrowBottom();
                 if (gridService.GetTileState(x - 1, y) == TileState.Revealed) slotView.HideArrowLeft();
                 if (gridService.GetTileState(x + 1, y) == TileState.Revealed) slotView.HideArrowRight();
-
             }
         }
     }

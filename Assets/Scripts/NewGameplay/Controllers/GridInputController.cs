@@ -10,15 +10,16 @@ namespace NewGameplay.Controllers
     {
         [SerializeField] private GridViewNew view;
         private IGridService grid;
-        private IInjectService inject;
-        private IInjectService injectService;
+    
+        private IWeightedInjectService injectService;
+
         //private bool hasPlacedFirstSymbol = false;
         private ITileElementService tileElementService;
         private IEntropyService entropyService;
         private SymbolPlacementService symbolPlacementService;
         public void Initialize(
             IGridService gridService,
-            IInjectService injectService,
+            IWeightedInjectService injectService,
             ITileElementService tileElementService,
             IEntropyService entropyService,
             GridViewNew gridView,

@@ -8,45 +8,56 @@ using NewGameplay.Interfaces;
 using NewGameplay.Services;
 using NewGameplay;
 
-public class ProgressTrackerService : IProgressTrackerService
+namespace NewGameplay.Services
 {
-    public int CurrentScore { get; private set; }
-    public int RoundTarget { get; private set; } = 20;  // Initial round target
-
-    public int CurrentProgress => CurrentScore;
-    public int CurrentThreshold => RoundTarget;
-    public event System.Action OnProgressGoalReached;
-
-    private readonly IDataFragmentService dataFragmentService;
-
-    public ProgressTrackerService(IDataFragmentService dataFragmentService)
+    public class ProgressTrackerService : IProgressTrackerService
     {
-        this.dataFragmentService = dataFragmentService;
-    }
+        public event System.Action OnProgressGoalReached;
+        public event System.Action OnProgressChanged;
+        private readonly IDataFragmentService dataFragmentService;
+        
+        private int foundFragments = 0;
+        private int requiredFragments = 1;
 
-    public void ApplyScore(int score)
-    {
-        CurrentScore += score;
+        public int FragmentsFound => foundFragments;
+        public int RequiredFragments => requiredFragments;
 
-        if (HasMetGoal() && !dataFragmentService.IsFragmentPresent())
+        public void SetRequiredFragments(int count)
         {
-            Debug.Log("[ProgressTracker] Progress goal reached. Attempting to spawn Data Fragment.");
-            dataFragmentService.SpawnFragment();
+            Debug.Log($"[ProgressTracker] Setting required fragments to {count} (will be clamped to 1-3)");
+            requiredFragments = Mathf.Clamp(count, 1, 3);
+            foundFragments = 0;
+            Debug.Log($"[ProgressTracker] Progress reset to 0/{requiredFragments}");
+            OnProgressChanged?.Invoke();
         }
-    }
 
-    public bool HasMetGoal() => CurrentScore >= RoundTarget;
+        public void IncrementFragmentsFound()
+        {
+            foundFragments++;
+            Debug.Log($"[ProgressTracker] Found fragments incremented to {foundFragments}/{requiredFragments}");
+            OnProgressChanged?.Invoke();
+            if (HasMetGoal())
+            {
+                OnProgressGoalReached?.Invoke();
+            }
+        }
 
-    public void ResetProgress()
-    {
-        CurrentScore = 0;
-    }
+        public bool HasMetGoal()
+        {
+            return foundFragments >= requiredFragments;
+        }
 
-    public void IncreaseThreshold()
-    {
-        Debug.Log("IncreaseThreshold called. Current RoundTarget: " + RoundTarget); // Debug log
-        RoundTarget += 20;  // Increase threshold by 20 each round
-        Debug.Log("Threshold increased. New RoundTarget: " + RoundTarget); // Debug log
+        public void ResetProgress()
+        {
+            Debug.Log("[ProgressTracker] Resetting progress");
+            foundFragments = 0;
+            OnProgressChanged?.Invoke();
+        }
+
+        public ProgressTrackerService(IDataFragmentService dataFragmentService)
+        {
+            this.dataFragmentService = dataFragmentService;
+        }
     }
 }
 
