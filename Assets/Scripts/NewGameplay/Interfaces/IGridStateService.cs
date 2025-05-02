@@ -18,7 +18,7 @@ namespace NewGameplay.Interfaces
         bool IsInBounds(int x, int y);
         void SetSymbol(int x, int y, string symbol);
         void SetTilePlayable(int x, int y, bool playable);
-        void ClearAllTiles();
+        void ClearAllTiles(bool makePlayable = true);
         void ClearAllExceptViruses();
         TileState GetTileState(int x, int y);
         void SetTileState(int x, int y, TileState newState);

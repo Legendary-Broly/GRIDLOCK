@@ -18,6 +18,7 @@ namespace NewGameplay.Services
         private readonly ISymbolPlacementService symbolPlacementService;
         private readonly IPurgeEffectService purgeEffectService;
         private readonly IVirusSpreadService virusSpreadService;
+
         private ITileElementService tileElementService;
         private IProgressTrackerService progressService;
 
@@ -27,6 +28,8 @@ namespace NewGameplay.Services
         private Vector2Int? lastRevealedTile = null;
         private Vector2Int? previousRevealedTile = null;
         private bool gridInteractionLocked = true;
+        private bool firstRevealPermitted = false;
+        private bool roundSpawnsCompleted = false;
 
         public string GetSymbolAt(int x, int y) => gridStateService.GetSymbolAt(x, y);
         public bool IsTilePlayable(int x, int y) => gridStateService.IsTilePlayable(x, y);
@@ -59,6 +62,7 @@ namespace NewGameplay.Services
             gridStateService.OnGridStateChanged += HandleGridStateChanged;
             symbolPlacementService.OnSymbolPlaced += HandleSymbolPlaced;
             virusSpreadService.OnVirusSpread += HandleVirusSpread;
+            virusSpreadService.SetGridService(this);
         }
 
         private GridViewNew gridView;
@@ -119,14 +123,10 @@ namespace NewGameplay.Services
 
             previousRevealedTile = lastRevealedTile;
             lastRevealedTile = new Vector2Int(x, y);
-            // ✅ Trigger fail only if this tile was revealed directly and contains a virus
-            if (gridStateService.GetSymbolAt(x, y) == "X")
-            {
-                Debug.Log("[GridService] Virus revealed by player — triggering fail state.");
-                TriggerFailState();
-                return;
-            }
 
+            // Get the symbol before revealing the tile
+            string previousSymbol = gridStateService.GetSymbolAt(x, y);
+            
             gridStateService.SetTileState(x, y, TileState.Revealed);
             RefreshTile(x, y);
 
@@ -137,11 +137,84 @@ namespace NewGameplay.Services
             }
 
             tileElementService?.TriggerElementEffect(x, y);
-            if (gridStateService.GetSymbolAt(x, y) == "DF")
+            
+            // Only increment fragments if the previous symbol was a data fragment
+            if (previousSymbol == "DF")
             {
                 progressService?.IncrementFragmentsFound();
             }
+            
             virusSpreadService?.TrySpreadFromExistingViruses();
+            
+            // Play sound effects based on tile content
+            var gameplayBootstrapper = UnityEngine.Object.FindFirstObjectByType<NewGameplayBootstrapper>();
+            var soundService = gameplayBootstrapper?.ExposedSoundService;
+            
+            if (soundService != null)
+            {
+                // Play specific sounds based on tile content
+                string symbol = GetSymbolAt(x, y);
+                bool playedSpecialSound = false;
+                
+                if (symbol == "X")
+                {
+                    soundService.PlayWarning();
+                    playedSpecialSound = true;
+                }
+                else if (symbol == "C$")
+                {
+                    soundService.PlayCodeShard();
+                    playedSpecialSound = true;
+                }
+                else if (symbol == "DF")
+                {
+                    soundService.PlayDataFragment();
+                    playedSpecialSound = true;
+                }
+                else if (virusSpreadService?.HasVirusAt(x, y) == true)
+                {
+                    soundService.PlayWarning();
+                    playedSpecialSound = true;
+                }
+                else if (symbol == "∆:/run_PURGE.exe")
+                {
+                    // Special handling for purge - only play warning if there was a virus
+                    if (previousSymbol == "X")
+                    {
+                        soundService.PlayWarning();
+                    }
+                    else
+                    {
+                        soundService.PlayTileClick();
+                    }
+                    playedSpecialSound = true;
+                }
+                
+                // Only play tile click if no special sound was played
+                if (!playedSpecialSound)
+                {
+                    soundService.PlayTileClick();
+                }
+            }
+            
+            if (!roundSpawnsCompleted)
+            {
+                tileElementService?.TriggerElementEffectForFirstVirus();
+
+                SetTilePlayable(x, y, false);
+
+                var bootstrapperRef = UnityEngine.Object.FindFirstObjectByType<NewGameplayBootstrapper>();
+                bootstrapperRef?.ExposedDataFragmentService?.SpawnFragments(3);
+                bootstrapperRef?.ExposedSoundService?.PlayTileClick();
+
+                if (string.IsNullOrEmpty(GetSymbolAt(x, y)))
+                {
+                    SetTilePlayable(x, y, true);
+                }
+
+                roundSpawnsCompleted = true;
+            }
+
         }
 
         public bool IsTileRevealed(int x, int y)
@@ -170,7 +243,7 @@ namespace NewGameplay.Services
         {
             if (gridInteractionLocked) return false;
             if (!IsInBounds(x, y) || IsTileRevealed(x, y)) return false;
-            if (!lastRevealedTile.HasValue) return true; // First reveal allowed anywhere
+            if (!lastRevealedTile.HasValue) return firstRevealPermitted; // First reveal only allowed if permitted
             return IsAdjacentToLastRevealed(x, y);
         }
 
@@ -232,9 +305,10 @@ namespace NewGameplay.Services
 
         public void ClearAllTiles()
         {
-            gridStateService.ClearAllTiles();
+            gridStateService.ClearAllTiles(makePlayable: false);
             lastRevealedTile = null;
             previousRevealedTile = null;
+
         }
 
         private void HandleGridStateChanged()
@@ -250,6 +324,10 @@ namespace NewGameplay.Services
         private void HandleVirusSpread()
         {
             OnGridUpdated?.Invoke();
+        }
+        public Vector2Int? GetLastRevealedTile()
+        {
+            return lastRevealedTile;
         }
 
         public void TriggerGridUpdate()
@@ -291,17 +369,15 @@ namespace NewGameplay.Services
         {
             this.progressService = service;
         }
-    
-        private void TriggerFailState()
+
+        public void SetFirstRevealPermitted(bool value)
         {
-            Debug.Log("[GridService] FAIL: Player revealed a virus — game over.");
-
-            for (int y = 0; y < GridHeight; y++)
-                for (int x = 0; x < GridWidth; x++)
-                    gridStateService.SetTilePlayable(x, y, false);
-
-            OnGridUpdated?.Invoke();
-            gameOverController?.ShowGameOver();
+            firstRevealPermitted = value;
         }
+        public void ResetRoundSpawns()
+        {
+            roundSpawnsCompleted = false;
+        }
+
     }
 }

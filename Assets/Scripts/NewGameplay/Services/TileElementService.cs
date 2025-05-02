@@ -64,9 +64,7 @@ namespace NewGameplay.Services
                 { TileElementType.VirusNest, 1 },
                 { TileElementType.EntropyIncreaser, 6 },
                 { TileElementType.EntropyReducer, 6 },
-                { TileElementType.CodeShardConstructor, 6 },
-                { TileElementType.CodeShardArgument, 6 },
-                { TileElementType.CodeShardCloser, 6 }
+                { TileElementType.CodeShard, 18 },
             };
 
             foreach (var elementCount in elementCounts)
@@ -109,16 +107,8 @@ namespace NewGameplay.Services
                     entropyService.Decrease(Mathf.Abs(config.entropyChange));
                     break;
 
-                case TileElementType.CodeShardConstructor:
-                    Debug.Log("Construct code shard.");
-                    break;
-
-                case TileElementType.CodeShardArgument:
-                    Debug.Log("Add argument to code shard.");
-                    break;
-
-                case TileElementType.CodeShardCloser:
-                    Debug.Log("Close code shard.");
+                case TileElementType.CodeShard:
+                    Debug.Log("Code shard found.");
                     break;
 
                 case TileElementType.VirusNest:

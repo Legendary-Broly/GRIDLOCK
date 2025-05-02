@@ -14,6 +14,7 @@ namespace NewGameplay.Controllers
         private GridViewNew gridView;
         private IGridService gridService;
         private IRoundService roundService;
+        private Action roundResetHandler;
 
         private int currentRound = 1;
         public event Action OnRoundStarted;
@@ -33,6 +34,33 @@ namespace NewGameplay.Controllers
             this.gridService = gridService;
             this.gridView = gridView;
 
+            // Create the event handler
+            roundResetHandler = () =>
+            {
+                currentRound++;
+                Debug.Log($"[RoundManager] Starting round {currentRound}");
+                
+                // Set required fragments based on round number (1->1, 2->2, 3->3)
+                int requiredFragments = Mathf.Clamp(currentRound, 1, 3);
+                Debug.Log($"[RoundManager] Setting required fragments for round {currentRound} to {requiredFragments}");
+                progressService.SetRequiredFragments(requiredFragments);
+                
+                // Always spawn 3 data fragments regardless of round number
+                Debug.Log($"[RoundManager] Spawning 3 data fragments for round {currentRound}");
+                dataFragmentService.SpawnFragments(3);
+                
+                gridView.RefreshGrid(gridService);
+
+                // Find and refresh the progress tracker view
+                var progressTrackerView = UnityEngine.Object.FindFirstObjectByType<ProgressTrackerView>();
+                if (progressTrackerView != null)
+                {
+                    Debug.Log("[RoundManager] Refreshing progress tracker view");
+                    progressTrackerView.Refresh();
+                }
+            };
+
+            // Subscribe to the continue button click
             popupManager.onContinue += BeginNewRound;
         }
 
@@ -68,28 +96,10 @@ namespace NewGameplay.Controllers
         {
             Debug.Log("[RoundManager] Beginning new round...");
 
-            // Subscribe to the event BEFORE triggering the reset
-            roundService.onRoundReset += () =>
-            {
-                currentRound++;
-                Debug.Log($"[RoundManager] Starting round {currentRound}");
-                
-                // Set required fragments based on round number (1->1, 2->2, 3->3)
-                int requiredFragments = Mathf.Clamp(currentRound, 1, 3);
-                Debug.Log($"[RoundManager] Setting required fragments for round {currentRound} to {requiredFragments}");
-                progressService.SetRequiredFragments(requiredFragments);
-
-                dataFragmentService.SpawnFragments(3);
-                gridView.RefreshGrid(gridService);
-
-                // Find and refresh the progress tracker view
-                var progressTrackerView = UnityEngine.Object.FindFirstObjectByType<ProgressTrackerView>();
-                if (progressTrackerView != null)
-                {
-                    Debug.Log("[RoundManager] Refreshing progress tracker view");
-                    progressTrackerView.Refresh();
-                }
-            };
+            // Unsubscribe first to prevent multiple subscriptions
+            roundService.onRoundReset -= roundResetHandler;
+            // Subscribe to the event
+            roundService.onRoundReset += roundResetHandler;
 
             // Now trigger the reset which will call ResetRound() internally
             roundService.ResetRound();

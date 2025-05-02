@@ -16,4 +16,4 @@ MonoBehaviour:
   entropyChange: 5
   progressPercent: 2
   displayText: E+
-  displayColor: {r: 1, g: 0.631607, b: 0, a: 1}
+  displayColor: {r: 1, g: 0.6775761, b: 0, a: 1}

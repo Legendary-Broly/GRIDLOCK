@@ -12,5 +12,7 @@ namespace NewGameplay.Interfaces
         void UpdateWeights(float entropyPercent);
         string[] GetCurrentSymbols();
         event System.Action<string[]> OnSymbolsInjected;
+        void UnlockNextHack();
+
     }
 } 

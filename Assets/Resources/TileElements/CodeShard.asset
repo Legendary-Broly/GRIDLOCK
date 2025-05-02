@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b7d196649bc128409925a6cfe5c176e, type: 3}
-  m_Name: CodeShardArgument
+  m_Name: CodeShard
   m_EditorClassIdentifier: 
-  elementType: 5
+  elementType: 4
   entropyChange: 0
   progressPercent: 0
-  displayText: CA
+  displayText: C$
   displayColor: {r: 1, g: 0, b: 0.77254903, a: 1}

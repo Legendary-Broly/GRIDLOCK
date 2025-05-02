@@ -49,7 +49,7 @@ namespace NewGameplay.Controllers
 
             if (entropyService != null)
             {
-                entropyService.Increase(5); // Base 5% entropy increase per inject
+                entropyService.Increase(10); // Base 5% entropy increase per inject
             }
             else
             {
@@ -79,7 +79,7 @@ namespace NewGameplay.Controllers
             if (string.IsNullOrEmpty(symbol)) return;
 
             // ∆ = Purge — keep existing placement logic
-            if (symbol == "∆")
+            if (symbol == "∆:/run_PURGE.exe")
             {
                 injectService.SelectSymbol(index);
             }
@@ -109,7 +109,7 @@ namespace NewGameplay.Controllers
                 if (image != null)
                 {
                     var cb = symbolButtons[i].colors;
-                    image.color = (i == index && symbol == "∆") ? cb.selectedColor : cb.normalColor;
+                    image.color = (i == index && symbol == "∆:/run_PURGE.exe") ? cb.selectedColor : cb.normalColor;
                 }
             }
         }

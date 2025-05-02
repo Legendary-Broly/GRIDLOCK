@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using NewGameplay.Interfaces;
 using NewGameplay.Services;
+using NewGameplay.Models;
+using NewGameplay.Enums;
 
 namespace NewGameplay.Controllers
 {
@@ -10,7 +12,10 @@ namespace NewGameplay.Controllers
         private IProgressTrackerService progressService;
         private IDataFragmentService dataFragmentService;
         private RoundManager roundManager;
-
+        private IGridService gridService;
+        private ICodeShardTracker codeShardTracker;
+        private IExtractService extractService;
+        private ITileElementService tileElementService;
 
         [SerializeField] private Button extractButton;
 
@@ -30,10 +35,21 @@ namespace NewGameplay.Controllers
             extractButton.interactable = canExtract;
         }
 
-        public void Initialize(IProgressTrackerService progress, IDataFragmentService dataFragments, RoundManager roundManager)
+        public void Initialize(
+            IExtractService extractService,
+            IGridService gridService,
+            IProgressTrackerService progressService,
+            IDataFragmentService dataFragmentService,
+            ICodeShardTracker codeShardTracker,
+            ITileElementService tileElementService,
+            RoundManager roundManager)
         {
-            this.progressService = progress;
-            this.dataFragmentService = dataFragments;
+            this.extractService = extractService;
+            this.gridService = gridService;
+            this.progressService = progressService;
+            this.dataFragmentService = dataFragmentService;
+            this.codeShardTracker = codeShardTracker;
+            this.tileElementService = tileElementService;
             this.roundManager = roundManager;
         }
 
@@ -42,8 +58,28 @@ namespace NewGameplay.Controllers
             if (progressService.HasMetGoal() && !dataFragmentService.AnyRevealedFragmentsContainVirus())
             {
                 Debug.Log("[ExtractController] Extract triggered, checking round end.");
-                roundManager.CheckRoundEnd(); // triggers popup & flow
+                roundManager.CheckRoundEnd();
                 extractButton.interactable = false;
+            }
+
+            for (int y = 0; y < gridService.GridHeight; y++)
+            {
+                for (int x = 0; x < gridService.GridWidth; x++)
+                {
+                    var state = gridService.GetTileState(x, y);
+                    var element = tileElementService.GetElementAt(x, y);
+                    var symbol = gridService.GetSymbolAt(x, y);
+
+                    bool isShard = element == TileElementType.CodeShard;
+                    bool isRevealed = state == TileState.Revealed;
+                    bool hasVirus = symbol == "X";
+
+                    if (isShard && isRevealed && !hasVirus)
+                    {
+                        codeShardTracker.AddShard();
+                        Debug.Log($"[ExtractController] Code Shard collected at ({x},{y})");
+                    }
+                }
             }
         }
     }

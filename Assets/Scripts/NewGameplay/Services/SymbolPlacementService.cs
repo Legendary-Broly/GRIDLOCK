@@ -75,7 +75,7 @@ namespace NewGameplay.Services
             }
 
             // Check playability unless it's a purge
-            if (!gridStateService.IsTilePlayable(x, y) && symbol != "∆")
+            if (!gridStateService.IsTilePlayable(x, y) && symbol != "∆:/run_PURGE.exe")
             {
                 Debug.Log($"[SymbolPlacement] Tile ({x},{y}) is not playable and symbol is not purge, returning");
                 return;
@@ -98,20 +98,29 @@ namespace NewGameplay.Services
             }
 
             // Special case: purge placed on virus
-            if (symbol == "∆" && virusSpreadService?.HasVirusAt(x, y) == true)
+            if (symbol == "∆:/run_PURGE.exe")
             {
-                Debug.Log($"[Purge] Purge removing virus at ({x},{y})");
-                virusSpreadService.RemoveVirusAt(x, y);
-                gridStateService.SetSymbol(x, y, null);  // Clear visual
-                gridStateService.SetTilePlayable(x, y, false);
-                lastPurgedPosition = new Vector2Int(x, y);  // Track this position
-
-                // Reveal the tile if it's adjacent to the last revealed tile
+                // Always reveal the tile when purge is used
                 if (gridService.CanRevealTile(x, y))
                 {
-                    Debug.Log($"[Purge] Revealing tile at ({x},{y}) after virus removal");
+                    Debug.Log($"[Purge] Revealing tile at ({x},{y})");
                     gridService.RevealTile(x, y);
                 }
+
+                // If there's a virus, remove it
+                if (virusSpreadService?.HasVirusAt(x, y) == true)
+                {
+                    Debug.Log($"[Purge] Purge removing virus at ({x},{y})");
+                    virusSpreadService.RemoveVirusAt(x, y);
+                }
+
+                // Clear the symbol and make tile unplayable, but protect data fragments
+                if (currentSymbol != "DF")  // Only clear if it's not a data fragment
+                {
+                    gridService.SetSymbol(x, y, null);
+                }
+                gridStateService.SetTilePlayable(x, y, false);
+                lastPurgedPosition = new Vector2Int(x, y);
 
                 Debug.Log($"[Purge] After removal - Symbol: '{gridStateService.GetSymbolAt(x, y)}', HasVirus: {virusSpreadService.HasVirusAt(x, y)}");
             }
@@ -123,7 +132,7 @@ namespace NewGameplay.Services
                 gridStateService.SetTilePlayable(x, y, false);
 
                 // Handle initial virus spawn (only for non-purge symbols)
-                if (!initialVirusSpawned && symbol != "∆")
+                if (!initialVirusSpawned && symbol != "∆:/run_PURGE.exe")
                 {
                     Vector2Int? nestPos = tileElementService.GetVirusNestPosition();
                     if (nestPos.HasValue)

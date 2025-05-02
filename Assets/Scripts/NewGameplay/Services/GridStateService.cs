@@ -61,16 +61,21 @@ namespace NewGameplay.Services
             OnGridStateChanged?.Invoke();
         }
 
-        public void ClearAllTiles()
+        public void ClearAllTiles(bool makePlayable = true)
         {
             for (int y = 0; y < gridHeight; y++)
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
                     gridState[x, y] = null;
-                    tilePlayable[x, y] = true;
+
+                    if (makePlayable)
+                        tilePlayable[x, y] = true;
+                    else
+                        tilePlayable[x, y] = false;
                 }
             }
+
             OnGridStateChanged?.Invoke();
         }
 

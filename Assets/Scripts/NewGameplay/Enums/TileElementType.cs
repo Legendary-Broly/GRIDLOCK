@@ -10,9 +10,7 @@ namespace NewGameplay.Enums
         ProgressTile,
         EntropyIncreaser,
         EntropyReducer,
-        CodeShardConstructor,
-        CodeShardArgument,
-        CodeShardCloser,
+        CodeShard,
         VirusNest,
     }
 }

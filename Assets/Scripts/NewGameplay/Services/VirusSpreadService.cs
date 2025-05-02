@@ -14,11 +14,16 @@ namespace NewGameplay.Services
         private HashSet<Vector2Int> recentlyPurgedPositions = new HashSet<Vector2Int>();
         private int purgeActionCount = 0;
         public event Action OnVirusSpread;
+        private GridService gridService;
+
         public VirusSpreadService(IGridStateService gridStateService)
         {
             this.gridStateService = gridStateService;
         }
-
+        public void SetGridService(GridService gridService)
+        {
+            this.gridService = gridService;
+        }
         public void TrySpreadFromExistingViruses()
         {
             List<Vector2Int> virusPositions = GetAllVirusPositions();
@@ -41,7 +46,7 @@ namespace NewGameplay.Services
 
                     string symbol = gridStateService.GetSymbolAt(nx, ny);
 
-                    if (symbol == "∆")
+                    if (symbol == "∆:/run_PURGE.exe")
                     {
                         Debug.Log($"[VirusSpreadService] Virus at ({virus.x},{virus.y}) neutralized by purge at ({nx},{ny})");
                         gridStateService.SetSymbol(nx, ny, null); // Clear purge
@@ -101,17 +106,47 @@ namespace NewGameplay.Services
         {
             if (!gridStateService.IsInBounds(x, y)) return false;
 
-            // Check if this position was recently purged
+            string symbol = gridStateService.GetSymbolAt(x, y);
+
+            if (symbol == "X" || symbol == "DF" || symbol == "∆:/run_PURGE.exe") return false;
+
             if (recentlyPurgedPositions.Contains(new Vector2Int(x, y)))
             {
                 Debug.Log($"[VirusSpreadService] Position ({x},{y}) was recently purged, blocking spread");
                 return false;
             }
 
-            string symbol = gridStateService.GetSymbolAt(x, y);
+            // Block virus spread to tiles that are marked as CanRevealTile for the player
+            if (gridService != null && gridService.CanRevealTile(x, y))
+            {
+                Debug.Log($"[VirusSpreadService] Spread blocked at ({x},{y}) — tile is marked as revealable for player.");
+                return false;
+            }
 
-            // Allow overwriting anything except Virus, DataFragment, or Purge
-            return symbol != "X" && symbol != "DF" && symbol != "∆";
+            // Block tiles adjacent to last revealed tile
+            if (gridService != null)
+            {
+                Vector2Int? last = gridService.GetLastRevealedTile();
+                if (last.HasValue)
+                {
+                    Vector2Int[] directions = new[]
+                    {
+                        Vector2Int.up, Vector2Int.down,
+                        Vector2Int.left, Vector2Int.right
+                    };
+
+                    foreach (var dir in directions)
+                    {
+                        if (last.Value + dir == new Vector2Int(x, y))
+                        {
+                            Debug.Log($"[VirusSpreadService] Spread blocked at ({x},{y}) — adjacent to last revealed tile.");
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            return true;
         }
 
         public void SpreadVirus()

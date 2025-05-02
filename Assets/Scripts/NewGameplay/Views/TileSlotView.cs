@@ -2,14 +2,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using NewGameplay.Enums;
 using NewGameplay.Interfaces;
-
+using TMPro;
 
 public class TileSlotView : MonoBehaviour
 {
-    [SerializeField] private Image arrowTop;
-    [SerializeField] private Image arrowBottom;
-    [SerializeField] private Image arrowLeft;
-    [SerializeField] private Image arrowRight;
+    [SerializeField] private TextMeshProUGUI virusHintText;
     [SerializeField] private GameObject playerRevealHighlight;
 
     private IVirusSpreadService virusSpreadService;
@@ -32,17 +29,32 @@ public class TileSlotView : MonoBehaviour
         this.gridService = gridService;
     }
 
-
-    public void SetDirectionalIndicators(int x, int y)
+    public void SetVirusHintCount(int x, int y)
     {
-        int w = tileElementService.GridWidth;
-        int h = tileElementService.GridHeight;
+        int count = 0;
 
-        SetArrow(arrowTop,    GetHintTypeAt(x, y - 1, w, h));
-        SetArrow(arrowBottom, GetHintTypeAt(x, y + 1, w, h));
-        SetArrow(arrowLeft,   GetHintTypeAt(x - 1, y, w, h));
-        SetArrow(arrowRight,  GetHintTypeAt(x + 1, y, w, h));
+        Vector2Int[] dirs = new[]
+        {
+            Vector2Int.up,
+            Vector2Int.down,
+            Vector2Int.left,
+            Vector2Int.right
+        };
+
+        foreach (var dir in dirs)
+        {
+            int nx = x + dir.x;
+            int ny = y + dir.y;
+
+            if (gridService.IsInBounds(nx, ny) && virusSpreadService.HasVirusAt(nx, ny))
+            {
+                count++;
+            }
+        }
+
+        virusHintText.text = count > 0 ? count.ToString() : "";
     }
+
     public void SetPlayerRevealed(bool state)
     {
         if (playerRevealHighlight != null)
@@ -58,9 +70,7 @@ public class TileSlotView : MonoBehaviour
         {
             case TileElementType.ProgressTile:
             case TileElementType.EntropyReducer:
-            case TileElementType.CodeShardConstructor:
-            case TileElementType.CodeShardArgument:
-            case TileElementType.CodeShardCloser:
+            case TileElementType.CodeShard:
                 return VisualTileHintType.Good;
 
             case TileElementType.EntropyIncreaser:
@@ -71,37 +81,6 @@ public class TileSlotView : MonoBehaviour
                 return VisualTileHintType.None;
         }
     }
-
-    private void SetArrow(Image arrow, VisualTileHintType type)
-    {
-        if (arrow == null) return;
-
-        switch (type)
-        {
-            case VisualTileHintType.Virus:
-                arrow.enabled = true;
-                arrow.color = VirusRed;
-                break;
-
-            default:
-                arrow.enabled = false;
-                break;
-        }
-    }
-
-    public void HideArrowTop() => arrowTop.enabled = false;
-    public void HideArrowBottom() => arrowBottom.enabled = false;
-    public void HideArrowLeft() => arrowLeft.enabled = false;
-    public void HideArrowRight() => arrowRight.enabled = false;
-
-    public void HideAllArrows()
-    {
-        HideArrowTop();
-        HideArrowBottom();
-        HideArrowLeft();
-        HideArrowRight();
-    }
-
     private VisualTileHintType GetHintTypeAt(int x, int y, int w, int h)
     {
         if (x < 0 || x >= w || y < 0 || y >= h)

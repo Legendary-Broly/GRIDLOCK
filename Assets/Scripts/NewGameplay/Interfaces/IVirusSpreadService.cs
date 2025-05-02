@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using NewGameplay.Services;
 
 namespace NewGameplay.Interfaces
 {
@@ -14,6 +15,8 @@ namespace NewGameplay.Interfaces
         void TrySpreadFromExistingViruses();
         bool HasVirusAt(int x, int y);
         void RemoveVirusAt(int x, int y);
+        void SetGridService(GridService gridService);
+
 
     }
 } 

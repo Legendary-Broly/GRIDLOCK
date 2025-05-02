@@ -38,18 +38,18 @@ namespace NewGameplay.Utility
             switch (symbol)
             {
 
-                case "Ψ": // Scout
+                case "Ψ:/run_FORK.exe": // Scout
                     Debug.Log($"[SymbolEffectProcessor] Scout triggered — revealing nearby tiles and increasing entropy.");
                     entropyService?.Increase(5);
                     RevealRandomHiddenTiles(gridService, x, y, 3, forceReveal: true);
                     break;
 
-                case "Σ": // Stabilizer
+                case "Σ:/run_REPAIR.exe": // Stabilizer
                     Debug.Log($"[SymbolEffectProcessor] Stabilizer placed at ({x},{y}) — decreasing entropy.");
                     entropyService?.Decrease(5);
                     break;
 
-                case "∆": // Purge
+                case "∆:/run_PURGE.exe": // Purge
                     // Purge behavior is handled separately inside placement logic (virus removal), no special side effect needed
                     break;
             }

@@ -29,15 +29,20 @@ namespace NewGameplay.Services
 
             symbolWeights = new Dictionary<string, SymbolWeight>
             {
-                { "Ψ", new SymbolWeight("Ψ", 10f, 10f, 10f) },
-                { "∆", new SymbolWeight("∆", 10f, 10f, 60f) },
-                { "Σ", new SymbolWeight("Σ", 10f, 10f, 10f) }
+                { "Ψ:/run_FORK.exe", new SymbolWeight("Ψ:/run_FORK.exe", 10f, 10f, 10f) },
+                { "∆:/run_PURGE.exe", new SymbolWeight("∆:/run_PURGE.exe", 10f, 10f, 60f) },
+                { "Σ:/run_REPAIR.exe", new SymbolWeight("Σ:/run_REPAIR.exe", 10f, 10f, 10f) }
             };
 
             foreach (var symbol in symbolWeights.Keys)
             {
                 consecutiveMisses[symbol] = 0;
             }
+        }
+        public void UnlockNextHack()
+        {
+            Debug.Log("[WeightedInjectService] Unlocking next hack (placeholder)");
+            // TODO: Add logic to unlock a new symbol and add it to the pool
         }
 
         public void SetGridService(IGridService service)
@@ -100,6 +105,7 @@ namespace NewGameplay.Services
                     Debug.Log($"[Inject] Revealing first tile at {chosen}");
                     gridService.RevealTile(chosen.x, chosen.y, forceReveal: true);
                     gridService.UnlockInteraction();
+                    (gridService as GridService)?.SetFirstRevealPermitted(true);
                     hasRevealedInitialTile = true;
                 }
             }
@@ -116,16 +122,16 @@ namespace NewGameplay.Services
             {
                 float weight = kvp.Value.BaseWeight;
 
-                if (kvp.Key == "∆")
+                if (kvp.Key == "∆:/run_PURGE.exe")
                 {
                     weight = Mathf.Min(60f, weight + (virusCount * 5f));
                     Debug.Log($"[∆] Adjusted weight to {weight} based on {virusCount} viruses");
                 }
-                else if (kvp.Key == "∆" && consecutiveMisses[kvp.Key] >= 3)
+                else if (kvp.Key == "∆:/run_PURGE.exe" && consecutiveMisses[kvp.Key] >= 3)
                 {
                     weight *= 1.5f;
                 }
-                else if (kvp.Key == "Σ" && consecutiveMisses[kvp.Key] >= 4)
+                else if (kvp.Key == "Σ:/run_REPAIR.exe" && consecutiveMisses[kvp.Key] >= 4)
                 {
                     weight *= 1.7f;
                 }
@@ -194,6 +200,10 @@ namespace NewGameplay.Services
         public string[] GetCurrentSymbols()
         {
             return currentSymbols.ToArray();
+        }
+        public void ResetForNewRound()
+        {
+            hasRevealedInitialTile = false;
         }
     }
 }

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: EntropyReducer
   m_EditorClassIdentifier: 
   elementType: 3
-  entropyChange: -5
-  progressPercent: 2
+  entropyChange: -2
+  progressPercent: 0
   displayText: E-
   displayColor: {r: 0.0047715902, g: 1, b: 0, a: 1}
