@@ -15,5 +15,6 @@ MonoBehaviour:
   elementType: 4
   entropyChange: 0
   progressPercent: 0
-  displayText: C$
-  displayColor: {r: 1, g: 0, b: 0.77254903, a: 1}
+  displayText: $
+  displayColor: {r: 1, g: 0, b: 0.95184326, a: 1}
+  description: 

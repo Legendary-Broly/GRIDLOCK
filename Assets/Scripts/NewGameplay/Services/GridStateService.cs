@@ -8,8 +8,8 @@ namespace NewGameplay.Services
 {
     public class GridStateService : IGridStateService
     {
-        private readonly int gridWidth = 7;   // Number of columns
-        private readonly int gridHeight = 8;  // Number of rows
+        private readonly int gridWidth = 15;   // Number of columns
+        private readonly int gridHeight = 17;  // Number of rows
         private readonly string[,] gridState;
         private readonly bool[,] tilePlayable;
         private TileState[,] tileStates;

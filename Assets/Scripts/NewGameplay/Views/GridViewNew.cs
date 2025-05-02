@@ -139,7 +139,7 @@ public class GridViewNew : MonoBehaviour
         backgroundText.text = "";
         backgroundText.color = Color.white;
         symbolText.color = Color.white;
-        slashText.enabled = true;
+        slashText.enabled = false;
         virusHintText.text = "";
         button.colors = originalColorBlocks[x, y];
 
@@ -153,10 +153,12 @@ public class GridViewNew : MonoBehaviour
             symbolText.text = gridService.CanRevealTile(x, y) ? "+" : "";
             backgroundText.text = "";
             slotView?.SetPlayerRevealed(false);
+            slashText.enabled = false;
         }
         else if (tileState == TileState.Revealed)
         {
             slotView?.SetPlayerRevealed(true);
+            slashText.enabled = true;
 
             if (elementSO != null)
             {
@@ -166,13 +168,11 @@ public class GridViewNew : MonoBehaviour
 
             if (symbol == "DF")
             {
-                slashText.enabled = false;
                 symbolText.text = "ǂ";
                 symbolText.color = Color.yellow;
             }
             else if (!string.IsNullOrEmpty(symbol))
             {
-                slashText.enabled = false;
                 symbolText.text = symbol;
                 symbolText.color = Color.white;
             }

@@ -11,6 +11,6 @@ namespace NewGameplay
         public float progressPercent;
         public string displayText;
         public Color displayColor = Color.white;  // Optional for styling
-
+        public string description;  // Added from Models version
     }
 }

@@ -15,5 +15,6 @@ MonoBehaviour:
   elementType: 3
   entropyChange: -2
   progressPercent: 0
-  displayText: E-
+  displayText: '-'
   displayColor: {r: 0.0047715902, g: 1, b: 0, a: 1}
+  description: 

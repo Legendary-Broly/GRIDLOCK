@@ -85,6 +85,8 @@ namespace NewGameplay.Controllers
             }
             else
             {
+                // Always select the symbol before using it
+                injectService.SelectSymbol(index);
                 // Trigger effect immediately (no grid placement)
                 var bootstrapper = FindFirstObjectByType<NewGameplayBootstrapper>();
                 var grid = bootstrapper?.ExposedGridService;
@@ -98,7 +100,7 @@ namespace NewGameplay.Controllers
                 }
 
                 // Clear used symbol and refresh UI
-                injectService.ClearSelectedSymbol(symbol);
+                injectService.ClearSelectedSymbol();
                 RefreshUI();
             }
 

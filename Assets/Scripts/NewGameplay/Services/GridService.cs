@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using NewGameplay.Interfaces;
-using NewGameplay.Configuration;
+
 using NewGameplay.Strategies;
 using NewGameplay.Utility;
 using NewGameplay;
@@ -258,7 +258,7 @@ namespace NewGameplay.Services
             if (string.IsNullOrEmpty(symbol)) return;
 
             symbolPlacementService.TryPlaceSymbol(x, y, symbol);
-            InjectServiceLocator.Service?.ClearSelectedSymbol(symbol);
+            InjectServiceLocator.Service?.ClearSelectedSymbol();
         }
 
         public void TryPlaceSymbol(int x, int y, string symbol)

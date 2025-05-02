@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using NewGameplay.Interfaces;
-using NewGameplay.Configuration;
 using System.Linq;
 
 namespace NewGameplay.Strategies
@@ -15,12 +14,18 @@ namespace NewGameplay.Strategies
         private readonly string[,] gridState;
         private readonly bool[,] tilePlayable;
 
-        // Static configuration to avoid passing constants around
-        public static class VirusConfiguration
-        {
-            public const string VIRUS_SYMBOL = "X";
-            public const string DATA_FRAGMENT_SYMBOL = "DF";
-        }
+        // Virus configuration
+        public const string VIRUS_SYMBOL = "X";
+        public const string DATA_FRAGMENT_SYMBOL = "DF";
+        
+        // Entropy thresholds for virus spawn count
+        public const int LOW_ENTROPY_THRESHOLD = 33;
+        public const int MEDIUM_ENTROPY_THRESHOLD = 66;
+        
+        // Base virus spawn counts at different entropy levels
+        public const int LOW_ENTROPY_SPAWN_COUNT = 1;
+        public const int MEDIUM_ENTROPY_SPAWN_COUNT = 2;
+        public const int HIGH_ENTROPY_SPAWN_COUNT = 3;
 
         public VirusSpawningStrategy(
             IEntropyService entropyService,
@@ -49,7 +54,7 @@ namespace NewGameplay.Strategies
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
-                    if (gridState[x, y] == VirusConfiguration.VIRUS_SYMBOL)
+                    if (gridState[x, y] == VIRUS_SYMBOL)
                     {
                         virusCount++;
                     }
@@ -80,7 +85,7 @@ namespace NewGameplay.Strategies
                     var pos = nearVirusPositions[index];
                     
                     // Don't spawn on data fragments
-                    if (gridState[pos.x, pos.y] == VirusConfiguration.DATA_FRAGMENT_SYMBOL)
+                    if (gridState[pos.x, pos.y] == DATA_FRAGMENT_SYMBOL)
                     {
                         nearVirusPositions.RemoveAt(index);
                         i--; // Retry this iteration
@@ -104,7 +109,7 @@ namespace NewGameplay.Strategies
                     var pos = emptyPositions[index];
                     
                     // Don't spawn on data fragments
-                    if (gridState[pos.x, pos.y] == VirusConfiguration.DATA_FRAGMENT_SYMBOL)
+                    if (gridState[pos.x, pos.y] == DATA_FRAGMENT_SYMBOL)
                     {
                         emptyPositions.RemoveAt(index);
                         continue;
@@ -126,7 +131,7 @@ namespace NewGameplay.Strategies
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
-                    if (gridState[x, y] == VirusConfiguration.VIRUS_SYMBOL)
+                    if (gridState[x, y] == VIRUS_SYMBOL)
                     {
                         // Check adjacent positions
                         int[] dx = { 0, 1, 0, -1 };
@@ -137,7 +142,7 @@ namespace NewGameplay.Strategies
                             int nx = x + dx[i];
                             int ny = y + dy[i];
                             
-                            if (IsInBounds(nx, ny) && gridState[nx, ny] != VirusConfiguration.VIRUS_SYMBOL)
+                            if (IsInBounds(nx, ny) && gridState[nx, ny] != VIRUS_SYMBOL)
                             {
                                 result.Add(new Vector2Int(nx, ny));
                             }
@@ -157,8 +162,10 @@ namespace NewGameplay.Strategies
             {
                 for (int x = 0; x < gridWidth; x++)
                 {
-                    Vector2Int pos = new Vector2Int(x, y);
-                    if (IsInBounds(x, y) && tilePlayable[x, y] && !processedSpots.Contains(pos))
+                    var pos = new Vector2Int(x, y);
+                    if (!processedSpots.Contains(pos) && 
+                        string.IsNullOrEmpty(gridState[x, y]) && 
+                        tilePlayable[x, y])
                     {
                         result.Add(pos);
                     }
@@ -167,7 +174,10 @@ namespace NewGameplay.Strategies
             
             return result;
         }
-
-        private bool IsInBounds(int x, int y) => x >= 0 && x < gridWidth && y >= 0 && y < gridHeight;
+        
+        private bool IsInBounds(int x, int y)
+        {
+            return x >= 0 && x < gridWidth && y >= 0 && y < gridHeight;
+        }
     }
 } 

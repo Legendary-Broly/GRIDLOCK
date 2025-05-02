@@ -42,7 +42,7 @@ namespace NewGameplay.UI
 
             if (shardTracker.TrySpendShards())
             {
-                feedbackText.text = "Hack unlocked!";
+                feedbackText.text = "Compiling...";
             }
             else
             {

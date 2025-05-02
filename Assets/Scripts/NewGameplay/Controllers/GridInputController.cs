@@ -44,7 +44,7 @@ namespace NewGameplay.Controllers
             {
                 Debug.Log($"[GridInput] Attempting to place symbol '{selectedSymbol}' at ({x},{y})");
                 symbolPlacementService?.TryPlaceSymbol(x, y, selectedSymbol);
-                injectService.ClearSelectedSymbol(selectedSymbol);
+                injectService.ClearSelectedSymbol();
                 var injectController = FindFirstObjectByType<InjectController>();
                 injectController?.RefreshUI();
                 view.RefreshGrid(grid);

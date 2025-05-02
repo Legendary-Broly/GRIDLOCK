@@ -33,7 +33,6 @@ namespace NewGameplay
         [SerializeField] private EntropyTrackerView entropyTrackerView;
         [SerializeField] private ProgressTrackerView progressTrackerView;
         [SerializeField] private RoundPopupManager roundPopupManager;
-        [SerializeField] private MutationManager mutationManager;
         [SerializeField] private CSTrackerView csTrackerView;
         [SerializeField] private CompileButtonController compileButtonController;
 
@@ -41,14 +40,7 @@ namespace NewGameplay
         {
             var entropyService = new EntropyService();
             var gridStateService = new GridStateService();
-
-            var symbolPlacementService = new SymbolPlacementService(
-                gridStateService,
-                null,
-                null,
-                entropyService
-            );
-
+            var symbolPlacementService = new SymbolPlacementService();
             var virusSpreadService = new VirusSpreadService(gridStateService);
 
             var gridService = new GridService(
@@ -79,17 +71,9 @@ namespace NewGameplay
             ExposedProgressService = progressService;
             gridService.SetProgressService(progressService);
 
-            var mutationEffectService = new MutationEffectService(entropyService, gridService, progressService);
             var purgeEffectService = new PurgeEffectService(gridStateService, gridService);
-
             codeShardTrackerService = new CodeShardTrackerService();
 
-            symbolPlacementService.SetVirusSpreadService(virusSpreadService);
-            symbolPlacementService.SetPurgeEffectService(purgeEffectService);
-            symbolPlacementService.SetGridView(gridView);
-            symbolPlacementService.SetTileElementService(tileElementService);
-
-            mutationEffectService.SetGridService(gridService);
             gridService.SetEntropyService(entropyService);
             gridService.SetTileElementService(tileElementService);
 
@@ -128,10 +112,6 @@ namespace NewGameplay
             entropyService.OnEntropyChanged += (float newValue, bool wasReset) => {
                 injectService.UpdateWeights(newValue);
                 entropyTrackerView.Refresh();
-                if (newValue == 0 && wasReset)
-                {
-                    mutationManager.ShowMutationPanel();
-                }
 
                 // Play sound effects based on entropy changes
                 if (soundService != null && !wasReset) // Don't play sounds on reset

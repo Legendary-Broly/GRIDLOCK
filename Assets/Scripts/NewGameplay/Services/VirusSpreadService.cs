@@ -16,14 +16,24 @@ namespace NewGameplay.Services
         public event Action OnVirusSpread;
         private GridService gridService;
 
+        // Virus configuration
+        public const string VIRUS_SYMBOL = "X";
+        private static readonly Vector2Int[] SPREAD_DIRECTIONS = new[]
+        {
+            Vector2Int.up, Vector2Int.down,
+            Vector2Int.left, Vector2Int.right
+        };
+
         public VirusSpreadService(IGridStateService gridStateService)
         {
             this.gridStateService = gridStateService;
         }
+
         public void SetGridService(GridService gridService)
         {
             this.gridService = gridService;
         }
+
         public void TrySpreadFromExistingViruses()
         {
             List<Vector2Int> virusPositions = GetAllVirusPositions();
@@ -31,13 +41,7 @@ namespace NewGameplay.Services
 
             foreach (var virus in virusPositions)
             {
-                Vector2Int[] directions = new[]
-                {
-                    Vector2Int.up, Vector2Int.down,
-                    Vector2Int.left, Vector2Int.right
-                };
-
-                foreach (var dir in directions)
+                foreach (var dir in SPREAD_DIRECTIONS)
                 {
                     int nx = virus.x + dir.x;
                     int ny = virus.y + dir.y;
@@ -63,7 +67,7 @@ namespace NewGameplay.Services
             if (validSpreadTargets.Count > 0)
             {
                 var spreadPos = validSpreadTargets[UnityEngine.Random.Range(0, validSpreadTargets.Count)];
-                gridStateService.SetSymbol(spreadPos.x, spreadPos.y, "X");
+                gridStateService.SetSymbol(spreadPos.x, spreadPos.y, VIRUS_SYMBOL);
                 gridStateService.SetTilePlayable(spreadPos.x, spreadPos.y, false);
 
                 Debug.Log($"[VirusSpreadService] Virus spread to ({spreadPos.x},{spreadPos.y})");
@@ -92,7 +96,7 @@ namespace NewGameplay.Services
             {
                 for (int y = 0; y < gridStateService.GridHeight; y++)
                 {
-                    if (gridStateService.GetSymbolAt(x, y) == "X")
+                    if (gridStateService.GetSymbolAt(x, y) == VIRUS_SYMBOL)
                     {
                         virusPositions.Add(new Vector2Int(x, y));
                     }
@@ -108,7 +112,7 @@ namespace NewGameplay.Services
 
             string symbol = gridStateService.GetSymbolAt(x, y);
 
-            if (symbol == "X" || symbol == "DF" || symbol == "∆:/run_PURGE.exe") return false;
+            if (symbol == VIRUS_SYMBOL || symbol == "DF" || symbol == "∆:/run_PURGE.exe") return false;
 
             if (recentlyPurgedPositions.Contains(new Vector2Int(x, y)))
             {
@@ -129,13 +133,7 @@ namespace NewGameplay.Services
                 Vector2Int? last = gridService.GetLastRevealedTile();
                 if (last.HasValue)
                 {
-                    Vector2Int[] directions = new[]
-                    {
-                        Vector2Int.up, Vector2Int.down,
-                        Vector2Int.left, Vector2Int.right
-                    };
-
-                    foreach (var dir in directions)
+                    foreach (var dir in SPREAD_DIRECTIONS)
                     {
                         if (last.Value + dir == new Vector2Int(x, y))
                         {
@@ -173,7 +171,7 @@ namespace NewGameplay.Services
 
         public bool HasVirusAt(int x, int y)
         {
-            return gridStateService.GetSymbolAt(x, y) == "X";
+            return gridStateService.GetSymbolAt(x, y) == VIRUS_SYMBOL;
         }
 
         public void RemoveVirusAt(int x, int y)

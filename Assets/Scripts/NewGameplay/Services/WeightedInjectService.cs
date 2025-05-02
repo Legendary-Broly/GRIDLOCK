@@ -86,16 +86,32 @@ namespace NewGameplay.Services
             selectedIndex = -1;
             OnSymbolsInjected?.Invoke(currentSymbols);
 
-            // Reveal one random tile on first inject
+            // Reveal one random tile on first inject, but only after any potential virus spreading
             if (!hasRevealedInitialTile && gridService != null && !gridService.IsFirstRevealDone())
             {
+                // First, let any virus spreading occur
+
+                // Then reveal a safe tile
                 var hidden = new List<Vector2Int>();
+                ITileElementService tileElementService = null;
+                if (gridService is GridService concreteGridService)
+                {
+                    tileElementService = concreteGridService.TileElementService;
+                }
                 for (int y = 0; y < gridService.GridHeight; y++)
                 {
                     for (int x = 0; x < gridService.GridWidth; x++)
                     {
                         if (!gridService.IsTileRevealed(x, y))
-                            hidden.Add(new Vector2Int(x, y));
+                        {
+                            // Only add tiles that are not viruses, data fragments, or virus nest
+                            string symbol = gridService.GetSymbolAt(x, y);
+                            bool isVirusNest = tileElementService != null && tileElementService.GetElementAt(x, y) == NewGameplay.Enums.TileElementType.VirusNest;
+                            if (symbol != "X" && symbol != "DF" && !isVirusNest)
+                            {
+                                hidden.Add(new Vector2Int(x, y));
+                            }
+                        }
                     }
                 }
 
@@ -161,15 +177,11 @@ namespace NewGameplay.Services
 
         public void ClearSelectedSymbol(string symbol)
         {
-            for (int i = 0; i < currentSymbols.Length; i++)
+            if (selectedIndex >= 0 && selectedIndex < currentSymbols.Length)
             {
-                if (currentSymbols[i] == symbol)
-                {
-                    currentSymbols[i] = "";
-                    if (selectedIndex == i) selectedIndex = -1;
-                    break;
-                }
+                currentSymbols[selectedIndex] = "";
             }
+            selectedIndex = -1;
         }
 
         public void ClearSymbolBank()
@@ -181,6 +193,10 @@ namespace NewGameplay.Services
 
         public void ClearSelectedSymbol()
         {
+            if (selectedIndex >= 0 && selectedIndex < currentSymbols.Length)
+            {
+                currentSymbols[selectedIndex] = "";
+            }
             selectedIndex = -1;
         }
 
