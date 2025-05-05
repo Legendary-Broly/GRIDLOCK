@@ -26,7 +26,6 @@ namespace NewGameplay.Services
 
         private bool hasSpawnedInitialVirus = false;
         private Vector2Int? lastRevealedTile = null;
-        private Vector2Int? previousRevealedTile = null;
         private bool gridInteractionLocked = true;
         private bool firstRevealPermitted = false;
         private bool roundSpawnsCompleted = false;
@@ -121,7 +120,6 @@ namespace NewGameplay.Services
                 return;
             }
 
-            previousRevealedTile = lastRevealedTile;
             lastRevealedTile = new Vector2Int(x, y);
 
             // Get the symbol before revealing the tile
@@ -235,7 +233,6 @@ namespace NewGameplay.Services
         {
             if (!lastRevealedTile.HasValue) return false;
             Vector2Int last = lastRevealedTile.Value;
-            if (previousRevealedTile.HasValue && previousRevealedTile.Value == new Vector2Int(x, y)) return false;
             return Mathf.Abs(x - last.x) + Mathf.Abs(y - last.y) == 1;
         }
 
@@ -307,8 +304,6 @@ namespace NewGameplay.Services
         {
             gridStateService.ClearAllTiles(makePlayable: false);
             lastRevealedTile = null;
-            previousRevealedTile = null;
-
         }
 
         private void HandleGridStateChanged()
@@ -358,6 +353,11 @@ namespace NewGameplay.Services
         public void SetTilePlayable(int x, int y, bool playable)
         {
             gridStateService.SetTilePlayable(x, y, playable);
+        }
+
+        public void SetTileState(int x, int y, TileState state)
+        {
+            gridStateService.SetTileState(x, y, state);
         }
 
         public TileState GetTileState(int x, int y)

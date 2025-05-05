@@ -7,7 +7,7 @@ namespace NewGameplay.Strategies
 {
     public class VirusSpawningStrategy
     {
-        private readonly IEntropyService entropyService;
+        private readonly IVirusSpreadService virusSpreadService;
         private readonly System.Random random;
         private readonly int gridWidth;
         private readonly int gridHeight;
@@ -28,14 +28,14 @@ namespace NewGameplay.Strategies
         public const int HIGH_ENTROPY_SPAWN_COUNT = 3;
 
         public VirusSpawningStrategy(
-            IEntropyService entropyService,
+            IVirusSpreadService virusSpreadService,
             System.Random random,
             int gridWidth,
             int gridHeight,
             string[,] gridState,
             bool[,] tilePlayable)
         {
-            this.entropyService = entropyService;
+            this.virusSpreadService = virusSpreadService;
             this.random = random;
             this.gridWidth = gridWidth;
             this.gridHeight = gridHeight;
@@ -46,7 +46,7 @@ namespace NewGameplay.Strategies
         public List<Vector2Int> GetVirusSpawnPositions()
         {
             // Calculate how many new viruses to spawn based on growth rate
-            int growthRate = entropyService.GetVirusGrowthRate();
+            int growthRate = virusSpreadService.GetVirusGrowthRate();
             int virusCount = 0;
 
             // Count existing viruses to use for base count

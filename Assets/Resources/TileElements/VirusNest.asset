@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b7d196649bc128409925a6cfe5c176e, type: 3}
   m_Name: VirusNest
   m_EditorClassIdentifier: 
-  elementType: 7
+  elementType: 5
   entropyChange: 0
   progressPercent: 0
   displayText: '#'
   displayColor: {r: 1, g: 0, b: 0, a: 1}
+  description: 

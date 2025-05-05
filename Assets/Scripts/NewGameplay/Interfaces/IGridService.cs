@@ -30,7 +30,8 @@ namespace NewGameplay.Interfaces
         List<Vector2Int> GetAllEmptyTilePositions();
         void SetTilePlayable(int x, int y, bool playable);
         void RevealTile(int x, int y, bool forceReveal = false);
-
+        void SetTileState(int x, int y, TileState state);
+        Vector2Int? GetLastRevealedTile();
         bool IsTileRevealed(int x, int y);
         TileState GetTileState(int x, int y);
         void RefreshTile(int x, int y);

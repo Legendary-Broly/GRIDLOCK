@@ -7,6 +7,7 @@ using NewGameplay.Enums;
 using NewGameplay.Services;
 using NewGameplay.Models;
 using System.Linq;
+using System.Collections;
 
 public class GridViewNew : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class GridViewNew : MonoBehaviour
     private IGridService gridService;
     private ITileElementService tileElementService;
     private IVirusSpreadService virusSpreadService;
+    private const float REVEAL_DELAY = 0.1f; // Delay between reveals in seconds
 
     public void Initialize(IGridService gridService, ITileElementService tileElementService, IVirusSpreadService virusSpreadService)
     {
@@ -203,5 +205,21 @@ public class GridViewNew : MonoBehaviour
                 virusHintText.text = new string('.', count);
             }
         }
+    }
+
+    public void RevealTilesSequentially(List<Vector2Int> tiles, System.Action onComplete = null)
+    {
+        StartCoroutine(RevealTilesCoroutine(tiles, onComplete));
+    }
+
+    private IEnumerator RevealTilesCoroutine(List<Vector2Int> tiles, System.Action onComplete)
+    {
+        foreach (var tile in tiles)
+        {
+            gridService.SetTileState(tile.x, tile.y, TileState.Revealed);
+            RefreshTileAt(tile.x, tile.y);
+            yield return new WaitForSeconds(REVEAL_DELAY);
+        }
+        onComplete?.Invoke();
     }
 }

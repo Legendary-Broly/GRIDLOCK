@@ -16,7 +16,7 @@ namespace NewGameplay.Interfaces
         bool HasVirusAt(int x, int y);
         void RemoveVirusAt(int x, int y);
         void SetGridService(GridService gridService);
-
+        int GetVirusGrowthRate();
 
     }
 } 

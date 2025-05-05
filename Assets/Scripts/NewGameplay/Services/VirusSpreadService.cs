@@ -180,5 +180,17 @@ namespace NewGameplay.Services
             recentlyPurgedPositions.Add(new Vector2Int(x, y));
             purgeActionCount = 0; // Reset counter when new purge occurs
         }
+
+        public float GetVirusGrowthRate()
+        {
+            // Base growth rate is 1.0
+            // This means each virus will spawn 1 new virus on average
+            return 1.0f;
+        }
+
+        int IVirusSpreadService.GetVirusGrowthRate()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

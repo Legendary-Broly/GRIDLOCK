@@ -61,10 +61,10 @@ namespace NewGameplay.Services
             int currentPosition = 0;
             var elementCounts = new Dictionary<TileElementType, int>
             {
-                { TileElementType.VirusNest, 15 },
-                { TileElementType.EntropyIncreaser, 50 },
-                { TileElementType.EntropyReducer, 50 },
-                { TileElementType.CodeShard, 75 },
+                { TileElementType.VirusNest, 30 },
+                { TileElementType.EntropyIncreaser, 30 },
+                { TileElementType.EntropyReducer, 30 },
+                { TileElementType.CodeShard, 30 },
             };
 
             foreach (var elementCount in elementCounts)
