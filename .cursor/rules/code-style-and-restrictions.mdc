@@ -1,0 +1,22 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+File names must match class/interface names.
+
+Organize code into appropriate folders (Controllers, Services, Interfaces, Views, Utility).
+
+Follow Unity naming conventions (PascalCase for methods, camelCase for fields).
+
+Always prefer simple solutions.
+
+Avoid duplication of code whenever possible, which means checking for other areas of the codebase that might already have similar code and functionality.
+
+When fixing an issue or bug, do not introduce a new pattern or technology without first exhausting all options for the existing implementation. And if you finally do this, make sure to remove the old implementation afterwards so we don't have duplicate logic.
+
+Keep the codebase very clean and organized. 
+
+Avoid having files over 300 lines of code, refactor at that point.
+
+

@@ -7,7 +7,7 @@ namespace NewGameplay.Strategies
 {
     public class VirusSpawningStrategy
     {
-        private readonly IVirusSpreadService virusSpreadService;
+        private readonly IVirusService virusService;
         private readonly System.Random random;
         private readonly int gridWidth;
         private readonly int gridHeight;
@@ -17,25 +17,16 @@ namespace NewGameplay.Strategies
         // Virus configuration
         public const string VIRUS_SYMBOL = "X";
         public const string DATA_FRAGMENT_SYMBOL = "DF";
-        
-        // Entropy thresholds for virus spawn count
-        public const int LOW_ENTROPY_THRESHOLD = 33;
-        public const int MEDIUM_ENTROPY_THRESHOLD = 66;
-        
-        // Base virus spawn counts at different entropy levels
-        public const int LOW_ENTROPY_SPAWN_COUNT = 1;
-        public const int MEDIUM_ENTROPY_SPAWN_COUNT = 2;
-        public const int HIGH_ENTROPY_SPAWN_COUNT = 3;
 
         public VirusSpawningStrategy(
-            IVirusSpreadService virusSpreadService,
+            IVirusService virusService,
             System.Random random,
             int gridWidth,
             int gridHeight,
             string[,] gridState,
             bool[,] tilePlayable)
         {
-            this.virusSpreadService = virusSpreadService;
+            this.virusService = virusService;
             this.random = random;
             this.gridWidth = gridWidth;
             this.gridHeight = gridHeight;
@@ -43,32 +34,7 @@ namespace NewGameplay.Strategies
             this.tilePlayable = tilePlayable;
         }
 
-        public List<Vector2Int> GetVirusSpawnPositions()
-        {
-            // Calculate how many new viruses to spawn based on growth rate
-            int growthRate = virusSpreadService.GetVirusGrowthRate();
-            int virusCount = 0;
-
-            // Count existing viruses to use for base count
-            for (int y = 0; y < gridHeight; y++)
-            {
-                for (int x = 0; x < gridWidth; x++)
-                {
-                    if (gridState[x, y] == VIRUS_SYMBOL)
-                    {
-                        virusCount++;
-                    }
-                }
-            }
-
-            // Minimum of 1 virus if none exist, otherwise base it on existing count and growth
-            int totalSpawnCount = virusCount > 0 ? (int)(virusCount * growthRate) : 1;
-            Debug.Log($"[VirusSpawning] Calculating virus count: Base count: {virusCount}, Growth rate: {growthRate}, Final count: {totalSpawnCount}");
-
-            return CalculateSpawnPositions(totalSpawnCount);
-        }
-
-        private List<Vector2Int> CalculateSpawnPositions(int count)
+        public List<Vector2Int> GetStaticVirusSpawnPositions(int count)
         {
             var result = new List<Vector2Int>();
             

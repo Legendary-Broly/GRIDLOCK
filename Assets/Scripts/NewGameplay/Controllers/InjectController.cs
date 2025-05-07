@@ -3,9 +3,8 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 using NewGameplay.Interfaces;
-using NewGameplay.Services;
 using NewGameplay.Utility;
-
+using NewGameplay.Views;
 namespace NewGameplay.Controllers
 {
     public class InjectController : MonoBehaviour
@@ -14,21 +13,13 @@ namespace NewGameplay.Controllers
         [SerializeField] private List<TextMeshProUGUI> symbolSlots;
         [SerializeField] private Button injectButton;
 
-        private IWeightedInjectService injectService;
-
+        private IInjectService injectService;
         private IGridService gridService;
-        private IEntropyService entropyService;
 
-        public void Initialize(IWeightedInjectService service, IGridService grid)
+        public void Initialize(IInjectService service, IGridService grid)
         {
             injectService = service;
             gridService = grid;
-
-            var bootstrapper = FindFirstObjectByType<NewGameplayBootstrapper>();
-            if (bootstrapper != null)
-            {
-                entropyService = bootstrapper.ExposedEntropyService;
-            }
 
             for (int i = 0; i < symbolButtons.Count; i++)
             {
@@ -42,25 +33,37 @@ namespace NewGameplay.Controllers
 
         private void OnInject()
         {
-            if (injectService == null) return;
+            if (injectService == null || (injectButton != null && !injectButton.interactable)) return;
 
-            injectService.InjectSymbols();
+            // (1) reset the symbol‐bank as you already do
+            injectService.SetFixedSymbols(new List<string>
+            {
+                "∆:/run_PURGE.exe",
+                "Ψ:/run_FORK.exe",
+                "Σ:/run_REPAIR.exe"
+            });
             RefreshUI();
-
-            if (entropyService != null)
+            gridService.UnlockInteraction();            // allow clicks
+            gridService.SetFirstRevealPermitted(true);  // allow the very first reveal
+            
+            // (2) pick a random empty/playable tile
+            var positions = gridService.GetAllEmptyTilePositions();
+            if (positions.Count > 0)
             {
-                entropyService.Increase(10); // Base 5% entropy increase per inject
-            }
-            else
-            {
-                Debug.LogWarning("[InjectController] EntropyService not found when injecting symbols.");
+                var pos = positions[UnityEngine.Random.Range(0, positions.Count)];
+                // force a reveal (skips adjacency check)
+                gridService.RevealTile(pos.x, pos.y, forceReveal: true);
+                gridService.SetLastRevealedTile(pos); // ⬅ custom setter we'll add
             }
 
+            // (3) finally repaint the grid
             var gridView = FindFirstObjectByType<GridViewNew>();
             if (gridView != null)
-            {
                 gridView.RefreshGrid(gridService);
-            }
+
+            gridService.TriggerGridUpdate();
+
+            SetInjectButtonInteractable(false); // Disable after use
         }
 
         public void RefreshUI()
@@ -78,33 +81,29 @@ namespace NewGameplay.Controllers
             string symbol = GetSymbolAt(index);
             if (string.IsNullOrEmpty(symbol)) return;
 
-            // ∆ = Purge — keep existing placement logic
+            injectService.SetSelectedSymbol(index);
+
             if (symbol == "∆:/run_PURGE.exe")
             {
-                injectService.SelectSymbol(index);
+                // PURGE is selected for targeting
             }
             else
             {
-                // Always select the symbol before using it
-                injectService.SelectSymbol(index);
-                // Trigger effect immediately (no grid placement)
                 var bootstrapper = FindFirstObjectByType<NewGameplayBootstrapper>();
                 var grid = bootstrapper?.ExposedGridService;
-                var entropy = bootstrapper?.ExposedEntropyService;
                 var tileElements = bootstrapper?.ExposedTileElementService;
 
-                if (grid != null && entropy != null && tileElements != null)
+                if (grid != null && tileElements != null)
                 {
                     Debug.Log($"[InjectController] Triggering effect for symbol {symbol} immediately (no placement)");
-                    SymbolEffectProcessor.ApplySymbolEffectAtPlacement(symbol, -1, -1, grid, entropy, tileElements);
+                    SymbolEffectProcessor.ApplySymbolEffectAtPlacement(symbol, -1, -1, grid, tileElements);
                 }
 
-                // Clear used symbol and refresh UI
                 injectService.ClearSelectedSymbol();
                 RefreshUI();
             }
 
-            // Update visual selection (for ∆ only)
+            // Visual feedback (PURGE highlight)
             for (int i = 0; i < symbolButtons.Count; i++)
             {
                 var image = symbolButtons[i].targetGraphic;
@@ -118,9 +117,9 @@ namespace NewGameplay.Controllers
 
         private string GetSymbolAt(int index)
         {
-            if (injectService is WeightedInjectService raw)
-                return raw.GetCurrentSymbols()[index];
-            return "?";
+            if (injectService == null) return "?";
+            var symbols = injectService.GetCurrentSymbols();
+            return index < symbols.Count ? symbols[index] : "?";
         }
 
         public void ClearSymbolSlots()
@@ -130,6 +129,12 @@ namespace NewGameplay.Controllers
                 symbolSlots[i].text = "";
                 symbolButtons[i].interactable = false;
             }
+        }
+
+        public void SetInjectButtonInteractable(bool interactable)
+        {
+            if (injectButton != null)
+                injectButton.interactable = interactable;
         }
     }
 }

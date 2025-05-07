@@ -1,97 +1,142 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 using NewGameplay.Enums;
 using NewGameplay.Interfaces;
-using TMPro;
+using NewGameplay.Models;
+using UnityEngine.EventSystems;
+using NewGameplay.Controllers;
 
-public class TileSlotView : MonoBehaviour
+namespace NewGameplay.Views
 {
-    [SerializeField] private TextMeshProUGUI virusHintText;
-    [SerializeField] private GameObject playerRevealHighlight;
-
-    private IVirusSpreadService virusSpreadService;
-    private ITileElementService tileElementService;
-    private IGridService gridService;
-    private static readonly Color VirusRed = new Color(1f, 0.2f, 0.2f);
-
-    public enum VisualTileHintType
+    public class TileSlotView : MonoBehaviour, IPointerClickHandler
     {
-        None,
-        Virus,
-        Good,
-        Warning
-    }
-
-    public void Initialize(IVirusSpreadService virusService, ITileElementService elementService, IGridService gridService)
-    {
-        this.virusSpreadService = virusService;
-        this.tileElementService = elementService;
-        this.gridService = gridService;
-    }
-
-    public void SetVirusHintCount(int x, int y)
-    {
-        int count = 0;
-
-        Vector2Int[] dirs = new[]
+        [SerializeField] private TextMeshProUGUI virusHintText;
+        [SerializeField] private GameObject playerRevealHighlight;
+        [SerializeField] private GameObject adjacencyHighlight;
+        [SerializeField] private TextMeshProUGUI symbolText;
+        [SerializeField] private Image flagIcon;
+        private IVirusService virusService;
+        private ITileElementService tileElementService;
+        private IGridService gridService;
+        private Button tileButton;
+        private int x, y;
+        private GridInputController inputController;
+        public enum VisualTileHintType
         {
-            Vector2Int.up,
-            Vector2Int.down,
-            Vector2Int.left,
-            Vector2Int.right
-        };
+            None,
+            Virus,
+            Good,
+            Warning
+        }
 
-        foreach (var dir in dirs)
+        public void Initialize(
+            IVirusService virusService,
+            ITileElementService elementService,
+            IGridService gridService,
+            int x,
+            int y,
+            GridInputController inputController)
         {
-            int nx = x + dir.x;
-            int ny = y + dir.y;
+            this.virusService = virusService;
+            this.tileElementService = elementService;
+            this.gridService = gridService;
+            this.x = x;
+            this.y = y;
+            this.inputController = inputController;
 
-            if (gridService.IsInBounds(nx, ny) && virusSpreadService.HasVirusAt(nx, ny))
+            tileButton = GetComponentInChildren<Button>();
+
+            if (symbolText == null)
             {
-                count++;
+                Debug.LogError($"[TileSlotView] symbolText is not assigned on {gameObject.name}");
+            }
+            else
+            {
+                symbolText.transform.SetAsLastSibling();
+                symbolText.gameObject.SetActive(false);
+            }
+
+            playerRevealHighlight?.SetActive(false);
+            adjacencyHighlight?.SetActive(false);
+        }
+
+        private void SetVirusHintCount(int x, int y)
+        {
+            // Only show hints for revealed tiles
+            if (gridService.GetTileState(x, y) != TileState.Revealed)
+            {
+                virusHintText.text = string.Empty;
+                return;
+            }
+
+            int count = 0;
+            Vector2Int[] dirs = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+            foreach (var dir in dirs)
+            {
+                int nx = x + dir.x;
+                int ny = y + dir.y;
+                if (gridService.IsInBounds(nx, ny) && virusService.HasVirusAt(nx, ny))
+                    count++;
+            }
+            virusHintText.text = count > 0 ? new string('.', count) : string.Empty;
+        }
+
+        public void Refresh()
+        {
+            SetVirusHintCount(x, y);
+
+            bool revealed = gridService.GetTileState(x, y) == TileState.Revealed;
+            bool wasActive = playerRevealHighlight != null && playerRevealHighlight.activeSelf;
+            playerRevealHighlight?.SetActive(revealed);
+
+            // Only log when a tile transitions from not revealed to revealed
+            if (revealed && !wasActive)
+            {
+                var sym = gridService.GetSymbolAt(x, y);
+                Debug.Log($"[TileSlotView] ({x},{y}) transitioned to revealed: symbol='{sym}', gridService: {gridService.GetHashCode()} at {Time.time}");
+            }
+
+            bool canReveal = gridService.CanRevealTile(x, y);
+            bool isFlagged = gridService.IsFlaggedAsVirus(x, y);
+            adjacencyHighlight?.SetActive(canReveal && !isFlagged);
+
+
+            if (tileButton != null)
+                tileButton.interactable = canReveal;
+
+            if (symbolText != null)
+            {
+                if (revealed)
+                {
+                    var sym = gridService.GetSymbolAt(x, y);
+                    bool show = !string.IsNullOrEmpty(sym);
+                    symbolText.text = sym;
+                    symbolText.gameObject.SetActive(show);
+                    if (show)
+                        symbolText.transform.SetAsLastSibling();
+                }
+                else
+                {
+                    symbolText.gameObject.SetActive(false);
+                }
+            }
+
+            // 🔻 ADD THIS BLOCK TO HANDLE FLAG DISPLAY 🔻
+            if (flagIcon != null)
+            {
+                flagIcon.gameObject.SetActive(isFlagged);
+                if (isFlagged)
+                    flagIcon.transform.SetAsLastSibling();
             }
         }
 
-        virusHintText.text = count > 0 ? count.ToString() : "";
-    }
-
-    public void SetPlayerRevealed(bool state)
-    {
-        if (playerRevealHighlight != null)
-            playerRevealHighlight.SetActive(state);
-    }
-
-    private VisualTileHintType GetHintType(TileElementType type, int x, int y)
-    {
-        if (virusSpreadService != null && virusSpreadService.HasVirusAt(x, y))
-            return VisualTileHintType.Virus;
-
-        switch (type)
+        public void OnPointerClick(PointerEventData eventData)
         {
-            case TileElementType.ProgressTile:
-            case TileElementType.EntropyReducer:
-            case TileElementType.CodeShard:
-                return VisualTileHintType.Good;
-
-            case TileElementType.EntropyIncreaser:
-            case TileElementType.VirusNest:
-                return VisualTileHintType.Warning;
-
-            default:
-                return VisualTileHintType.None;
+            if (inputController != null)
+            {
+                inputController.HandleTileClick(x, y, eventData.button);
+            }
         }
     }
-    private VisualTileHintType GetHintTypeAt(int x, int y, int w, int h)
-    {
-        if (x < 0 || x >= w || y < 0 || y >= h)
-            return VisualTileHintType.None;
-
-        var element = tileElementService.GetElementAt(x, y);
-
-        if (virusSpreadService != null && virusSpreadService.HasVirusAt(x, y))
-            return VisualTileHintType.Virus;
-
-        return GetHintType(element, x, y);
-    }
-
 }

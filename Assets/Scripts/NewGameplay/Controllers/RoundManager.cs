@@ -1,108 +1,92 @@
-using UnityEngine;
 using NewGameplay.Interfaces;
-using NewGameplay.Controllers;
+using UnityEngine;
+using NewGameplay.Views;
 using NewGameplay.Services;
-using System;
+using NewGameplay.Strategies;
+using NewGameplay.ScriptableObjects;
+using NewGameplay.Models;
+
+
 
 namespace NewGameplay.Controllers
 {
-    public class RoundManager
+    public class RoundManager : MonoBehaviour
     {
+        [SerializeField] private GridViewNew gridView;
+        [SerializeField] private GridInputController inputController;
+        [SerializeField] private InjectController injectController;
+
+        private IRoundService roundService;
+        private IGridService gridService;
+        private IGridStateService gridStateService;
         private IProgressTrackerService progressService;
         private IDataFragmentService dataFragmentService;
-        private RoundPopupManager popupManager;
-        private GridViewNew gridView;
-        private IGridService gridService;
-        private IRoundService roundService;
-        private Action roundResetHandler;
+        private IVirusService virusService;
+        private ITileElementService tileElementService;
 
-        private int currentRound = 1;
-        public event Action OnRoundStarted;
-
-        public RoundManager(
-            IProgressTrackerService progress,
-            IDataFragmentService dataFragmentService,
-            RoundPopupManager popupManager,
-            IRoundService roundService,
+        public void Initialize(
+            IRoundService roundService, 
             IGridService gridService,
-            GridViewNew gridView)
+            IGridStateService gridStateService,
+            IProgressTrackerService progressService,
+            IDataFragmentService dataFragmentService,
+            IVirusService virusService,
+            ITileElementService tileElementService)
         {
-            this.progressService = progress;
-            this.dataFragmentService = dataFragmentService;
-            this.popupManager = popupManager;
             this.roundService = roundService;
             this.gridService = gridService;
-            this.gridView = gridView;
-
-            // Create the event handler
-            roundResetHandler = () =>
-            {
-                currentRound++;
-                Debug.Log($"[RoundManager] Starting round {currentRound}");
-                
-                // Set required fragments based on round number (1->1, 2->2, 3->3)
-                int requiredFragments = Mathf.Clamp(currentRound, 1, 3);
-                Debug.Log($"[RoundManager] Setting required fragments for round {currentRound} to {requiredFragments}");
-                progressService.SetRequiredFragments(requiredFragments);
-                
-                // Always spawn 3 data fragments regardless of round number
-                Debug.Log($"[RoundManager] Spawning 3 data fragments for round {currentRound}");
-                dataFragmentService.SpawnFragments(3);
-                
-                gridView.RefreshGrid(gridService);
-
-                // Find and refresh the progress tracker view
-                var progressTrackerView = UnityEngine.Object.FindFirstObjectByType<ProgressTrackerView>();
-                if (progressTrackerView != null)
-                {
-                    Debug.Log("[RoundManager] Refreshing progress tracker view");
-                    progressTrackerView.Refresh();
-                }
-            };
-
-            // Subscribe to the continue button click
-            popupManager.onContinue += BeginNewRound;
-        }
-
-        public void Initialize(IRoundService roundService, IProgressTrackerService progressService, RoundPopupManager popupManager, IDataFragmentService dataFragmentService)
-        {
-            this.roundService = roundService;
+            this.gridStateService = gridStateService;
             this.progressService = progressService;
-            this.popupManager = popupManager;
             this.dataFragmentService = dataFragmentService;
+            this.virusService = virusService;
+            this.tileElementService = tileElementService;
+
+            // Subscribe to round reset event
+            this.roundService.onRoundReset += StartNextRound;
         }
 
         public void StartFirstRound()
         {
-            Debug.Log("[RoundManager] Starting first round");
-            currentRound = 1;
-            progressService.SetRequiredFragments(1); // First round always requires 1 fragment
-            dataFragmentService.SpawnFragments(3);
-            OnRoundStarted?.Invoke();
+            // Optional: Only trigger UI or animations here
+            RebuildGrid();
+            if (injectController != null)
+                injectController.SetInjectButtonInteractable(true);
         }
 
-        public void CheckRoundEnd()
+        public void StartNextRound()
         {
-            bool goalMet = progressService.HasMetGoal();
-            bool noInfectedFragments = !dataFragmentService.AnyRevealedFragmentsContainVirus();
-
-            if (goalMet && noInfectedFragments)
-            {
-                popupManager.ShowPopup(currentRound);
-            }
-        }
-
-        public void BeginNewRound()
-        {
-            Debug.Log("[RoundManager] Beginning new round...");
-
-            // Unsubscribe first to prevent multiple subscriptions
-            roundService.onRoundReset -= roundResetHandler;
-            // Subscribe to the event
-            roundService.onRoundReset += roundResetHandler;
-
-            // Now trigger the reset which will call ResetRound() internally
             roundService.ResetRound();
+            gridView.Initialize(gridService, virusService, tileElementService, inputController, inputController.HandleTileClick);
+            RebuildGrid();
+            gridView.RefreshGrid(gridService);
+            gridService.UnlockInteraction();
+            if (injectController != null)
+                injectController.SetInjectButtonInteractable(true);
+        }
+
+        private void RebuildGrid()
+        {
+            int width = gridService.GridWidth;
+            int height = gridService.GridHeight;
+
+            if (gridView != null)
+            {
+                gridView.BuildGrid(width, height, inputController.HandleTileClick);
+                
+                // Find and rebind the GridInputController
+                if (inputController != null)
+                {
+                    inputController.RebindView(gridView);
+                }
+                else
+                {
+                    Debug.LogWarning("[RoundManager] Could not find GridInputController in scene");
+                }
+            }
+            else
+            {
+                Debug.LogWarning("[RoundManager] GridView is not assigned.");
+            }
         }
     }
 }

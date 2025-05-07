@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+All systems must be modular and injectable.
+
+Use interfaces (IGridService, IRoundService, etc.) for all service dependencies.
+
+
+No direct references to GameObject.Find, FindObjectOfType, or hard-coded singletons unless explicitly required (e.g., Bootstrapper initialization).

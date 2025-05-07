@@ -4,39 +4,44 @@ using NewGameplay.Interfaces;
 using NewGameplay.Enums;
 using System.Linq;
 using NewGameplay.Models;
+using NewGameplay.ScriptableObjects;
 
 namespace NewGameplay.Services
 {
     public class TileElementService : ITileElementService
     {
         private TileElementType[,] gridElements;
-        private readonly int gridWidth;
-        private readonly int gridHeight;
+        private int gridWidth;
+        private int gridHeight;
         private readonly List<TileElementSO> elementConfigs;
-        private readonly IEntropyService entropyService;
         private IGridService gridService;
         private Vector2Int? virusNestPosition = null;
 
         public int GridWidth => gridWidth;
-
         public int GridHeight => gridHeight;
 
         public TileElementService(
-            int gridWidth,
-            int gridHeight,
-            List<TileElementSO> configs,
-            IEntropyService entropyService)
+            int initialWidth,
+            int initialHeight,
+            List<TileElementSO> configs)
         {
-            this.gridWidth = gridWidth;
-            this.gridHeight = gridHeight;
+            this.gridWidth = initialWidth;
+            this.gridHeight = initialHeight;
             this.elementConfigs = configs;
-            this.entropyService = entropyService;
-            gridElements = new TileElementType[gridWidth, gridHeight];
+            // Initial array is NOT created here — ResizeGrid() must be called
         }
 
         public void SetGridService(IGridService service)
         {
             this.gridService = service;
+        }
+
+        public void ResizeGrid(int width, int height)
+        {
+            gridWidth = width;
+            gridHeight = height;
+            gridElements = new TileElementType[gridWidth, gridHeight];
+            GenerateElements();
         }
 
         public void GenerateElements()
@@ -61,10 +66,8 @@ namespace NewGameplay.Services
             int currentPosition = 0;
             var elementCounts = new Dictionary<TileElementType, int>
             {
-                { TileElementType.VirusNest, 30 },
-                { TileElementType.EntropyIncreaser, 30 },
-                { TileElementType.EntropyReducer, 30 },
-                { TileElementType.CodeShard, 30 },
+                { TileElementType.VirusNest, 0 },
+                { TileElementType.CodeShard, 0 },
             };
 
             foreach (var elementCount in elementCounts)
@@ -97,16 +100,6 @@ namespace NewGameplay.Services
 
             switch (element)
             {
-                case TileElementType.EntropyIncreaser:
-                    Debug.Log($"[TileElementService] Increasing entropy by {config.entropyChange}");
-                    entropyService.Increase(Mathf.Abs(config.entropyChange));
-                    break;
-
-                case TileElementType.EntropyReducer:
-                    Debug.Log($"[TileElementService] Reducing entropy by {config.entropyChange}");
-                    entropyService.Decrease(Mathf.Abs(config.entropyChange));
-                    break;
-
                 case TileElementType.CodeShard:
                     Debug.Log("Code shard found.");
                     break;
@@ -114,16 +107,6 @@ namespace NewGameplay.Services
                 case TileElementType.VirusNest:
                     Debug.Log("[TileElementService] Virus Nest triggered — spawning virus.");
                     gridElements[x, y] = TileElementType.Empty;
-
-                    if (gridService != null)
-                    {
-                        gridService.SetSymbol(x, y, "X");
-                        gridService.SetTilePlayable(x, y, false);
-                    }
-                    else
-                    {
-                        Debug.LogError("[TileElementService] GridService not set - cannot spawn virus.");
-                    }
                     break;
             }
         }
@@ -135,16 +118,6 @@ namespace NewGameplay.Services
                 Vector2Int pos = virusNestPosition.Value;
                 Debug.Log($"[TileElementService] Spawning virus from nest at {pos}");
                 gridElements[pos.x, pos.y] = TileElementType.Empty;
-
-                if (gridService != null)
-                {
-                    gridService.SetSymbol(pos.x, pos.y, "X");
-                    gridService.SetTilePlayable(pos.x, pos.y, false);
-                }
-                else
-                {
-                    Debug.LogError("[TileElementService] GridService not set - cannot spawn virus.");
-                }
             }
             else
             {
@@ -154,7 +127,16 @@ namespace NewGameplay.Services
 
         public Vector2Int? GetVirusNestPosition() => virusNestPosition;
 
-        public TileElementType GetElementAt(int x, int y) => gridElements[x, y];
+        public TileElementType GetElementAt(int x, int y)
+        {
+            if (x < 0 || y < 0 || x >= gridElements.GetLength(0) || y >= gridElements.GetLength(1))
+            {
+                Debug.LogWarning($"[TileElementService] GetElementAt({x},{y}) out of bounds — grid size: {gridElements.GetLength(0)}x{gridElements.GetLength(1)}");
+                return TileElementType.Empty;
+            }
+
+            return gridElements[x, y];
+        }
 
         public TileElementSO GetElementSOAt(int x, int y)
         {

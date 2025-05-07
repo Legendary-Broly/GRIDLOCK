@@ -1,0 +1,9 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+No service or controller should mutate shared state in another service directly.
+
+
+Use service methods (e.g., gridService.SetSymbol(...)) to encapsulate all state changes.

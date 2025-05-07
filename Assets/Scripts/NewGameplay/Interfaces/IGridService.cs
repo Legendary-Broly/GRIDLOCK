@@ -1,10 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using System.Linq;
 using NewGameplay.Models;
 
 namespace NewGameplay.Interfaces
@@ -12,32 +8,34 @@ namespace NewGameplay.Interfaces
     public interface IGridService
     {
         event Action OnGridUpdated;
-        void TryPlaceSymbol(int x, int y);
-        void TryPlaceSymbol(int x, int y, string symbol);
-        void SpreadVirus();
-        void SetSymbol(int x, int y, string symbol);
-        string GetSymbolAt(int x, int y);
-        bool IsTilePlayable(int x, int y);
-        bool IsInBounds(int x, int y);
-        int GridSize { get; }
         int GridWidth { get; }
         int GridHeight { get; }
-        void ClearAllExceptViruses();
+        void SetSymbol(int x, int y, string symbol);
+        string GetSymbolAt(int x, int y);
+        bool IsInBounds(int x, int y);
+        bool IsTileRevealed(int x, int y);
+        bool CanRevealTile(int x, int y);
+        void SetFirstRevealPermitted(bool value);
+        bool IsFirstRevealDone();
+        void SetTileState(int x, int y, TileState state);
+        TileState GetTileState(int x, int y);
+        void RevealTile(int x, int y, bool forceReveal = false);
+        void TryPlaceSymbol(int x, int y);
+        void TryPlaceSymbol(int x, int y, string symbol);
         void ClearAllTiles();
-        string[,] GridState { get; }
-        bool[,] TilePlayable { get; }
+        void ClearAllExceptViruses();
+        void LockInteraction();
+        void UnlockInteraction();
+        void RefreshTile(int x, int y);
         void TriggerGridUpdate();
         List<Vector2Int> GetAllEmptyTilePositions();
-        void SetTilePlayable(int x, int y, bool playable);
-        void RevealTile(int x, int y, bool forceReveal = false);
-        void SetTileState(int x, int y, TileState state);
         Vector2Int? GetLastRevealedTile();
-        bool IsTileRevealed(int x, int y);
-        TileState GetTileState(int x, int y);
-        void RefreshTile(int x, int y);
-        bool CanRevealTile(int x, int y);
-        bool IsFirstRevealDone();
-        void UnlockInteraction();
-        void LockInteraction();
+        void SetLastRevealedTile(Vector2Int pos);
+        void SetVirusFlag(int x, int y, bool flagged);
+        bool IsFlaggedAsVirus(int x, int y);
+    
+        bool CanUseVirusFlag();
+
+        void DisableVirusFlag();
     }
 }

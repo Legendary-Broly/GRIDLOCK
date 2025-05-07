@@ -11,11 +11,12 @@ namespace NewGameplay.Controllers
     {
         private IProgressTrackerService progressService;
         private IDataFragmentService dataFragmentService;
-        private RoundManager roundManager;
+        private IRoundService roundService;
         private IGridService gridService;
         private ICodeShardTracker codeShardTracker;
         private IExtractService extractService;
         private ITileElementService tileElementService;
+        private RoundPopupManager roundPopupManager;
 
         [SerializeField] private Button extractButton;
 
@@ -42,7 +43,8 @@ namespace NewGameplay.Controllers
             IDataFragmentService dataFragmentService,
             ICodeShardTracker codeShardTracker,
             ITileElementService tileElementService,
-            RoundManager roundManager)
+            IRoundService roundService,
+            RoundPopupManager roundPopupManager)
         {
             this.extractService = extractService;
             this.gridService = gridService;
@@ -50,15 +52,17 @@ namespace NewGameplay.Controllers
             this.dataFragmentService = dataFragmentService;
             this.codeShardTracker = codeShardTracker;
             this.tileElementService = tileElementService;
-            this.roundManager = roundManager;
+            this.roundService = roundService;
+            this.roundPopupManager = roundPopupManager;
         }
 
         public void OnExtractButtonClicked()
         {
             if (progressService.HasMetGoal() && !dataFragmentService.AnyRevealedFragmentsContainVirus())
             {
-                Debug.Log("[ExtractController] Extract triggered, checking round end.");
-                roundManager.CheckRoundEnd();
+                Debug.Log("[ExtractController] Extract triggered, showing round popup.");
+                roundPopupManager.ShowPopup(roundService.CurrentRound);
+                roundPopupManager.onContinue += HandleRoundPopupContinue;
                 extractButton.interactable = false;
             }
 
@@ -81,6 +85,12 @@ namespace NewGameplay.Controllers
                     }
                 }
             }
+        }
+
+        private void HandleRoundPopupContinue()
+        {
+            roundPopupManager.onContinue -= HandleRoundPopupContinue;
+            roundService.TriggerRoundReset();
         }
     }
 }

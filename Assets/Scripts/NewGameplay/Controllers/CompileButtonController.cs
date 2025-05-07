@@ -11,9 +11,9 @@ namespace NewGameplay.UI
         [SerializeField] private TextMeshProUGUI feedbackText;
 
         private ICodeShardTracker shardTracker;
-        private IWeightedInjectService injectService;
+        private IInjectService injectService;
 
-        public void Initialize(ICodeShardTracker tracker, IWeightedInjectService injectService)
+        public void Initialize(ICodeShardTracker tracker, IInjectService injectService)
         {
             this.shardTracker = tracker;
             this.injectService = injectService;
@@ -38,7 +38,7 @@ namespace NewGameplay.UI
         {
             if (!compileButton.interactable) return;
 
-            injectService.UnlockNextHack();
+            //injectService.UnlockNextHack();
 
             if (shardTracker.TrySpendShards())
             {

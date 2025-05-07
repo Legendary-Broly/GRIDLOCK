@@ -1,66 +1,112 @@
 using UnityEngine;
-using UnityEngine.UI;
 using NewGameplay.Interfaces;
+using NewGameplay.Views;
 using NewGameplay.Services;
-using System.Linq;
-using NewGameplay.Models;
+using UnityEngine.EventSystems;  // for SymbolPlacementService
+using NewGameplay.Controllers;
+
 namespace NewGameplay.Controllers
 {
     public class GridInputController : MonoBehaviour
     {
         [SerializeField] private GridViewNew view;
-        private IGridService grid;
-    
-        private IWeightedInjectService injectService;
-
-        //private bool hasPlacedFirstSymbol = false;
+        private IGridService gridService;
+        private IInjectService injectService;
         private ITileElementService tileElementService;
-        private IEntropyService entropyService;
         private SymbolPlacementService symbolPlacementService;
+        private IVirusService virusService;
         public void Initialize(
             IGridService gridService,
-            IWeightedInjectService injectService,
+            IInjectService injectService,
             ITileElementService tileElementService,
-            IEntropyService entropyService,
             GridViewNew gridView,
             SymbolPlacementService symbolPlacementService)
         {
-            this.grid = gridService;
+            this.gridService = gridService;
             this.injectService = injectService;
             this.tileElementService = tileElementService;
-            this.entropyService = entropyService;
             this.view = gridView;
             this.symbolPlacementService = symbolPlacementService;
 
+            // make sure your injectService is globally accessible
             InjectServiceLocator.Service = injectService;
         }
 
-        public void HandleTileClick(int x, int y)
+        public void HandleTileClick(int x, int y, PointerEventData.InputButton button)
         {
-            string selectedSymbol = injectService?.SelectedSymbol;
+            Debug.Log($"[GridInputController] Tile click received at ({x},{y}) with button {button}");
+            if (button == PointerEventData.InputButton.Right)
+            {
+                if (!gridService.CanUseVirusFlag())
+                {
+                    Debug.Log($"[GridInputController] Right-click ignored — virus flag already used.");
+                    return;
+                }
 
-            // Handle symbol placement first
+                if (!gridService.IsTileRevealed(x, y) &&
+                    gridService.GetLastRevealedTile().HasValue &&
+                    Mathf.Abs(gridService.GetLastRevealedTile().Value.x - x) + Mathf.Abs(gridService.GetLastRevealedTile().Value.y - y) == 1)
+                {
+                    if (virusService.HasVirusAt(x, y))
+                    {
+                        gridService.SetVirusFlag(x, y, true);
+                        Debug.Log($"[GridInputController] ✅ Correct virus flag at ({x},{y})");
+                        // TODO: reward logic here
+                    }
+                    else
+                    {
+                        Debug.Log($"[GridInputController] ❌ Incorrect virus flag at ({x},{y})");
+                    }
+
+                    gridService.DisableVirusFlag();
+                    view.RefreshTileAt(x, y);
+                }
+                else
+                {
+                    Debug.Log($"[GridInputController] Invalid right-click target at ({x},{y})");
+                }
+
+                return;
+            }
+
+            if (button != PointerEventData.InputButton.Left)
+                return;
+
+            Debug.Log($"[GridInputController] Tile clicked at ({x},{y})");
+
+            var selectedSymbol = injectService?.SelectedSymbol;
             if (!string.IsNullOrEmpty(selectedSymbol))
             {
-                Debug.Log($"[GridInput] Attempting to place symbol '{selectedSymbol}' at ({x},{y})");
-                symbolPlacementService?.TryPlaceSymbol(x, y, selectedSymbol);
+                Debug.Log($"[GridInputController] Placing symbol '{selectedSymbol}' at ({x},{y})");
+                symbolPlacementService.TryPlaceSymbol(x, y, selectedSymbol);
                 injectService.ClearSelectedSymbol();
-                var injectController = FindFirstObjectByType<InjectController>();
-                injectController?.RefreshUI();
-                view.RefreshGrid(grid);
-                return;  // Return here to prevent default tile reveal
+                FindFirstObjectByType<InjectController>()?.RefreshUI();
+                view.RefreshGrid(gridService);
+                return;
             }
 
-            // Default tile reveal (only if no symbol was placed)
-            grid.RevealTile(x, y);
-            view.RefreshGrid(grid);
-
-            string symbol = grid.GetSymbolAt(x, y);
-            if (symbol == "X")
+            if (!gridService.CanRevealTile(x, y))
             {
-                Debug.Log($"[GridInput] Revealed a virus at ({x},{y})! Entropy increased.");
-                entropyService.Increase(10);
+                Debug.Log($"[GridInputController] Cannot reveal ({x},{y}) – CanRevealTile==false");
+                return;
             }
+
+            Debug.Log($"[GridInputController] Revealing tile at ({x},{y})");
+            gridService.RevealTile(x, y);
+            view.RefreshGrid(gridService);
+        }
+
+        public void RebindView(GridViewNew newView)
+        {
+            this.view = newView;
+        }
+        public void HandleTileClick(int x, int y)
+        {
+            HandleTileClick(x, y, PointerEventData.InputButton.Left);
+        }
+        public void SetVirusService(IVirusService virusService)
+        {
+            this.virusService = virusService;
         }
     }
 }

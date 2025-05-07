@@ -5,6 +5,6 @@ namespace NewGameplay.Services
 {
     public static class InjectServiceLocator
     {
-        public static IWeightedInjectService Service;
+        public static IInjectService Service;
     }
 }

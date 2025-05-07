@@ -5,6 +5,7 @@ using System.Linq;
 using NewGameplay.Models;
 using NewGameplay.Enums;
 using System;
+using NewGameplay.Views;
 
 namespace NewGameplay.Services
 {
@@ -40,14 +41,17 @@ namespace NewGameplay.Services
             var positions = gridService.GetAllEmptyTilePositions();
             Debug.Log($"[DataFragmentService] Found {positions.Count} empty positions before filtering");
             
-            // Filter positions to only include tiles with Empty element type and that are playable
+            // Filter positions to only include tiles with Empty element type
             if (tileElementService != null)
             {
+                foreach (var pos in positions)
+                {
+                    var element = tileElementService.GetElementAt(pos.x, pos.y);
+                }
                 positions = positions.Where(pos => 
-                    tileElementService.GetElementAt(pos.x, pos.y) == TileElementType.Empty && 
-                    gridService.IsTilePlayable(pos.x, pos.y)
+                    tileElementService.GetElementAt(pos.x, pos.y) == TileElementType.Empty
                 ).ToList();
-                Debug.Log($"[DataFragmentService] After filtering for empty elements and playable tiles: {positions.Count} positions remain");
+                Debug.Log($"[DataFragmentService] After filtering for empty elements: {positions.Count} positions remain");
             }
             else
             {
@@ -62,8 +66,6 @@ namespace NewGameplay.Services
                 var pos = positions[i];
                 fragmentPositions.Add(pos);
                 gridService.SetSymbol(pos.x, pos.y, FRAGMENT_SYMBOL);
-                gridService.SetTilePlayable(pos.x, pos.y, false);
-                Debug.Log($"[DataFragmentService] Spawned fragment {i+1}/{count} at ({pos.x}, {pos.y}) - Tile playable: {gridService.IsTilePlayable(pos.x, pos.y)}, Element type: {tileElementService?.GetElementAt(pos.x, pos.y)}");
             }
 
             Debug.Log($"[DataFragmentService] Completed spawning {fragmentPositions.Count} fragments. Final fragment positions: {string.Join(", ", fragmentPositions.Select(p => $"({p.x},{p.y})"))}");

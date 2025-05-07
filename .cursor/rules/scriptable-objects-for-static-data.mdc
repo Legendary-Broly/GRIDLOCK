@@ -1,0 +1,9 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Any data like symbol definitions, weights, tile modifiers, etc. must come from ScriptableObject configs.
+
+
+Do not hardcode values like grid sizes, multipliers, or effect types.

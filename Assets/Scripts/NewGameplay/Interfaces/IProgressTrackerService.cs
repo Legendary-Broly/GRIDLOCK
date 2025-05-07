@@ -12,8 +12,9 @@ namespace NewGameplay.Interfaces
         int RequiredFragments { get; }
         
         void SetRequiredFragments(int count);
-        void IncrementFragmentsFound();
+        //void IncrementFragmentsFound();
         bool HasMetGoal();
         void ResetProgress();
+        void NotifyFragmentRevealed();
     }
 }

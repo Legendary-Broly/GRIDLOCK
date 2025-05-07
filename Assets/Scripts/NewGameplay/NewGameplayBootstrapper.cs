@@ -7,59 +7,71 @@ using System.Linq;
 using NewGameplay.Enums;
 using NewGameplay.Views;
 using NewGameplay.UI;
+using NewGameplay.Strategies;
+using NewGameplay.ScriptableObjects;
+using System;
 
 namespace NewGameplay
 {
     public class NewGameplayBootstrapper : MonoBehaviour
     {
         public GridService ExposedGridService { get; private set; }
-        public EntropyService ExposedEntropyService { get; private set; }
         public TileElementService ExposedTileElementService { get; private set; }
         public IProgressTrackerService ExposedProgressService { get; private set; }
         public IDataFragmentService ExposedDataFragmentService => dataFragmentService;
-        [SerializeField] private SoundEffectService soundService;
-        public SoundEffectService ExposedSoundService => soundService;
 
-        private RoundManager roundManager;
-        private IWeightedInjectService weightedInjectService;
+        private IInjectService injectService;
         private GameOverController gameOverController;
         private CodeShardTrackerService codeShardTrackerService;
         private DataFragmentService dataFragmentService;
+        public VirusSpawningStrategy ExposedVirusSpawningStrategy => virusSpawningStrategy;
+        private VirusSpawningStrategy virusSpawningStrategy;
+        private VirusService virusService;
+        private GridStateService gridStateService;
+        private SymbolPlacementService symbolPlacementService;
+        private GridService gridService;
+        private TileElementService tileElementService;
+        private ProgressTrackerService progressService;
+        private RoundService roundService;
+        private ExtractService extractService;
 
         [SerializeField] private GridInputController inputController;
         [SerializeField] private GridViewNew gridView;
         [SerializeField] private InjectController injectController;
         [SerializeField] private ExtractController extractController;
-        [SerializeField] private EntropyTrackerView entropyTrackerView;
         [SerializeField] private ProgressTrackerView progressTrackerView;
         [SerializeField] private RoundPopupManager roundPopupManager;
         [SerializeField] private CSTrackerView csTrackerView;
         [SerializeField] private CompileButtonController compileButtonController;
+        [SerializeField] private RoundManager roundManager;
+        [SerializeField] private RoundConfigDatabase roundConfigDatabase;
 
         private void Awake()
         {
-            var entropyService = new EntropyService();
-            var gridStateService = new GridStateService();
-            var symbolPlacementService = new SymbolPlacementService();
-            var virusSpreadService = new VirusSpreadService(gridStateService);
+            gridStateService = new GridStateService();
+            symbolPlacementService = new SymbolPlacementService();
+            virusService = new VirusService(gridStateService);
 
-            var gridService = new GridService(
+            gridService = new GridService(
                 gridStateService,
                 symbolPlacementService,
                 null,
-                virusSpreadService
+                virusService
             );
+
+            if (virusService is VirusService vs)
+            vs.SetGridService(gridService);
+            
             symbolPlacementService.SetGridService(gridService);
 
-            // Tile Element Service setup (must come before dataFragmentService)
             var tileElementConfigs = Resources.LoadAll<TileElementSO>("TileElements").ToList();
-            var tileElementService = new TileElementService(
+            tileElementService = new TileElementService(
                 gridService.GridWidth,
                 gridService.GridHeight,
-                tileElementConfigs,
-                entropyService
+                tileElementConfigs
             );
-            tileElementService.GenerateElements();
+
+            // 🔧 RESIZE FIRST before anything uses the tile element grid
             tileElementService.SetGridService(gridService);
 
             dataFragmentService = new DataFragmentService(gridService);
@@ -67,68 +79,67 @@ namespace NewGameplay
             dataFragmentService.SetTileElementService(tileElementService);
 
             gridService.SetGridView(gridView);
-            var progressService = new ProgressTrackerService(dataFragmentService);
+            progressService = new ProgressTrackerService(dataFragmentService);
             ExposedProgressService = progressService;
             gridService.SetProgressService(progressService);
 
             var purgeEffectService = new PurgeEffectService(gridStateService, gridService);
             codeShardTrackerService = new CodeShardTrackerService();
 
-            gridService.SetEntropyService(entropyService);
-            gridService.SetTileElementService(tileElementService);
-
             ExposedTileElementService = tileElementService;
-            ExposedEntropyService = entropyService;
             ExposedGridService = gridService;
 
-            IWeightedInjectService injectService = new WeightedInjectService();
-            if (injectService is WeightedInjectService weightedInject)
+            injectService = new InjectService();
+            if (injectService is InjectService inject)
             {
-                weightedInject.SetGridService(gridService);
-                weightedInjectService = weightedInject;
+                inject.SetGridService(gridService);
             }
 
-            var roundService = new RoundService(gridService, progressService, injectService, dataFragmentService, virusSpreadService);
-            var extractService = new ExtractService(gridService, entropyService, dataFragmentService);
+            roundService = new RoundService(gridStateService, gridService, progressService, injectService, dataFragmentService, virusService, tileElementService);
+            roundService.Initialize(roundConfigDatabase);
 
-            roundManager = new RoundManager(progressService, dataFragmentService, roundPopupManager, roundService, gridService, gridView);
+            extractService = new ExtractService(gridService, dataFragmentService);
+            // 🟡 Manually trigger round logic BEFORE initializing roundManager
+            roundService.ResetRound();
+
+            roundManager.Initialize(
+                roundService,
+                gridService,
+                gridStateService,
+                progressService,
+                dataFragmentService,
+                virusService,
+                tileElementService
+            );
+
+            gridView.Initialize(
+                gridService,
+                virusService, 
+                tileElementService,
+                inputController,
+                (x, y, button) => inputController.HandleTileClick(x, y, button)
+            );
+            // No logic in StartFirstRound — UI only (optional)
             roundManager.StartFirstRound();
 
-            progressTrackerView.Initialize(progressService, gridService, entropyService);
-            entropyTrackerView.Initialize(entropyService);
-            gridView.Initialize(gridService, tileElementService, virusSpreadService);
-            gridView.BuildGrid(gridService.GridWidth, gridService.GridHeight, (x, y) => inputController.HandleTileClick(x, y));
-            gridService.InitializeTileStates(gridService.GridWidth, gridService.GridHeight);
+            progressTrackerView.Initialize(progressService, gridService);
+            gridView.BuildGrid(gridService.GridWidth, gridService.GridHeight, (x, y, button) => inputController.HandleTileClick(x, y, button));
+            Debug.Log($"[GridViewNew] Building grid: {gridService.GridWidth}x{gridService.GridHeight}");
+            //gridService.InitializeTileStates(gridService.GridWidth, gridService.GridHeight);
             gridView.RefreshGrid(gridService);
 
-            inputController.Initialize(gridService, injectService, tileElementService, entropyService, gridView, symbolPlacementService);
+            inputController.Initialize(gridService, injectService, tileElementService, gridView, symbolPlacementService);
+            inputController.SetVirusService(virusService);
+
             injectController.Initialize(injectService, gridService);
-            extractController.Initialize(extractService, gridService, progressService, dataFragmentService, codeShardTrackerService, tileElementService, roundManager);
+            extractController.Initialize(extractService, gridService, progressService, dataFragmentService, codeShardTrackerService, tileElementService, roundService, roundPopupManager);
 
             gridService.SetGameOverController(gameOverController);
             csTrackerView.Initialize(codeShardTrackerService);
-            compileButtonController.Initialize(codeShardTrackerService, weightedInjectService);
+            compileButtonController.Initialize(codeShardTrackerService, injectService);
 
-            entropyService.OnEntropyChanged += (float newValue, bool wasReset) => {
-                injectService.UpdateWeights(newValue);
-                entropyTrackerView.Refresh();
-
-                // Play sound effects based on entropy changes
-                if (soundService != null && !wasReset) // Don't play sounds on reset
-                {
-                    float oldValue = entropyService.EntropyPercent;
-                    if (newValue > oldValue)
-                    {
-                        soundService.PlayEntropyGain();
-                    }
-                    else if (newValue < oldValue)
-                    {
-                        soundService.PlayEntropyLoss();
-                    }
-                }
-            };
-
-            roundService.onRoundReset += () => {
+            roundService.onRoundReset += () =>
+            {
                 Debug.Log("[Bootstrapper] Round reset event received, refreshing UI...");
                 gridView.RefreshGrid(gridService);
                 progressTrackerView.Refresh();

@@ -7,10 +7,7 @@ namespace NewGameplay.Enums
     public enum TileElementType
     {
         Empty,
-        ProgressTile,
-        EntropyIncreaser,
-        EntropyReducer,
-        CodeShard,
         VirusNest,
+        CodeShard,
     }
 }

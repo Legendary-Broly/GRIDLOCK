@@ -16,41 +16,32 @@ namespace NewGameplay.Services
         public event System.Action OnProgressChanged;
         private readonly IDataFragmentService dataFragmentService;
         
-        private int foundFragments = 0;
         private int requiredFragments = 1;
 
-        public int FragmentsFound => foundFragments;
+        public int FragmentsFound => dataFragmentService.GetRevealedFragmentCount();
         public int RequiredFragments => requiredFragments;
 
         public void SetRequiredFragments(int count)
         {
-            Debug.Log($"[ProgressTracker] Setting required fragments to {count} (will be clamped to 1-3)");
-            requiredFragments = Mathf.Clamp(count, 1, 3);
-            foundFragments = 0;
+            Debug.Log($"[ProgressTracker] Setting required fragments to {count}");
+            requiredFragments = count;
             Debug.Log($"[ProgressTracker] Progress reset to 0/{requiredFragments}");
             OnProgressChanged?.Invoke();
         }
 
-        public void IncrementFragmentsFound()
-        {
-            foundFragments++;
-            Debug.Log($"[ProgressTracker] Found fragments incremented to {foundFragments}/{requiredFragments}");
-            OnProgressChanged?.Invoke();
-            if (HasMetGoal())
-            {
-                OnProgressGoalReached?.Invoke();
-            }
-        }
-
         public bool HasMetGoal()
         {
-            return foundFragments >= requiredFragments;
+            return FragmentsFound >= requiredFragments;
         }
 
         public void ResetProgress()
         {
             Debug.Log("[ProgressTracker] Resetting progress");
-            foundFragments = 0;
+            OnProgressChanged?.Invoke();
+        }
+
+        public void NotifyFragmentRevealed()
+        {
             OnProgressChanged?.Invoke();
         }
 

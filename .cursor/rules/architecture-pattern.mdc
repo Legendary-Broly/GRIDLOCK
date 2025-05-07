@@ -1,0 +1,13 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Follow a Clean Architecture or MVCS Variant.
+
+All business logic must reside in Services (under NewGameplay/Services).
+
+Controllers handle UI + input orchestration, never business logic.
+
+
+Views (under NewGameplay/Views) should be purely passive and updated by services or controllers.

@@ -1,5 +1,6 @@
 using UnityEngine;
 using NewGameplay.Enums;
+using NewGameplay.ScriptableObjects;
 namespace NewGameplay.Interfaces
 {
     public interface ITileElementService
@@ -13,6 +14,8 @@ namespace NewGameplay.Interfaces
         TileElementSO GetElementSOAt(int x, int y);
         Vector2Int? GetVirusNestPosition();
         void TriggerElementEffectForFirstVirus();
+        void ResizeGrid(int width, int height);
+
     }
 }
 

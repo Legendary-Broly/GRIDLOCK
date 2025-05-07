@@ -1,16 +1,16 @@
 using UnityEngine;
 using NewGameplay.Enums;
 
-namespace NewGameplay
+namespace NewGameplay.ScriptableObjects
 {
-    [CreateAssetMenu(fileName = "TileElement", menuName = "TileElements/TileElement")]
+    [CreateAssetMenu(fileName = "NewTileElement", menuName = "Gridlock/Tile Element")]
     public class TileElementSO : ScriptableObject
     {
         public TileElementType elementType;
-        public int entropyChange;
-        public float progressPercent;
+        public string displayName;
+        public string description;
+        public Sprite icon;
+        public Color displayColor;
         public string displayText;
-        public Color displayColor = Color.white;  // Optional for styling
-        public string description;  // Added from Models version
     }
 }

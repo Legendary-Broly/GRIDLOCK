@@ -12,7 +12,6 @@ public class ProgressTrackerView : MonoBehaviour
 
     private IProgressTrackerService progress;
     private IGridService gridService;
-    private IEntropyService entropyService;
 
     private Vector3 originalPosition;
     private Coroutine jitterCoroutine;
@@ -31,11 +30,10 @@ public class ProgressTrackerView : MonoBehaviour
         //Refresh();
     }
 
-    public void Initialize(IProgressTrackerService progressService, IGridService grid, IEntropyService entropy)
+    public void Initialize(IProgressTrackerService progressService, IGridService grid)
     {
         progress = progressService;
         gridService = grid;
-        entropyService = entropy;
 
         progress.OnProgressChanged += Refresh;
         Refresh();

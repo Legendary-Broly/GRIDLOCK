@@ -1,0 +1,11 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Keep logic in services and make them unit-testable.
+
+Controllers should contain only glue logic.
+
+
+Views should never affect game state.

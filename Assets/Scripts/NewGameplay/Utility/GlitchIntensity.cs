@@ -42,7 +42,7 @@ namespace NewGameplay.Utility
             if (bootstrapper != null)
             {
                 Debug.Log("[GlitchIntensity] Found NewGameplayBootstrapper instance");
-                entropyService = bootstrapper.ExposedEntropyService;
+                //entropyService = bootstrapper.ExposedEntropyService;
                 if (entropyService != null)
                 {
                     Debug.Log("[GlitchIntensity] Successfully connected to EntropyService");
