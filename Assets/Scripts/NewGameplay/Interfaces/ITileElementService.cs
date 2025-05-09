@@ -12,8 +12,6 @@ namespace NewGameplay.Interfaces
         TileElementType GetElementAt(int x, int y);
         void TriggerElementEffect(int x, int y);
         TileElementSO GetElementSOAt(int x, int y);
-        Vector2Int? GetVirusNestPosition();
-        void TriggerElementEffectForFirstVirus();
         void ResizeGrid(int width, int height);
 
     }

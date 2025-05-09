@@ -12,9 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b7d196649bc128409925a6cfe5c176e, type: 3}
   m_Name: CodeShard
   m_EditorClassIdentifier: 
-  elementType: 4
-  entropyChange: 0
-  progressPercent: 0
-  displayText: $
-  displayColor: {r: 1, g: 0, b: 0.95184326, a: 1}
-  description: 
+  elementType: 3
+  icon: {fileID: 21300000, guid: 95801a0bc7e55c243ba59db6050b3893, type: 3}
+  displayColor: {r: 0.09743297, g: 1, b: 0, a: 1}

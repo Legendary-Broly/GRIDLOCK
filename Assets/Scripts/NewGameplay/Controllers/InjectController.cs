@@ -1,59 +1,64 @@
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro;
 using System.Collections.Generic;
 using NewGameplay.Interfaces;
-using NewGameplay.Utility;
+using NewGameplay.Services;
+using System.Linq;
+using TMPro;
 using NewGameplay.Views;
+
 namespace NewGameplay.Controllers
 {
     public class InjectController : MonoBehaviour
     {
-        [SerializeField] private List<Button> symbolButtons;
-        [SerializeField] private List<TextMeshProUGUI> symbolSlots;
+        [SerializeField] private List<Button> toolButtons;
+        [SerializeField] private List<TextMeshProUGUI> toolSlots;
         [SerializeField] private Button injectButton;
 
         private IInjectService injectService;
         private IGridService gridService;
-
-        public void Initialize(IInjectService service, IGridService grid)
+        private GridViewNew gridView;
+        public void Initialize(IInjectService injectService, IGridService gridService)
         {
-            injectService = service;
-            gridService = grid;
+            this.injectService = injectService;
+            this.gridService = gridService;
 
-            for (int i = 0; i < symbolButtons.Count; i++)
+            injectService.OnToolsUpdated += RefreshUI;
+            injectService.OnToolSelected += UpdateToolSelection;
+
+            for (int i = 0; i < toolButtons.Count; i++)
             {
-                int index = i;
-                symbolButtons[i].onClick.AddListener(() => OnSymbolClicked(index));
+                int index = i; // Capture for lambda
+                toolButtons[i].onClick.AddListener(() => OnToolButtonClicked(index));
             }
+               if (injectButton != null)
+                injectButton.onClick.AddListener(OnInject);
 
-            injectButton.onClick.AddListener(OnInject);
             RefreshUI();
         }
-
         private void OnInject()
         {
             if (injectService == null || (injectButton != null && !injectButton.interactable)) return;
 
             // (1) reset the symbol‐bank as you already do
-            injectService.SetFixedSymbols(new List<string>
-            {
-                "∆:/run_PURGE.exe",
-                "Ψ:/run_FORK.exe",
-                "Σ:/run_REPAIR.exe"
-            });
+            injectService.ResetForNewRound();
+            Debug.Log("Tools after reset: " + string.Join(", ", injectService.GetCurrentTools()));
             RefreshUI();
             gridService.UnlockInteraction();            // allow clicks
             gridService.SetFirstRevealPermitted(true);  // allow the very first reveal
             
             // (2) pick a random empty/playable tile
-            var positions = gridService.GetAllEmptyTilePositions();
+            var positions = gridService.GetValidInitialRevealPositions();
             if (positions.Count > 0)
             {
                 var pos = positions[UnityEngine.Random.Range(0, positions.Count)];
                 // force a reveal (skips adjacency check)
                 gridService.RevealTile(pos.x, pos.y, forceReveal: true);
                 gridService.SetLastRevealedTile(pos); // ⬅ custom setter we'll add
+            }
+            else
+            {
+                Debug.LogWarning("[InjectController] No valid initial reveal positions found!");
             }
 
             // (3) finally repaint the grid
@@ -66,75 +71,70 @@ namespace NewGameplay.Controllers
             SetInjectButtonInteractable(false); // Disable after use
         }
 
-        public void RefreshUI()
+
+        private void OnToolButtonClicked(int index)
         {
-            for (int i = 0; i < symbolSlots.Count; i++)
+            if (injectService == null) return;
+
+            string tool = GetToolAt(index);
+            if (string.IsNullOrEmpty(tool)) return;
+
+            injectService.SetSelectedTool(index);
+            UpdateToolSelection();
+
+            // If the selected tool is Pivot, immediately activate it and refresh the grid
+            if (tool == ToolConstants.PIVOT_TOOL)
             {
-                string symbol = GetSymbolAt(i);
-                symbolSlots[i].text = symbol;
-                symbolButtons[i].interactable = !string.IsNullOrEmpty(symbol);
+                var inputController = FindFirstObjectByType<GridInputController>();
+                inputController?.ActivatePivotToolAndRefreshGrid();
             }
         }
 
-        private void OnSymbolClicked(int index)
-        {
-            string symbol = GetSymbolAt(index);
-            if (string.IsNullOrEmpty(symbol)) return;
-
-            injectService.SetSelectedSymbol(index);
-
-            if (symbol == "∆:/run_PURGE.exe")
-            {
-                // PURGE is selected for targeting
-            }
-            else
-            {
-                var bootstrapper = FindFirstObjectByType<NewGameplayBootstrapper>();
-                var grid = bootstrapper?.ExposedGridService;
-                var tileElements = bootstrapper?.ExposedTileElementService;
-
-                if (grid != null && tileElements != null)
-                {
-                    Debug.Log($"[InjectController] Triggering effect for symbol {symbol} immediately (no placement)");
-                    SymbolEffectProcessor.ApplySymbolEffectAtPlacement(symbol, -1, -1, grid, tileElements);
-                }
-
-                injectService.ClearSelectedSymbol();
-                RefreshUI();
-            }
-
-            // Visual feedback (PURGE highlight)
-            for (int i = 0; i < symbolButtons.Count; i++)
-            {
-                var image = symbolButtons[i].targetGraphic;
-                if (image != null)
-                {
-                    var cb = symbolButtons[i].colors;
-                    image.color = (i == index && symbol == "∆:/run_PURGE.exe") ? cb.selectedColor : cb.normalColor;
-                }
-            }
-        }
-
-        private string GetSymbolAt(int index)
+        private string GetToolAt(int index)
         {
             if (injectService == null) return "?";
-            var symbols = injectService.GetCurrentSymbols();
-            return index < symbols.Count ? symbols[index] : "?";
+            var tools = injectService.GetCurrentTools();
+            return index < tools.Count ? tools[index] : "?";
         }
 
-        public void ClearSymbolSlots()
+        public void RefreshUI()
         {
-            for (int i = 0; i < symbolSlots.Count; i++)
+            if (injectService == null) return;
+            var tools = injectService.GetCurrentTools();
+            Debug.Log("RefreshUI tools: " + string.Join(", ", tools));
+            for (int i = 0; i < toolSlots.Count; i++)
             {
-                symbolSlots[i].text = "";
-                symbolButtons[i].interactable = false;
+                toolSlots[i].text = i < tools.Count ? tools[i] : "";
+                toolButtons[i].interactable = i < tools.Count;
+            }
+
+            UpdateToolSelection();
+        }
+
+        private void UpdateToolSelection()
+        {
+            if (injectService == null) return;
+
+            string selectedTool = injectService.SelectedTool;
+            // No color adjustment here; only interactable state is managed in code.
+        }
+
+        public void ClearToolSlots()
+        {
+            for (int i = 0; i < toolSlots.Count; i++)
+            {
+                toolSlots[i].text = "";
+                toolButtons[i].interactable = false;
             }
         }
 
         public void SetInjectButtonInteractable(bool interactable)
         {
             if (injectButton != null)
+            {
                 injectButton.interactable = interactable;
+            }
         }
     }
 }
+

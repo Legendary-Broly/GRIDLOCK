@@ -7,7 +7,8 @@ namespace NewGameplay.Enums
     public enum TileElementType
     {
         Empty,
-        VirusNest,
+        SystemIntegrityIncrease,
+        ToolRefresh,
         CodeShard,
     }
 }

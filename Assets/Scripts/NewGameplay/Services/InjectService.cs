@@ -1,80 +1,81 @@
 using System.Collections.Generic;
-using NewGameplay.Interfaces;  
-using NewGameplay.Services;
-using NewGameplay.Models;
+using UnityEngine;
+using NewGameplay.Interfaces;
+using System;
 
 namespace NewGameplay.Services
 {
     public class InjectService : IInjectService
     {
-        private List<string> currentSymbols = new List<string>();
-        private int selectedSymbolIndex = -1;
-        private IGridService gridService;
-        private List<string> fixedSymbols;
-        private string selectedSymbol;
+        private List<string> currentTools = new List<string>();
+        private int selectedToolIndex = -1;
+        private ISymbolToolService symbolToolService;
 
-        public string SelectedSymbol => selectedSymbol;
+        public event Action OnToolsUpdated;
+        public event Action OnToolSelected;
 
-        public void SetFixedSymbols(List<string> symbols)
+        public string SelectedTool => selectedToolIndex >= 0 && selectedToolIndex < currentTools.Count ? currentTools[selectedToolIndex] : null;
+
+        public void SetSymbolToolService(ISymbolToolService service)
         {
-            fixedSymbols = new List<string>(symbols);
-            ResetForNewRound();
+            this.symbolToolService = service;
         }
 
         public void ResetForNewRound()
         {
-            currentSymbols = new List<string>(fixedSymbols);
-            selectedSymbol = null;
+            currentTools.Clear();
+            currentTools.Add(ToolConstants.PURGE_TOOL);
+            currentTools.Add(ToolConstants.FORK_TOOL);
+            currentTools.Add(ToolConstants.PIVOT_TOOL);
+            selectedToolIndex = -1;
+            OnToolsUpdated?.Invoke();
         }
 
-        public List<string> GetCurrentSymbols()
+        public List<string> GetCurrentTools()
         {
-            return new List<string>(currentSymbols);
+            return new List<string>(currentTools);
         }
 
-        public void SelectSymbol(int index)
+        public void SetSelectedTool(int index)
         {
-            if (index >= 0 && index < currentSymbols.Count)
-            {
-                selectedSymbolIndex = index;
-            }
+            if (index < 0 || index >= currentTools.Count) return;
+            
+            selectedToolIndex = index;
+            OnToolSelected?.Invoke();
         }
 
-        public void SetGridService(IGridService gridService)
+        public void ClearSelectedTool()
         {
-            this.gridService = gridService;
+            selectedToolIndex = -1;
+            OnToolSelected?.Invoke();
         }
 
-        public string GetSelectedSymbol()
+        public void UseSelectedTool()
         {
-            return selectedSymbolIndex >= 0 && selectedSymbolIndex < currentSymbols.Count 
-                ? currentSymbols[selectedSymbolIndex] 
-                : null;
+            if (selectedToolIndex < 0 || selectedToolIndex >= currentTools.Count) return;
+            // No tool effect logic here. Only selection management.
         }
 
-        public void ClearSelectedSymbol()
+        public string GetSelectedTool()
         {
-            selectedSymbolIndex = -1;
-            selectedSymbol = null;
+            return selectedToolIndex >= 0 && selectedToolIndex < currentTools.Count ? currentTools[selectedToolIndex] : null;
         }
 
-        public void ClearSymbolBank()
+        public void RemoveSelectedTool()
         {
-            currentSymbols.Clear();
-            ClearSelectedSymbol();
+            if (selectedToolIndex < 0 || selectedToolIndex >= currentTools.Count) return;
+            currentTools.RemoveAt(selectedToolIndex);
+            selectedToolIndex = -1;
+            OnToolsUpdated?.Invoke();
+            OnToolSelected?.Invoke();
         }
 
-        public void InjectSymbol(string symbol, int x, int y)
+        public void ClearToolBank()
         {
-            if (currentSymbols.Contains(symbol))
-            {
-                currentSymbols.Remove(symbol);
-            }
-        }
-
-        public void SetSelectedSymbol(int index)
-        {
-            throw new System.NotImplementedException();
+            currentTools.Clear();
+            selectedToolIndex = -1;
+            OnToolsUpdated?.Invoke();
+            OnToolSelected?.Invoke();
         }
     }
 }

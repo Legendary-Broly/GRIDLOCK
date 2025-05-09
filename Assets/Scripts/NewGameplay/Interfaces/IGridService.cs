@@ -20,8 +20,6 @@ namespace NewGameplay.Interfaces
         void SetTileState(int x, int y, TileState state);
         TileState GetTileState(int x, int y);
         void RevealTile(int x, int y, bool forceReveal = false);
-        void TryPlaceSymbol(int x, int y);
-        void TryPlaceSymbol(int x, int y, string symbol);
         void ClearAllTiles();
         void ClearAllExceptViruses();
         void LockInteraction();
@@ -33,9 +31,9 @@ namespace NewGameplay.Interfaces
         void SetLastRevealedTile(Vector2Int pos);
         void SetVirusFlag(int x, int y, bool flagged);
         bool IsFlaggedAsVirus(int x, int y);
-    
         bool CanUseVirusFlag();
-
         void DisableVirusFlag();
+        void SetSymbolToolService(ISymbolToolService service);
+        List<Vector2Int> GetValidInitialRevealPositions();
     }
 }

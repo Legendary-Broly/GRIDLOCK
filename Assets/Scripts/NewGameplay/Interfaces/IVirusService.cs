@@ -7,5 +7,6 @@ namespace NewGameplay.Interfaces
     public interface IVirusService
     {
         bool HasVirusAt(int x, int y);
+        void RemoveVirus(int x, int y);
     }
 } 

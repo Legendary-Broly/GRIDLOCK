@@ -14,7 +14,7 @@ namespace NewGameplay.Controllers
         private IRoundService roundService;
         private IGridService gridService;
         private ICodeShardTracker codeShardTracker;
-        private IExtractService extractService;
+        
         private ITileElementService tileElementService;
         private RoundPopupManager roundPopupManager;
 
@@ -37,7 +37,6 @@ namespace NewGameplay.Controllers
         }
 
         public void Initialize(
-            IExtractService extractService,
             IGridService gridService,
             IProgressTrackerService progressService,
             IDataFragmentService dataFragmentService,
@@ -46,7 +45,6 @@ namespace NewGameplay.Controllers
             IRoundService roundService,
             RoundPopupManager roundPopupManager)
         {
-            this.extractService = extractService;
             this.gridService = gridService;
             this.progressService = progressService;
             this.dataFragmentService = dataFragmentService;

@@ -5,6 +5,9 @@ using NewGameplay.Enums;
 using System.Linq;
 using NewGameplay.Models;
 using NewGameplay.ScriptableObjects;
+using NewGameplay.Views;
+using NewGameplay.Controllers;
+using NewGameplay.Services;
 
 namespace NewGameplay.Services
 {
@@ -15,10 +18,11 @@ namespace NewGameplay.Services
         private int gridHeight;
         private readonly List<TileElementSO> elementConfigs;
         private IGridService gridService;
-        private Vector2Int? virusNestPosition = null;
-
+        private NewGameplayBootstrapper bootstrapper;
+        private IInjectService injectService;
         public int GridWidth => gridWidth;
         public int GridHeight => gridHeight;
+        private ISystemIntegrityService systemIntegrityService;
 
         public TileElementService(
             int initialWidth,
@@ -29,6 +33,10 @@ namespace NewGameplay.Services
             this.gridHeight = initialHeight;
             this.elementConfigs = configs;
             // Initial array is NOT created here — ResizeGrid() must be called
+        }
+        public void SetSystemIntegrityService(ISystemIntegrityService service)
+        {
+            this.systemIntegrityService = service;
         }
 
         public void SetGridService(IGridService service)
@@ -46,86 +54,109 @@ namespace NewGameplay.Services
 
         public void GenerateElements()
         {
+            // Clear all existing elements
             for (int y = 0; y < gridHeight; y++)
                 for (int x = 0; x < gridWidth; x++)
                     gridElements[x, y] = TileElementType.Empty;
 
-            List<Vector2Int> positions = new List<Vector2Int>();
+            // Collect valid tile positions (no viruses)
+            List<Vector2Int> candidatePositions = new List<Vector2Int>();
             for (int y = 0; y < gridHeight; y++)
+            {
                 for (int x = 0; x < gridWidth; x++)
-                    positions.Add(new Vector2Int(x, y));
-
-            for (int i = positions.Count - 1; i > 0; i--)
-            {
-                int j = UnityEngine.Random.Range(0, i + 1);
-                var temp = positions[i];
-                positions[i] = positions[j];
-                positions[j] = temp;
-            }
-
-            int currentPosition = 0;
-            var elementCounts = new Dictionary<TileElementType, int>
-            {
-                { TileElementType.VirusNest, 0 },
-                { TileElementType.CodeShard, 0 },
-            };
-
-            foreach (var elementCount in elementCounts)
-            {
-                for (int i = 0; i < elementCount.Value && currentPosition < positions.Count; i++)
                 {
-                    var pos = positions[currentPosition];
-                    gridElements[pos.x, pos.y] = elementCount.Key;
+                    if (gridService == null || !gridService.IsInBounds(x, y)) continue;
 
-                    if (elementCount.Key == TileElementType.VirusNest)
+                    string symbol = gridService.GetSymbolAt(x, y);
+                    bool isVirus = symbol == "X";
+                    bool isEmpty = string.IsNullOrEmpty(symbol);
+                    var tileState = gridService.GetTileState(x, y);
+                    bool isHidden = tileState == TileState.Hidden;
+
+                    if (isEmpty && !isVirus && isHidden)
                     {
-                        virusNestPosition = new Vector2Int(pos.x, pos.y);
+                        candidatePositions.Add(new Vector2Int(x, y));
                     }
 
-                    currentPosition++;
                 }
             }
+
+            // Shuffle candidate positions
+            for (int i = candidatePositions.Count - 1; i > 0; i--)
+            {
+                int j = UnityEngine.Random.Range(0, i + 1);
+                (candidatePositions[i], candidatePositions[j]) = (candidatePositions[j], candidatePositions[i]);
+            }
+
+            int tilesPerElement = Mathf.FloorToInt(candidatePositions.Count * 0.1f); // 5%
+
+            var elementTypes = new[]
+            {
+                TileElementType.CodeShard,
+                TileElementType.SystemIntegrityIncrease,
+                TileElementType.ToolRefresh
+            };
+
+            int posIndex = 0;
+
+            foreach (var element in elementTypes)
+            {
+                for (int i = 0; i < tilesPerElement && posIndex < candidatePositions.Count; i++, posIndex++)
+                {
+                    var pos = candidatePositions[posIndex];
+                    gridElements[pos.x, pos.y] = element;
+                }
+            }
+
+            Debug.Log($"[TileElementService] Generated {tilesPerElement} of each element type across {candidatePositions.Count} eligible tiles.");
         }
 
         public void TriggerElementEffect(int x, int y)
         {
+            Debug.Log($"[TriggerElementEffect] Called at ({x},{y}) — Element: {gridElements[x, y]}");
+
             var element = gridElements[x, y];
             var config = elementConfigs.FirstOrDefault(e => e.elementType == element);
 
             if (config == null)
             {
-                Debug.LogWarning($"[TileElementService] No configuration found for element type {element} at ({x},{y})");
+                Debug.Log("[TileElementService] Empty tile element at ({x},{y})");
                 return;
             }
 
             switch (element)
             {
                 case TileElementType.CodeShard:
-                    Debug.Log("Code shard found.");
+                    Debug.Log("🧩 Code shard found.");
+                    // You can emit an event here if needed.
                     break;
 
-                case TileElementType.VirusNest:
-                    Debug.Log("[TileElementService] Virus Nest triggered — spawning virus.");
-                    gridElements[x, y] = TileElementType.Empty;
+                case TileElementType.SystemIntegrityIncrease:
+                    if (gridService is GridService gs &&
+                        UnityEngine.Object.FindFirstObjectByType<SystemIntegrityTrackerView>()?.enabled == true)
+                    {
+                        var integrity = UnityEngine.Object.FindFirstObjectByType<SystemIntegrityTrackerView>();
+                        if (systemIntegrityService != null)
+                            {
+                                float missing = 100f - systemIntegrityService.CurrentIntegrity;
+                                float restore = missing * 0.25f;
+                                systemIntegrityService.Increase(restore);
+                                Debug.Log($"[TileElement] System Integrity raised by {restore} (25% of missing)");
+                            }
+                        
+                    }
+                    break;
+                    
+                case TileElementType.ToolRefresh:
+                    var injectService = UnityEngine.Object.FindFirstObjectByType<NewGameplayBootstrapper>()?.GetComponent<NewGameplayBootstrapper>()?.GetComponentInChildren<InjectController>()?.GetComponentInChildren<InjectService>();
+                    if (injectService != null)
+                    {
+                        injectService.ResetForNewRound();
+                        Debug.Log("[TileElement] Tool uses refreshed.");
+                    }
                     break;
             }
         }
-
-        public void TriggerElementEffectForFirstVirus()
-        {
-            if (virusNestPosition.HasValue)
-            {
-                Vector2Int pos = virusNestPosition.Value;
-                Debug.Log($"[TileElementService] Spawning virus from nest at {pos}");
-                gridElements[pos.x, pos.y] = TileElementType.Empty;
-            }
-            else
-            {
-                Debug.LogWarning("[TileElementService] No virus nest position found.");
-            }
-        }
-
-        public Vector2Int? GetVirusNestPosition() => virusNestPosition;
 
         public TileElementType GetElementAt(int x, int y)
         {

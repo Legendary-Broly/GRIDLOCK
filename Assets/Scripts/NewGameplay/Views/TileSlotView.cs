@@ -16,12 +16,15 @@ namespace NewGameplay.Views
         [SerializeField] private GameObject adjacencyHighlight;
         [SerializeField] private TextMeshProUGUI symbolText;
         [SerializeField] private Image flagIcon;
+        [SerializeField] private Image elementIcon;
+        
         private IVirusService virusService;
         private ITileElementService tileElementService;
         private IGridService gridService;
         private Button tileButton;
         private int x, y;
         private GridInputController inputController;
+        private ISymbolToolService symbolToolService;
         public enum VisualTileHintType
         {
             None,
@@ -36,7 +39,8 @@ namespace NewGameplay.Views
             IGridService gridService,
             int x,
             int y,
-            GridInputController inputController)
+            GridInputController inputController,
+            ISymbolToolService symbolToolService = null)
         {
             this.virusService = virusService;
             this.tileElementService = elementService;
@@ -44,6 +48,7 @@ namespace NewGameplay.Views
             this.x = x;
             this.y = y;
             this.inputController = inputController;
+            this.symbolToolService = symbolToolService;
 
             tileButton = GetComponentInChildren<Button>();
 
@@ -71,7 +76,15 @@ namespace NewGameplay.Views
             }
 
             int count = 0;
-            Vector2Int[] dirs = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+            Vector2Int[] dirs;
+            if (symbolToolService != null && symbolToolService.IsPivotActive())
+            {
+                dirs = new[] { new Vector2Int(1, 1), new Vector2Int(-1, 1), new Vector2Int(1, -1), new Vector2Int(-1, -1) };
+            }
+            else
+            {
+                dirs = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+            }
             foreach (var dir in dirs)
             {
                 int nx = x + dir.x;
@@ -90,7 +103,6 @@ namespace NewGameplay.Views
             bool wasActive = playerRevealHighlight != null && playerRevealHighlight.activeSelf;
             playerRevealHighlight?.SetActive(revealed);
 
-            // Only log when a tile transitions from not revealed to revealed
             if (revealed && !wasActive)
             {
                 var sym = gridService.GetSymbolAt(x, y);
@@ -100,7 +112,6 @@ namespace NewGameplay.Views
             bool canReveal = gridService.CanRevealTile(x, y);
             bool isFlagged = gridService.IsFlaggedAsVirus(x, y);
             adjacencyHighlight?.SetActive(canReveal && !isFlagged);
-
 
             if (tileButton != null)
                 tileButton.interactable = canReveal;
@@ -122,12 +133,37 @@ namespace NewGameplay.Views
                 }
             }
 
-            // 🔻 ADD THIS BLOCK TO HANDLE FLAG DISPLAY 🔻
             if (flagIcon != null)
             {
                 flagIcon.gameObject.SetActive(isFlagged);
                 if (isFlagged)
                     flagIcon.transform.SetAsLastSibling();
+            }
+
+            // 🔹 New: Apply TileElementSO visuals
+            if (revealed)
+            {
+                var elementSO = tileElementService.GetElementSOAt(x, y);
+                if (elementSO != null && elementSO.elementType != TileElementType.Empty)
+                {
+                    if (elementIcon != null)
+                    {
+                        elementIcon.sprite = elementSO.icon;
+                        elementIcon.color = elementSO.displayColor;
+                        elementIcon.gameObject.SetActive(true);
+                        elementIcon.transform.SetAsLastSibling();
+                    }
+                }
+                else
+                {
+                    if (elementIcon != null) elementIcon.gameObject.SetActive(false);
+
+                }
+            }
+            else
+            {
+                if (elementIcon != null) elementIcon.gameObject.SetActive(false);
+
             }
         }
 
@@ -137,6 +173,11 @@ namespace NewGameplay.Views
             {
                 inputController.HandleTileClick(x, y, eventData.button);
             }
+        }
+
+        public void SetSymbolToolService(ISymbolToolService toolService)
+        {
+            this.symbolToolService = toolService;
         }
     }
 }

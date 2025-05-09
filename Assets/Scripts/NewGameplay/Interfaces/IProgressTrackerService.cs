@@ -5,7 +5,6 @@ namespace NewGameplay.Interfaces
 {
     public interface IProgressTrackerService
     {
-        event System.Action OnProgressGoalReached;
         event System.Action OnProgressChanged;
         
         int FragmentsFound { get; }

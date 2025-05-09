@@ -23,14 +23,23 @@ namespace NewGameplay.Services
         public bool HasVirusAt(int x, int y)
         {
             var symbol = gridStateService.GetSymbolAt(x, y);
-            return symbol == "X";
+            return symbol == VIRUS_SYMBOL;
         }
+
+        public void RemoveVirus(int x, int y)
+        {
+            if (HasVirusAt(x, y))
+            {
+                gridService.SetSymbol(x, y, "");
+            }
+        }
+
         public void SetGridService(IGridService gridService)
         {
             this.gridService = gridService;
         }
 
-        public void SpawnViruses(int virusCount, int width, int height)
+        public void SpawnViruses(int virusCount, int width, int height, Vector2Int? protectedTile = null)
         {
             var placed = 0;
             var attempted = 0;
@@ -42,6 +51,12 @@ namespace NewGameplay.Services
                 int y = random.Next(0, height);
                 attempted++;
 
+                // Skip if this is the protected tile
+                if (protectedTile.HasValue && x == protectedTile.Value.x && y == protectedTile.Value.y)
+                {
+                    continue;
+                }
+
                 var symbol = gridStateService.GetSymbolAt(x, y);
                 if (string.IsNullOrEmpty(symbol))
                 {
@@ -52,6 +67,5 @@ namespace NewGameplay.Services
 
             Debug.Log($"[VirusService] Spawned {placed} viruses after {attempted} attempts.");
         }
-
     }
 }

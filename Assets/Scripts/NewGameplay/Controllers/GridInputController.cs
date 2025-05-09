@@ -2,7 +2,7 @@ using UnityEngine;
 using NewGameplay.Interfaces;
 using NewGameplay.Views;
 using NewGameplay.Services;
-using UnityEngine.EventSystems;  // for SymbolPlacementService
+using UnityEngine.EventSystems;
 using NewGameplay.Controllers;
 
 namespace NewGameplay.Controllers
@@ -13,28 +13,47 @@ namespace NewGameplay.Controllers
         private IGridService gridService;
         private IInjectService injectService;
         private ITileElementService tileElementService;
-        private SymbolPlacementService symbolPlacementService;
+        private SymbolToolService symbolToolService;
         private IVirusService virusService;
+        private ISystemIntegrityService systemIntegrityService;
+
         public void Initialize(
             IGridService gridService,
             IInjectService injectService,
             ITileElementService tileElementService,
             GridViewNew gridView,
-            SymbolPlacementService symbolPlacementService)
+            SymbolToolService symbolToolService)
         {
             this.gridService = gridService;
             this.injectService = injectService;
             this.tileElementService = tileElementService;
             this.view = gridView;
-            this.symbolPlacementService = symbolPlacementService;
+            this.symbolToolService = symbolToolService;
 
-            // make sure your injectService is globally accessible
+            if (symbolToolService != null)
+            {
+                symbolToolService.OnPivotActivated += OnPivotStateChanged;
+                symbolToolService.OnPivotDeactivated += OnPivotStateChanged;
+                symbolToolService.OnToolUsed += OnToolUsed;
+            }
+
             InjectServiceLocator.Service = injectService;
+        }
+
+        private void OnToolUsed()
+        {
+            injectService?.RemoveSelectedTool();
+        }
+
+        private void OnPivotStateChanged()
+        {
+            view.RefreshGrid(gridService);
         }
 
         public void HandleTileClick(int x, int y, PointerEventData.InputButton button)
         {
             Debug.Log($"[GridInputController] Tile click received at ({x},{y}) with button {button}");
+
             if (button == PointerEventData.InputButton.Right)
             {
                 if (!gridService.CanUseVirusFlag())
@@ -43,19 +62,31 @@ namespace NewGameplay.Controllers
                     return;
                 }
 
-                if (!gridService.IsTileRevealed(x, y) &&
-                    gridService.GetLastRevealedTile().HasValue &&
-                    Mathf.Abs(gridService.GetLastRevealedTile().Value.x - x) + Mathf.Abs(gridService.GetLastRevealedTile().Value.y - y) == 1)
+                bool isPivot = symbolToolService != null && symbolToolService.IsPivotActive();
+                bool validFlagTarget = false;
+
+                if (!gridService.IsTileRevealed(x, y) && gridService.GetLastRevealedTile().HasValue)
                 {
-                    if (virusService.HasVirusAt(x, y))
+                    var last = gridService.GetLastRevealedTile().Value;
+                    validFlagTarget = isPivot
+                        ? Mathf.Abs(last.x - x) == 1 && Mathf.Abs(last.y - y) == 1
+                        : Mathf.Abs(last.x - x) + Mathf.Abs(last.y - y) == 1;
+                }
+
+                if (validFlagTarget)
+                {
+                    bool isVirus = virusService.HasVirusAt(x, y);
+                    gridService.SetVirusFlag(x, y, isVirus);
+
+                    if (isVirus)
                     {
-                        gridService.SetVirusFlag(x, y, true);
                         Debug.Log($"[GridInputController] ✅ Correct virus flag at ({x},{y})");
-                        // TODO: reward logic here
+                        // Optional: reward logic
                     }
                     else
                     {
                         Debug.Log($"[GridInputController] ❌ Incorrect virus flag at ({x},{y})");
+                        systemIntegrityService?.Decrease(5f);
                     }
 
                     gridService.DisableVirusFlag();
@@ -72,15 +103,12 @@ namespace NewGameplay.Controllers
             if (button != PointerEventData.InputButton.Left)
                 return;
 
-            Debug.Log($"[GridInputController] Tile clicked at ({x},{y})");
-
-            var selectedSymbol = injectService?.SelectedSymbol;
-            if (!string.IsNullOrEmpty(selectedSymbol))
+            // Check if a tool is selected
+            string selectedTool = injectService?.GetSelectedTool();
+            if (!string.IsNullOrEmpty(selectedTool))
             {
-                Debug.Log($"[GridInputController] Placing symbol '{selectedSymbol}' at ({x},{y})");
-                symbolPlacementService.TryPlaceSymbol(x, y, selectedSymbol);
-                injectService.ClearSelectedSymbol();
-                FindFirstObjectByType<InjectController>()?.RefreshUI();
+                Debug.Log($"[GridInputController] Using tool {selectedTool} at ({x},{y})");
+                symbolToolService?.TryPlaceSymbol(x, y, selectedTool);
                 view.RefreshGrid(gridService);
                 return;
             }
@@ -92,21 +120,41 @@ namespace NewGameplay.Controllers
             }
 
             Debug.Log($"[GridInputController] Revealing tile at ({x},{y})");
+
+            // Check if the tile has a virus before revealing
+            if (virusService.HasVirusAt(x, y))
+            {
+                systemIntegrityService?.Decrease(25f);
+            }
+
             gridService.RevealTile(x, y);
             view.RefreshGrid(gridService);
+        }
+
+        public void HandleTileClick(int x, int y)
+        {
+            HandleTileClick(x, y, PointerEventData.InputButton.Left);
+        }
+
+        public void SetVirusService(IVirusService virusService)
+        {
+            this.virusService = virusService;
+        }
+
+        public void SetSystemIntegrityService(ISystemIntegrityService integrityService)
+        {
+            this.systemIntegrityService = integrityService;
         }
 
         public void RebindView(GridViewNew newView)
         {
             this.view = newView;
         }
-        public void HandleTileClick(int x, int y)
+
+        public void ActivatePivotToolAndRefreshGrid()
         {
-            HandleTileClick(x, y, PointerEventData.InputButton.Left);
-        }
-        public void SetVirusService(IVirusService virusService)
-        {
-            this.virusService = virusService;
+            symbolToolService?.UsePivotTool();
+            view.RefreshGrid(gridService);
         }
     }
 }

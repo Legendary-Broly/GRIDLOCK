@@ -15,15 +15,11 @@ namespace NewGameplay.Services
     public class GridService : IGridService
     {
         private readonly IGridStateService gridStateService;
-        private readonly ISymbolPlacementService symbolPlacementService;
-        private readonly IPurgeEffectService purgeEffectService;
         private readonly IVirusService virusService;
-        //public event Action OnCorrectFlagPlaced; <--- this is the event that will be triggered when the correct flag is placed(WIP)
         private ITileElementService tileElementService;
         private IProgressTrackerService progressService;
-
-        public ITileElementService TileElementService => tileElementService;
-
+        private ISymbolToolService symbolToolService;
+        //public event Action OnCorrectFlagPlaced; <--- this is the event that will be triggered when the correct flag is placed(WIP)
         private Vector2Int? lastRevealedTile = null;
         private bool gridInteractionLocked = true;
         private bool firstRevealPermitted = false;
@@ -40,19 +36,16 @@ namespace NewGameplay.Services
         private GridViewNew gridView;
         private GameOverController gameOverController;
 
+        public ITileElementService TileElementService => tileElementService;
+
         public GridService(
             IGridStateService gridStateService,
-            ISymbolPlacementService symbolPlacementService,
-            IPurgeEffectService purgeEffectService,
             IVirusService virusService)
         {
             this.gridStateService = gridStateService;
-            this.symbolPlacementService = symbolPlacementService;
-            this.purgeEffectService = purgeEffectService;
             this.virusService = virusService;
 
             gridStateService.OnGridStateChanged += HandleGridStateChanged;
-            symbolPlacementService.OnSymbolPlaced += HandleSymbolPlaced;
         }
 
         public void SetGameOverController(GameOverController controller)
@@ -109,8 +102,26 @@ namespace NewGameplay.Services
                 return;
             }
 
+            // Check if pivot is active and validate diagonal movement
+            if (symbolToolService != null && symbolToolService.IsPivotActive())
+            {
+                if (!IsValidDiagonalMove(x, y))
+                {
+                    Debug.Log($"[GridService] RevealTile failed - invalid diagonal move");
+                    return;
+                }
+                symbolToolService.DeactivatePivot();
+            }
+            else if (!forceReveal && !IsValidAdjacentMove(x, y))
+            {
+                Debug.Log($"[GridService] RevealTile failed - invalid adjacent move");
+                return;
+            }
+
             Debug.Log($"[GridService] Proceeding with reveal at ({x},{y})");
             gridStateService.SetTileState(x, y, TileState.Revealed);
+            
+            Debug.Log($"[GridService] Triggering element effect at ({x},{y})...");
             tileElementService?.TriggerElementEffect(x, y);
 
             if (progressService != null && GetSymbolAt(x, y) == "DF")
@@ -121,21 +132,23 @@ namespace NewGameplay.Services
             lastRevealedTile = new Vector2Int(x, y);
             firstRevealPermitted = false;
 
-            // Make adjacent tiles playable
-            Vector2Int[] directions = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
-            foreach (var dir in directions)
-            {
-                int nx = x + dir.x;
-                int ny = y + dir.y;
-                if (IsInBounds(nx, ny) && !IsTileRevealed(nx, ny))
-                {
-                    // No need to set playable here
-                }
-            }
-
             EnableVirusFlag();
             OnGridUpdated?.Invoke();
             Debug.Log($"[GridService] RevealTile completed - lastRevealedTile now ({lastRevealedTile?.x},{lastRevealedTile?.y})");
+        }
+
+        private bool IsValidDiagonalMove(int x, int y)
+        {
+            if (!lastRevealedTile.HasValue) return false;
+            var last = lastRevealedTile.Value;
+            return Mathf.Abs(x - last.x) == 1 && Mathf.Abs(y - last.y) == 1;
+        }
+
+        private bool IsValidAdjacentMove(int x, int y)
+        {
+            if (!lastRevealedTile.HasValue) return firstRevealPermitted;
+            var last = lastRevealedTile.Value;
+            return Mathf.Abs(x - last.x) + Mathf.Abs(y - last.y) == 1;
         }
 
         public bool IsTileRevealed(int x, int y)
@@ -164,82 +177,78 @@ namespace NewGameplay.Services
             bool inBounds = IsInBounds(x, y);
             bool revealed = IsTileRevealed(x, y);
             bool hasStart = lastRevealedTile.HasValue;
-            bool isAdjacent = IsAdjacentToLastRevealed(x, y);
+            bool isDiagonal = false;
+            bool isAdjacent = false;
+            if (hasStart)
+            {
+                var last = lastRevealedTile.Value;
+                isDiagonal = symbolToolService != null && symbolToolService.IsPivotActive() && Mathf.Abs(last.x - x) == 1 && Mathf.Abs(last.y - y) == 1;
+                isAdjacent = (!symbolToolService?.IsPivotActive() ?? true) && Mathf.Abs(last.x - x) + Mathf.Abs(last.y - y) == 1;
+            }
 
             if (gridInteractionLocked) return false;
             if (!inBounds || revealed) return false;
             if (!hasStart) return firstRevealPermitted;
-            return isAdjacent;
+            return isDiagonal || isAdjacent;
         }
-
 
         public void TryPlaceSymbol(int x, int y)
         {
-            var symbol = InjectServiceLocator.Service?.SelectedSymbol;
-            if (string.IsNullOrEmpty(symbol)) return;
-
-            if (CanRevealTile(x, y))
-            {
-                symbolPlacementService.TryPlaceSymbol(x, y, symbol);
-                InjectServiceLocator.Service?.ClearSelectedSymbol();
-            }
+            // This method is no longer needed as symbols are now tools
+            // Keeping empty implementation for interface compatibility
         }
-
         public void TryPlaceSymbol(int x, int y, string symbol)
         {
-            if (!IsInBounds(x, y) || !CanRevealTile(x, y)) return;
+            // This method is no longer needed as symbols are now tools
+            // Keeping empty implementation for interface compatibility
+        }
 
-            if (string.IsNullOrEmpty(gridStateService.GetGridState(x, y)))
+        public void SetSymbol(int x, int y, string symbol)
+        {
+            string existingSymbol = gridStateService.GetGridState(x, y);
+            if (existingSymbol != symbol)
             {
                 gridStateService.SetGridState(x, y, symbol);
                 OnGridUpdated?.Invoke();
             }
         }
 
-        public void SetSymbol(int x, int y, string symbol)
-        {
-            string existingSymbol = gridStateService.GetGridState(x, y);
-
-            if (symbol == "DF")
-            {
-                gridStateService.SetGridState(x, y, symbol);
-                Debug.Log($"[GridService] SetSymbol called for DF at ({x},{y})");
-                return;
-            }
-
-            if (existingSymbol == "DF")
-            {
-                Debug.Log("[GridService] Attempted to overwrite Data Fragment. Action blocked.");
-                return;
-            }
-
-            if (symbol == "X" && existingSymbol == "DF")
-            {
-                Debug.Log("[GridService] Attempted to place virus on Data Fragment. Action blocked.");
-                return;
-            }
-
-            gridStateService.SetGridState(x, y, symbol);
-        }
-
         public void ClearAllExceptViruses()
         {
-            // Optional: Implement if needed
+            for (int y = 0; y < GridHeight; y++)
+            {
+                for (int x = 0; x < GridWidth; x++)
+                {
+                    if (GetSymbolAt(x, y) != "X")
+                    {
+                        SetSymbol(x, y, "");
+                    }
+                }
+            }
+            OnGridUpdated?.Invoke();
         }
 
         public void ClearAllTiles()
         {
-            gridStateService.ClearAllTiles();
-            lastRevealedTile = null;
+            for (int y = 0; y < GridHeight; y++)
+            {
+                for (int x = 0; x < GridWidth; x++)
+                {
+                    SetSymbol(x, y, "");
+                }
+            }
+            OnGridUpdated?.Invoke();
         }
 
         private void HandleGridStateChanged()
         {
             OnGridUpdated?.Invoke();
         }
+
         public void SetVirusFlag(int x, int y, bool flagged)
         {
             gridStateService.SetVirusFlag(x, y, flagged);
+            OnGridUpdated?.Invoke();
         }
 
         public bool IsFlaggedAsVirus(int x, int y)
@@ -247,15 +256,11 @@ namespace NewGameplay.Services
             return gridStateService.IsFlaggedAsVirus(x, y);
         }
 
-        private void HandleSymbolPlaced()
-        {
-            OnGridUpdated?.Invoke();
-        }
-
         public Vector2Int? GetLastRevealedTile()
         {
             return lastRevealedTile;
         }
+
         public void SetLastRevealedTile(Vector2Int pos)
         {
             lastRevealedTile = pos;
@@ -263,26 +268,45 @@ namespace NewGameplay.Services
 
         public void TriggerGridUpdate()
         {
-            Debug.Log("[GridService] Manual grid update triggered");
             OnGridUpdated?.Invoke();
         }
 
         public List<Vector2Int> GetAllEmptyTilePositions()
         {
-            var emptyPositions = new List<Vector2Int>();
-
-            for (int y = 0; y < gridStateService.GridHeight; y++)
+            var positions = new List<Vector2Int>();
+            for (int y = 0; y < GridHeight; y++)
             {
-                for (int x = 0; x < gridStateService.GridWidth; x++)
+                for (int x = 0; x < GridWidth; x++)
                 {
-                    if (string.IsNullOrEmpty(gridStateService.GetGridState(x, y)))
+                    if (string.IsNullOrEmpty(GetSymbolAt(x, y)))
                     {
-                        emptyPositions.Add(new Vector2Int(x, y));
+                        positions.Add(new Vector2Int(x, y));
                     }
                 }
             }
+            return positions;
+        }
 
-            return emptyPositions;
+        public List<Vector2Int> GetValidInitialRevealPositions()
+        {
+            var positions = new List<Vector2Int>();
+            for (int y = 0; y < GridHeight; y++)
+            {
+                for (int x = 0; x < GridWidth; x++)
+                {
+                    string symbol = GetSymbolAt(x, y);
+                    bool isEmpty = string.IsNullOrEmpty(symbol);
+                    bool isVirus = symbol == "X";
+                    bool isDataFragment = symbol == "DF";
+                    bool hasElement = tileElementService?.GetElementAt(x, y) != TileElementType.Empty;
+
+                    if (isEmpty && !isVirus && !isDataFragment && !hasElement)
+                    {
+                        positions.Add(new Vector2Int(x, y));
+                    }
+                }
+            }
+            return positions;
         }
 
         public void SetTileState(int x, int y, TileState state)
@@ -292,7 +316,7 @@ namespace NewGameplay.Services
 
         public TileState GetTileState(int x, int y)
         {
-            return IsInBounds(x, y) ? gridStateService.GetTileState(x, y) : TileState.Hidden;
+            return gridStateService.GetTileState(x, y);
         }
 
         public bool IsInBounds(int x, int y) => x >= 0 && x < GridWidth && y >= 0 && y < GridHeight;
@@ -314,8 +338,12 @@ namespace NewGameplay.Services
 
         public string GetSymbolAt(int x, int y)
         {
-            // Delegate to the underlying state service
-            return gridStateService.GetSymbolAt(x, y);
+            return gridStateService.GetGridState(x, y);
+        }
+
+        public void SetSymbolToolService(ISymbolToolService service)
+        {
+            this.symbolToolService = service;
         }
     }
 }

@@ -10,11 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4b7d196649bc128409925a6cfe5c176e, type: 3}
-  m_Name: VirusNest
+  m_Name: SystemIntegrityIncrease
   m_EditorClassIdentifier: 
-  elementType: 5
-  entropyChange: 0
-  progressPercent: 0
-  displayText: '#'
-  displayColor: {r: 1, g: 0, b: 0, a: 1}
-  description: 
+  elementType: 1
+  icon: {fileID: 21300000, guid: 5b668c5c6f3d23a4cad26112dbdd42ae, type: 3}
+  displayColor: {r: 1, g: 0.504717, b: 0.504717, a: 1}

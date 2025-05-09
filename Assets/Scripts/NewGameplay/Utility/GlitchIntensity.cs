@@ -6,6 +6,7 @@ using NewGameplay.Services;
 using NewGameplay;
 using System.Collections;
 using System.Linq;
+using NewGameplay.Interfaces;
 
 namespace NewGameplay.Utility
 {
@@ -15,7 +16,7 @@ namespace NewGameplay.Utility
         private AnalogGlitchVolume analogGlitch;
         private DigitalGlitchVolume digitalGlitch;
 
-        private EntropyService entropyService;
+        private ISystemIntegrityService integrityService;
         
         // Optional: Allow direct reference to bootstrapper through inspector
         [SerializeField] private NewGameplayBootstrapper bootstrapperReference;
@@ -42,14 +43,14 @@ namespace NewGameplay.Utility
             if (bootstrapper != null)
             {
                 Debug.Log("[GlitchIntensity] Found NewGameplayBootstrapper instance");
-                //entropyService = bootstrapper.ExposedEntropyService;
-                if (entropyService != null)
+                integrityService = bootstrapper.GetComponent<ISystemIntegrityService>();
+                if (integrityService != null)
                 {
-                    Debug.Log("[GlitchIntensity] Successfully connected to EntropyService");
+                    Debug.Log("[GlitchIntensity] Successfully connected to SystemIntegrityService");
                 }
                 else
                 {
-                    Debug.LogError("[GlitchIntensity] ExposedEntropyService is null in NewGameplayBootstrapper");
+                    Debug.LogError("[GlitchIntensity] ExposedSystemIntegrityService is null in NewGameplayBootstrapper");
                 }
             }
             else
@@ -57,31 +58,31 @@ namespace NewGameplay.Utility
                 Debug.LogError("[GlitchIntensity] NewGameplayBootstrapper not found in the scene");
             }
 
-            if (entropyService == null)
+            if (integrityService == null)
             {
-                Debug.LogError("EntropyService not found! Make sure NewGameplayBootstrapper is properly initialized in the scene.");
+                Debug.LogError("SystemIntegrityService not found! Make sure NewGameplayBootstrapper is properly initialized in the scene.");
                 enabled = false;
             }
         }
 
         private void Update()
         {
-            if (entropyService == null) return;
+            if (integrityService == null) return;
 
-            float normalizedEntropy = entropyService.EntropyPercent / 100f;
+            float normalizedIntegrity = integrityService.CurrentIntegrity / 100f;
 
             // Scale glitch effects based on entropy (adjust multipliers as needed)
             if (analogGlitch != null)
             {
-                analogGlitch.scanLineJitter.value = Mathf.Lerp(0.0f, 0.025f, normalizedEntropy);
-                analogGlitch.verticalJump.value = Mathf.Lerp(0.0f, 0.01f, normalizedEntropy);
-                analogGlitch.horizontalShake.value = Mathf.Lerp(0.0f, 0.0f, normalizedEntropy);
-                analogGlitch.colorDrift.value = Mathf.Lerp(0.0f, 0.15f, normalizedEntropy);
+                analogGlitch.scanLineJitter.value = Mathf.Lerp(0.0f, 0.025f, normalizedIntegrity);
+                analogGlitch.verticalJump.value = Mathf.Lerp(0.0f, 0.01f, normalizedIntegrity);
+                analogGlitch.horizontalShake.value = Mathf.Lerp(0.0f, 0.0f, normalizedIntegrity);
+                analogGlitch.colorDrift.value = Mathf.Lerp(0.0f, 0.15f, normalizedIntegrity);
             }
 
-            if (normalizedEntropy >= 1f)
+            if (normalizedIntegrity >= 1f)
             {
-                digitalGlitch.intensity.value = 0.009f;  // Activate at 100% entropy
+                digitalGlitch.intensity.value = 0.009f;  // Activate at 100% integrity
             }
             else
             {

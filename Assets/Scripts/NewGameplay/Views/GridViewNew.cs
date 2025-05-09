@@ -23,19 +23,21 @@ namespace NewGameplay.Views
         private IVirusService virusService;
         private ITileElementService tileElementService;
         private GridInputController inputController;
+        private ISymbolToolService symbolToolService;
 
         public void Initialize(
             IGridService gridService,
             IVirusService virusService,
             ITileElementService tileElementService,
             GridInputController inputController,
-            Action<int, int, PointerEventData.InputButton> onTileClicked
-)
+            Action<int, int, PointerEventData.InputButton> onTileClicked,
+            ISymbolToolService symbolToolService = null)
         {
             this.gridService = gridService;
             this.virusService = virusService;
             this.tileElementService = tileElementService;
             this.inputController = inputController;
+            this.symbolToolService = symbolToolService;
             int width = gridService.GridWidth;
             int height = gridService.GridHeight;
 
@@ -87,8 +89,8 @@ namespace NewGameplay.Views
                     GameObject slotGO = Instantiate(gridTilePrefab, gridParent);
                     tiles[x, y] = slotGO;                              // ← store the GameObject
                     var slot = slotGO.GetComponent<TileSlotView>();
-                        slot.Initialize(virusService, tileElementService, gridService, x, y, inputController);
-                        slots[x, y] = slot;
+                    slot.Initialize(virusService, tileElementService, gridService, x, y, inputController, symbolToolService);
+                    slots[x, y] = slot;
 
                     int cx = x;
                     int cy = y;

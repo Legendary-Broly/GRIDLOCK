@@ -7,10 +7,7 @@ namespace NewGameplay.ScriptableObjects
     public class TileElementSO : ScriptableObject
     {
         public TileElementType elementType;
-        public string displayName;
-        public string description;
         public Sprite icon;
         public Color displayColor;
-        public string displayText;
     }
 }

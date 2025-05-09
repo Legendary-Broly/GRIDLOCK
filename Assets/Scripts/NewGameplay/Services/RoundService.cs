@@ -59,6 +59,13 @@ namespace NewGameplay.Services
             {
                 currentRound++;
 
+                // Store the last revealed tile position before resetting
+                Vector2Int? lastRevealedTile = null;
+                if (grid is GridService gridService)
+                {
+                    lastRevealedTile = gridService.GetLastRevealedTile();
+                }
+
                 var config = roundConfigDatabase.GetConfigForRound(currentRound);
                 if (config == null)
                 {
@@ -70,7 +77,6 @@ namespace NewGameplay.Services
 
                 gridStateService.SetGridSize(config.gridWidth, config.gridHeight);
 
-                inject.ClearSymbolBank();
                 grid.ClearAllTiles();
 
                 if (grid is GridService g)
@@ -81,10 +87,10 @@ namespace NewGameplay.Services
 
                 progress.ResetProgress();
 
-                if (grid is GridService gridService)
+                if (grid is GridService gridService2)
                 {
-                    gridService.InitializeTileStates(gridService.GridWidth, gridService.GridHeight);
-                    gridService.TileElementService?.GenerateElements();
+                    gridService2.InitializeTileStates(gridService2.GridWidth, gridService2.GridHeight);
+                    gridService2.TileElementService?.GenerateElements();
                 }
 
                 int fragmentCount = Mathf.Clamp(currentRound, 1, 3); // Up to 3 fragments max
@@ -94,15 +100,23 @@ namespace NewGameplay.Services
 
                 if (virusService is VirusService concreteVirusService)
                 {
-                    concreteVirusService.SpawnViruses(config.virusCount, config.gridWidth, config.gridHeight);
+                    concreteVirusService.SpawnViruses(config.virusCount, config.gridWidth, config.gridHeight, lastRevealedTile);
+                }
+
+                // Restore the last revealed tile if it's within the new grid bounds
+                if (lastRevealedTile.HasValue && grid is GridService gridService3)
+                {
+                    var pos = lastRevealedTile.Value;
+                    if (pos.x < config.gridWidth && pos.y < config.gridHeight)
+                    {
+                        gridService3.SetLastRevealedTile(pos);
+                        gridService3.RevealTile(pos.x, pos.y, true);
+                    }
                 }
 
                 grid.TriggerGridUpdate();
                 onRoundReset?.Invoke();
                 grid.LockInteraction();
-                inject.SetFixedSymbols(new List<string> {
-                    "∆:/run_PURGE.exe", "Ψ:/run_FORK.exe", "Σ:/run_REPAIR.exe"
-                });
             }
             finally
             {

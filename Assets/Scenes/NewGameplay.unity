@@ -1028,8 +1028,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -5.650009, y: -14.999985}
-  m_SizeDelta: {x: -37.499977, y: -30.00004}
+  m_AnchoredPosition: {x: -5.650009, y: -12.4049835}
+  m_SizeDelta: {x: -37.499977, y: -24.810036}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &152199366
 MonoBehaviour:
@@ -1051,10 +1051,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "mgr_smile will provide you with hacks each time you INJECT.\n\n\u03A8
-    (FORK): Reveal 3 random tiles on the grid, forking to one of them at random.\n\n\u2206
-    (PURGE): Place on a virus or suspected virus to purge it from the system\n\n\u03A3
-    (REPAIR): Run the hack to reduce system entropy. "
+  m_text: "You are provided with three tools when you INJECT;\n\n\u2206 (PURGE):
+    Place on a tile containing a virus to remove the virus and reveal the tile. \n\n\u03A8
+    (FORK): Select a previously revealed tile to restart from. \n\n\u03A3 (PIVOT):
+    For one move your available options are shifted to diagonal tiles, not adjacent
+    tiles. "
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
   m_sharedMaterial: {fileID: -4509799713525957626, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
@@ -1587,11 +1588,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a80525744a62ea14ba49e71670d77494, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  symbolButtons:
+  toolButtons:
   - {fileID: 1267298929}
   - {fileID: 1324413754}
   - {fileID: 2127462645}
-  symbolSlots:
+  toolSlots:
   - {fileID: 964927345}
   - {fileID: 2017044839}
   - {fileID: 1042913844}
@@ -1757,7 +1758,7 @@ GameObject:
   - component: {fileID: 223557697}
   - component: {fileID: 223557696}
   m_Layer: 5
-  m_Name: Symbol1
+  m_Name: Tool1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1976,7 +1977,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: ENTROPY:0%
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
   m_sharedMaterial: {fileID: -4509799713525957626, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
@@ -1986,7 +1987,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294955520
-  m_fontColor: {r: 0, g: 0.8235295, b: 1, a: 1}
+  m_fontColor: {r: 0, g: 0.8117648, b: 0.9921569, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2003,8 +2004,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 48.6
-  m_fontSizeBase: 48.6
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -2224,8 +2225,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 185.6, y: 423.36}
-  m_SizeDelta: {x: 378.6, y: 67.4}
+  m_AnchoredPosition: {x: 185.6, y: 416.8}
+  m_SizeDelta: {x: 378.6, y: 92.71}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &348712378
 GameObject:
@@ -3462,8 +3463,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -198.4, y: -56.1}
-  m_SizeDelta: {x: 66.8, y: 3.79}
+  m_AnchoredPosition: {x: -198.4, y: -5.17}
+  m_SizeDelta: {x: 66.8, y: 1.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &708315656
 MonoBehaviour:
@@ -3538,8 +3539,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -247.4, y: -380.21}
-  m_SizeDelta: {x: 333.76, y: 150.7}
+  m_AnchoredPosition: {x: -247.4, y: -440.3}
+  m_SizeDelta: {x: 333.76, y: 32}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &773935510
 GameObject:
@@ -3731,7 +3732,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 262.8, y: 92.29999}
+  m_AnchoredPosition: {x: 262.8, y: 88.869995}
   m_SizeDelta: {x: 465, y: 137}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &795836073
@@ -3784,8 +3785,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 99e22c82bdb2b9644969692170dbe48b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entropyText: {fileID: 330393482}
+  integrityText: {fileID: 330393482}
   firaCodeFont: {fileID: 11400000, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
+  barWidth: 20
+  textTransform: {fileID: 330393484}
+  maxShakeIntensity: 1.5
 --- !u!1 &800430608
 GameObject:
   m_ObjectHideFlags: 0
@@ -3984,7 +3988,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &849825550
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4646,9 +4650,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "[OBJECTIVE]: \n\nINJECT into the system, track down the required data
-    fragments, and extract them from the system without revealing a virus. Clicking
-    on a tile and revealing a virus will crash the system, ending the run. "
+  m_text: "[OBJECTIVE]: \n\nINJECT into the system, reveal tiles to track down the
+    required data fragments, and extract them from the system. \n\n[INFORMATION ON
+    FAIL STATE WIP]"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
   m_sharedMaterial: {fileID: -4509799713525957626, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
@@ -4876,7 +4880,7 @@ GameObject:
   - component: {fileID: 964927344}
   - component: {fileID: 964927345}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: ToolName1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5188,7 +5192,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -5.4}
+  m_AnchoredPosition: {x: 0, y: 3.7}
   m_SizeDelta: {x: 360.1, y: 55.08998}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1022387746
@@ -5211,7 +5215,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'INJECT to generate your starting point and 3 hacks. '
+  m_text: 'INJECT to generate your starting point and 3 hacks. Or don''t. '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
   m_sharedMaterial: {fileID: -4509799713525957626, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
@@ -5324,6 +5328,7 @@ MonoBehaviour:
   injectController: {fileID: 181381482}
   extractController: {fileID: 1206357460}
   progressTrackerView: {fileID: 1580727597}
+  systemIntegrityTrackerView: {fileID: 795836075}
   roundPopupManager: {fileID: 1315484603}
   csTrackerView: {fileID: 176926551}
   compileButtonController: {fileID: 2050338765}
@@ -5356,7 +5361,7 @@ GameObject:
   - component: {fileID: 1042913845}
   - component: {fileID: 1042913844}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: ToolName3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5537,8 +5542,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: VIRUSES are the enemy. One virus spawns at the beginning of the round,
-    steadiy growing and corrupting tiles they control. Purge or avoid them.
+  m_text: 'VIRUSES are the enemy. Do not reveal tiles with viruses. '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
   m_sharedMaterial: {fileID: -4509799713525957626, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
@@ -5653,8 +5657,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -244.7, y: -49}
-  m_SizeDelta: {x: 365.9, y: 126.6}
+  m_AnchoredPosition: {x: -244.7, y: -41.5}
+  m_SizeDelta: {x: 355.3, y: 66.9}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1089352953
 GameObject:
@@ -5965,7 +5969,7 @@ GameObject:
   - component: {fileID: 1116973116}
   - component: {fileID: 1116973115}
   m_Layer: 5
-  m_Name: Symbol2
+  m_Name: Tool2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6041,7 +6045,7 @@ GameObject:
   - component: {fileID: 1120538735}
   - component: {fileID: 1120538734}
   m_Layer: 5
-  m_Name: SymbolBank
+  m_Name: ToolWindow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6796,7 +6800,7 @@ GameObject:
   - component: {fileID: 1267230116}
   - component: {fileID: 1267230115}
   m_Layer: 5
-  m_Name: Symbol3
+  m_Name: Tool3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7014,6 +7018,7 @@ RectTransform:
   - {fileID: 2073597891}
   - {fileID: 849825550}
   - {fileID: 1882066397}
+  - {fileID: 1416464835}
   m_Father: {fileID: 342800691}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -7805,6 +7810,81 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1663976937}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1416464834
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1416464835}
+  - component: {fileID: 1416464837}
+  - component: {fileID: 1416464836}
+  m_Layer: 5
+  m_Name: Image
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1416464835
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416464834}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1271157382}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -305.96, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1416464836
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416464834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0, b: 0.017761707, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 21300000, guid: 4c73403134d9eb3458d9c495a33c2c13, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1416464837
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1416464834}
+  m_CullTransparentMesh: 1
 --- !u!1 &1432139282
 GameObject:
   m_ObjectHideFlags: 0
@@ -8548,7 +8628,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 696.6, y: 92.54999}
+  m_AnchoredPosition: {x: 696.6, y: 89.899994}
   m_SizeDelta: {x: 465, y: 137}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1580727595
@@ -9219,7 +9299,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 185.4, y: 46.3}
+  m_AnchoredPosition: {x: 185.4, y: 128.82}
   m_SizeDelta: {x: 460.9, y: 285}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1697934527
@@ -9832,16 +9912,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'ENTROPY rises throughout a run, corrupting the system unpredictably once
-    100% is reached.
-
-
-    Entropy is unavoidable.
-
-    Entropy is inescapable.
-
-    Entropy
-    is inevitable. '
+  m_text: '[ENTROPY IS WIP]'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
   m_sharedMaterial: {fileID: -4509799713525957626, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
@@ -10760,7 +10831,7 @@ GameObject:
   - component: {fileID: 2017044838}
   - component: {fileID: 2017044839}
   m_Layer: 5
-  m_Name: Text (TMP)
+  m_Name: ToolName2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11034,7 +11105,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2043284740
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11623,9 +11694,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Locate and extract with Code $hards before viruses can corrupt them to
-    use them to compile new hacks. The red dots represent how many viruses are adjacent
-    to your location. '
+  m_text: 'Right click to flag a tile with a virus.
+
+
+    The red dots represent
+    how many viruses are adjacent to your location. '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
   m_sharedMaterial: {fileID: -4509799713525957626, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
@@ -11652,8 +11725,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 16.2
-  m_fontSizeBase: 16.2
+  m_fontSize: 14.9
+  m_fontSizeBase: 14.9
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

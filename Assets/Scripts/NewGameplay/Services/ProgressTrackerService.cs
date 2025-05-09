@@ -12,7 +12,7 @@ namespace NewGameplay.Services
 {
     public class ProgressTrackerService : IProgressTrackerService
     {
-        public event System.Action OnProgressGoalReached;
+        
         public event System.Action OnProgressChanged;
         private readonly IDataFragmentService dataFragmentService;
         
