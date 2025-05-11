@@ -68,9 +68,9 @@ namespace NewGameplay.Views
 
         private void SetVirusHintCount(int x, int y)
         {
-            // Only show hints for revealed tiles
             if (gridService.GetTileState(x, y) != TileState.Revealed)
             {
+                // Still hidden — do not show hint at all
                 virusHintText.text = string.Empty;
                 return;
             }
@@ -78,7 +78,9 @@ namespace NewGameplay.Views
             int count = 0;
             Vector2Int[] dirs;
             if (symbolToolService != null && symbolToolService.IsPivotActive())
+            
             {
+                Debug.Log($"[TileSlotView] ({x},{y}) Refreshing virus hint — PivotActive: {symbolToolService?.IsPivotActive()}");
                 dirs = new[] { new Vector2Int(1, 1), new Vector2Int(-1, 1), new Vector2Int(1, -1), new Vector2Int(-1, -1) };
             }
             else

@@ -63,26 +63,6 @@ namespace NewGameplay.Controllers
                 roundPopupManager.onContinue += HandleRoundPopupContinue;
                 extractButton.interactable = false;
             }
-
-            for (int y = 0; y < gridService.GridHeight; y++)
-            {
-                for (int x = 0; x < gridService.GridWidth; x++)
-                {
-                    var state = gridService.GetTileState(x, y);
-                    var element = tileElementService.GetElementAt(x, y);
-                    var symbol = gridService.GetSymbolAt(x, y);
-
-                    bool isShard = element == TileElementType.CodeShard;
-                    bool isRevealed = state == TileState.Revealed;
-                    bool hasVirus = symbol == "X";
-
-                    if (isShard && isRevealed && !hasVirus)
-                    {
-                        codeShardTracker.AddShard();
-                        Debug.Log($"[ExtractController] Code Shard collected at ({x},{y})");
-                    }
-                }
-            }
         }
 
         private void HandleRoundPopupContinue()

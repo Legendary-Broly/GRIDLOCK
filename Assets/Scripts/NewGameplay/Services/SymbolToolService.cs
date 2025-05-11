@@ -54,6 +54,12 @@ namespace NewGameplay.Services
             // Can only fork to revealed tiles
             if (!gridService.IsTileRevealed(x, y)) return;
 
+            // Reset virus flag if present at the target tile
+            if (gridService.IsFlaggedAsVirus(x, y))
+            {
+                gridService.SetVirusFlag(x, y, false);
+            }
+
             lastRevealedTile = new Vector2Int(x, y);
             gridService.SetLastRevealedTile(new Vector2Int(x, y));
             OnToolUsed?.Invoke();
@@ -61,9 +67,11 @@ namespace NewGameplay.Services
 
         public void UsePivotTool()
         {
+            Debug.Log("[SymbolToolService] Pivot tool activated. Broadcasting OnPivotActivated.");
             isPivotActive = true;
             OnPivotActivated?.Invoke();
             OnToolUsed?.Invoke();
+            gridService.TriggerGridUpdate();
         }
 
         public void DeactivatePivot()
@@ -72,6 +80,7 @@ namespace NewGameplay.Services
             
             isPivotActive = false;
             OnPivotDeactivated?.Invoke();
+            gridService.TriggerGridUpdate();
         }
 
         public bool IsPivotActive() => isPivotActive;

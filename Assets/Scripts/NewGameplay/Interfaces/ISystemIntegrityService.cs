@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Linq;
+using NewGameplay.Controllers;
 
 namespace NewGameplay.Interfaces
 {
@@ -15,5 +16,6 @@ namespace NewGameplay.Interfaces
         void Decrease(float amount);
         void Increase(float amount);
         void SetIntegrity(float amount);
+        void SetGameOverController(GameOverController controller);
     }
 }

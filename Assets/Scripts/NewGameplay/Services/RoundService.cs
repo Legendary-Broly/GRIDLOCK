@@ -85,12 +85,17 @@ namespace NewGameplay.Services
                     g.ResetRoundSpawns();
                 }
 
+                // Deactivate pivot tool if it's active
+                if (grid is GridService gridServiceWithTools && gridServiceWithTools.SymbolToolService != null)
+                {
+                    gridServiceWithTools.SymbolToolService.DeactivatePivot();
+                }
+
                 progress.ResetProgress();
 
                 if (grid is GridService gridService2)
                 {
                     gridService2.InitializeTileStates(gridService2.GridWidth, gridService2.GridHeight);
-                    gridService2.TileElementService?.GenerateElements();
                 }
 
                 int fragmentCount = Mathf.Clamp(currentRound, 1, 3); // Up to 3 fragments max
@@ -103,14 +108,20 @@ namespace NewGameplay.Services
                     concreteVirusService.SpawnViruses(config.virusCount, config.gridWidth, config.gridHeight, lastRevealedTile);
                 }
 
+                // Generate elements after viruses are placed
+                if (grid is GridService gridService3)
+                {
+                    gridService3.TileElementService?.GenerateElements();
+                }
+
                 // Restore the last revealed tile if it's within the new grid bounds
-                if (lastRevealedTile.HasValue && grid is GridService gridService3)
+                if (lastRevealedTile.HasValue && grid is GridService gridService4)
                 {
                     var pos = lastRevealedTile.Value;
                     if (pos.x < config.gridWidth && pos.y < config.gridHeight)
                     {
-                        gridService3.SetLastRevealedTile(pos);
-                        gridService3.RevealTile(pos.x, pos.y, true);
+                        gridService4.SetLastRevealedTile(pos);
+                        gridService4.RevealTile(pos.x, pos.y, true);
                     }
                 }
 

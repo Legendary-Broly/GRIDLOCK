@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 using NewGameplay.Interfaces;
-
+using NewGameplay.Controllers;
 
 namespace NewGameplay.Services
 {
@@ -12,6 +12,7 @@ namespace NewGameplay.Services
         public float CurrentIntegrity { get; private set; } = 100f;
         private const float MAX_INTEGRITY = 100f;
         private const float MIN_INTEGRITY = 0f;
+        private GameOverController gameOverController;
 
         public void Decrease(float amount)
         {
@@ -21,7 +22,7 @@ namespace NewGameplay.Services
             if (Mathf.Approximately(CurrentIntegrity, 0f))
             {
                 Debug.Log("[SystemIntegrityService] SYSTEM FAILURE: GRIDLOCK triggered.");
-                // TODO: Trigger GRIDLOCK event / game over logic
+                gameOverController?.ShowGameOver(); // Trigger popup
             }
         }
 
@@ -35,6 +36,11 @@ namespace NewGameplay.Services
         {
             CurrentIntegrity = Mathf.Clamp(amount, MIN_INTEGRITY, MAX_INTEGRITY);
             OnIntegrityChanged?.Invoke(CurrentIntegrity);
+        }
+        
+        public void SetGameOverController(GameOverController controller)
+        {
+            this.gameOverController = controller;
         }
     }
 }

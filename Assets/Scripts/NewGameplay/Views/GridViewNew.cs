@@ -134,5 +134,19 @@ namespace NewGameplay.Views
                 button.interactable = value;
             }
         }
+        public void RebindSymbolToolService(ISymbolToolService service)
+        {
+            this.symbolToolService = service;
+            int width = gridService.GridWidth;
+            int height = gridService.GridHeight;
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    slots[x, y]?.SetSymbolToolService(service);
+                }
+            }
+        }
     }
 }

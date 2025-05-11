@@ -15,6 +15,7 @@ namespace NewGameplay.Controllers
         [SerializeField] private GridViewNew gridView;
         [SerializeField] private GridInputController inputController;
         [SerializeField] private InjectController injectController;
+        [SerializeField] private SymbolToolService symbolToolService;
 
         private IRoundService roundService;
         private IGridService gridService;
@@ -31,7 +32,8 @@ namespace NewGameplay.Controllers
             IProgressTrackerService progressService,
             IDataFragmentService dataFragmentService,
             IVirusService virusService,
-            ITileElementService tileElementService)
+            ITileElementService tileElementService,
+            SymbolToolService symbolToolService)
         {
             this.roundService = roundService;
             this.gridService = gridService;
@@ -40,6 +42,7 @@ namespace NewGameplay.Controllers
             this.dataFragmentService = dataFragmentService;
             this.virusService = virusService;
             this.tileElementService = tileElementService;
+            this.symbolToolService = symbolToolService;
 
             // Subscribe to round reset event
             this.roundService.onRoundReset += StartNextRound;
@@ -56,7 +59,7 @@ namespace NewGameplay.Controllers
         public void StartNextRound()
         {
             roundService.ResetRound();
-            gridView.Initialize(gridService, virusService, tileElementService, inputController, inputController.HandleTileClick);
+            gridView.Initialize(gridService, virusService, tileElementService, inputController, inputController.HandleTileClick, symbolToolService);
             RebuildGrid();
             gridView.RefreshGrid(gridService);
             gridService.UnlockInteraction();

@@ -1,9 +1,11 @@
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using NewGameplay.Interfaces;
 using NewGameplay.Models;
 using NewGameplay.Services;
+using NewGameplay.Views;
 
 namespace NewGameplay.Services
 {
@@ -11,6 +13,7 @@ namespace NewGameplay.Services
     {
         private IGridStateService gridStateService;
         private IGridService gridService;
+        private IChatLogService chatLogService;
 
         // Virus configuration
         public const string VIRUS_SYMBOL = "X";
@@ -24,6 +27,7 @@ namespace NewGameplay.Services
         {
             var symbol = gridStateService.GetSymbolAt(x, y);
             return symbol == VIRUS_SYMBOL;
+           
         }
 
         public void RemoveVirus(int x, int y)

@@ -6,7 +6,7 @@ using NewGameplay.Services;
 using System.Linq;
 using TMPro;
 using NewGameplay.Views;
-
+using NewGameplay.ScriptableObjects;
 namespace NewGameplay.Controllers
 {
     public class InjectController : MonoBehaviour
@@ -18,10 +18,12 @@ namespace NewGameplay.Controllers
         private IInjectService injectService;
         private IGridService gridService;
         private GridViewNew gridView;
-        public void Initialize(IInjectService injectService, IGridService gridService)
+        private IChatLogService chatLogService;
+        public void Initialize(IInjectService injectService, IGridService gridService, IChatLogService chatLogService)
         {
             this.injectService = injectService;
             this.gridService = gridService;
+            this.chatLogService = chatLogService;
 
             injectService.OnToolsUpdated += RefreshUI;
             injectService.OnToolSelected += UpdateToolSelection;
@@ -35,6 +37,10 @@ namespace NewGameplay.Controllers
                 injectButton.onClick.AddListener(OnInject);
 
             RefreshUI();
+        }
+        public void SetChatLogService(IChatLogService chatLogService)
+        {
+            this.chatLogService = chatLogService;
         }
         private void OnInject()
         {
@@ -54,7 +60,8 @@ namespace NewGameplay.Controllers
                 var pos = positions[UnityEngine.Random.Range(0, positions.Count)];
                 // force a reveal (skips adjacency check)
                 gridService.RevealTile(pos.x, pos.y, forceReveal: true);
-                gridService.SetLastRevealedTile(pos); // ⬅ custom setter we'll add
+                gridService.SetLastRevealedTile(pos);
+                gridService.SetFirstRevealPermitted(false); // Reset after reveal to ensure next move must be adjacent
             }
             else
             {
@@ -69,6 +76,8 @@ namespace NewGameplay.Controllers
             gridService.TriggerGridUpdate();
 
             SetInjectButtonInteractable(false); // Disable after use
+
+            chatLogService?.LogRandomInjectLine();
         }
 
 

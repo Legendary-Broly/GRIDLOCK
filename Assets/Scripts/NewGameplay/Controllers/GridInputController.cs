@@ -16,7 +16,7 @@ namespace NewGameplay.Controllers
         private SymbolToolService symbolToolService;
         private IVirusService virusService;
         private ISystemIntegrityService systemIntegrityService;
-
+        private IChatLogService chatLogService;
         public void Initialize(
             IGridService gridService,
             IInjectService injectService,
@@ -81,12 +81,13 @@ namespace NewGameplay.Controllers
                     if (isVirus)
                     {
                         Debug.Log($"[GridInputController] ✅ Correct virus flag at ({x},{y})");
-                        // Optional: reward logic
+                        systemIntegrityService?.Increase(0f);
+
                     }
                     else
                     {
                         Debug.Log($"[GridInputController] ❌ Incorrect virus flag at ({x},{y})");
-                        systemIntegrityService?.Decrease(5f);
+                        systemIntegrityService?.Decrease(0f);
                     }
 
                     gridService.DisableVirusFlag();

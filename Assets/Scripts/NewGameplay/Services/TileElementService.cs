@@ -23,6 +23,8 @@ namespace NewGameplay.Services
         public int GridWidth => gridWidth;
         public int GridHeight => gridHeight;
         private ISystemIntegrityService systemIntegrityService;
+        private ICodeShardTracker codeShardTracker;
+        private IChatLogService chatLogService;
 
         public TileElementService(
             int initialWidth,
@@ -42,6 +44,15 @@ namespace NewGameplay.Services
         public void SetGridService(IGridService service)
         {
             this.gridService = service;
+        }
+        public void SetCodeShardTracker(ICodeShardTracker tracker)
+        {
+            this.codeShardTracker = tracker;
+        }
+
+        public void SetInjectService(IInjectService service)
+        {
+            this.injectService = service;
         }
 
         public void ResizeGrid(int width, int height)
@@ -127,35 +138,44 @@ namespace NewGameplay.Services
             switch (element)
             {
                 case TileElementType.CodeShard:
-                    Debug.Log("🧩 Code shard found.");
-                    // You can emit an event here if needed.
+                    if (codeShardTracker != null)
+                    {
+                        codeShardTracker.AddShard();
+                        Debug.Log("[TileElement] 🧩 Code Shard collected on reveal.");
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[TileElement] CodeShardTracker is null.");
+                    }
                     break;
 
                 case TileElementType.SystemIntegrityIncrease:
-                    if (gridService is GridService gs &&
-                        UnityEngine.Object.FindFirstObjectByType<SystemIntegrityTrackerView>()?.enabled == true)
+                    if (systemIntegrityService != null)
                     {
-                        var integrity = UnityEngine.Object.FindFirstObjectByType<SystemIntegrityTrackerView>();
-                        if (systemIntegrityService != null)
-                            {
-                                float missing = 100f - systemIntegrityService.CurrentIntegrity;
-                                float restore = missing * 0.25f;
-                                systemIntegrityService.Increase(restore);
-                                Debug.Log($"[TileElement] System Integrity raised by {restore} (25% of missing)");
-                            }
-                        
+                        float missing = 100f - systemIntegrityService.CurrentIntegrity;
+                        float restore = missing * 0.25f;
+                        systemIntegrityService.Increase(restore);
+                        Debug.Log($"[TileElement] System Integrity raised by {restore} (25% of missing)");
+                    }
+                    else
+                    {
+                        Debug.LogWarning("[TileElement] SystemIntegrityService is null.");
                     }
                     break;
                     
                 case TileElementType.ToolRefresh:
-                    var injectService = UnityEngine.Object.FindFirstObjectByType<NewGameplayBootstrapper>()?.GetComponent<NewGameplayBootstrapper>()?.GetComponentInChildren<InjectController>()?.GetComponentInChildren<InjectService>();
                     if (injectService != null)
                     {
                         injectService.ResetForNewRound();
                         Debug.Log("[TileElement] Tool uses refreshed.");
                     }
+                    else
+                    {
+                        Debug.LogWarning("[TileElement] InjectService is null.");
+                    }
                     break;
             }
+            chatLogService.LogTileElementReveal(element);
         }
 
         public TileElementType GetElementAt(int x, int y)
@@ -173,6 +193,10 @@ namespace NewGameplay.Services
         {
             var type = gridElements[x, y];
             return elementConfigs.FirstOrDefault(e => e.elementType == type);
+        }
+        public void SetChatLogService(IChatLogService service)
+        {
+            chatLogService = service;
         }
     }
 }

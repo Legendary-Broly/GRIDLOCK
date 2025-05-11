@@ -19,6 +19,7 @@ namespace NewGameplay.Services
         private ITileElementService tileElementService;
         private IProgressTrackerService progressService;
         private ISymbolToolService symbolToolService;
+        private IChatLogService chatLogService;
         //public event Action OnCorrectFlagPlaced; <--- this is the event that will be triggered when the correct flag is placed(WIP)
         private Vector2Int? lastRevealedTile = null;
         private bool gridInteractionLocked = true;
@@ -34,7 +35,6 @@ namespace NewGameplay.Services
         public int GridHeight => gridStateService.GridHeight;
 
         private GridViewNew gridView;
-        private GameOverController gameOverController;
 
         public ITileElementService TileElementService => tileElementService;
 
@@ -46,11 +46,6 @@ namespace NewGameplay.Services
             this.virusService = virusService;
 
             gridStateService.OnGridStateChanged += HandleGridStateChanged;
-        }
-
-        public void SetGameOverController(GameOverController controller)
-        {
-            this.gameOverController = controller;
         }
 
         public void SetGridView(GridViewNew view)
@@ -120,6 +115,12 @@ namespace NewGameplay.Services
 
             Debug.Log($"[GridService] Proceeding with reveal at ({x},{y})");
             gridStateService.SetTileState(x, y, TileState.Revealed);
+            
+            // Check if this is a virus reveal
+            if (GetSymbolAt(x, y) == "X")
+            {
+                chatLogService?.LogVirusReveal();
+            }
             
             Debug.Log($"[GridService] Triggering element effect at ({x},{y})...");
             tileElementService?.TriggerElementEffect(x, y);
@@ -344,6 +345,13 @@ namespace NewGameplay.Services
         public void SetSymbolToolService(ISymbolToolService service)
         {
             this.symbolToolService = service;
+        }
+
+        public ISymbolToolService SymbolToolService => symbolToolService;
+
+        public void SetChatLogService(IChatLogService chatLogService)
+        {
+            this.chatLogService = chatLogService;
         }
     }
 }
