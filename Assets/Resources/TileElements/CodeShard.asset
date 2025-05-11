@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b7d196649bc128409925a6cfe5c176e, type: 3}
+  m_Name: CodeShard
+  m_EditorClassIdentifier: 
+  elementType: 3
+  icon: {fileID: 21300000, guid: 95801a0bc7e55c243ba59db6050b3893, type: 3}
+  displayColor: {r: 0.09743297, g: 1, b: 0, a: 1}

@@ -1,0 +1,9 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+Use C# events (e.g., OnGridUpdated) or injected callback delegates for communication between layers.
+
+
+Avoid any hard reference from service → UI or service → controller.

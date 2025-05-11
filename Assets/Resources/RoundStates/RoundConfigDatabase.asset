@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 57b5882b2d4fbe84eaa84a7dcd5dbd98, type: 3}
+  m_Name: RoundConfigDatabase
+  m_EditorClassIdentifier: 
+  roundConfigs:
+  - {fileID: 11400000, guid: 5c11d585a6531e142947590106cf51ba, type: 2}
+  - {fileID: 11400000, guid: 74fb8d6f6694e60438814c76b12ae1a1, type: 2}
+  - {fileID: 11400000, guid: 316d5afe173e9544a91fbda6f957c8e0, type: 2}
+  - {fileID: 11400000, guid: a3b8e88a74973cd4a9d82f8b5971a18d, type: 2}
+  - {fileID: 11400000, guid: a10cc50bf7085d6478f14317de900acf, type: 2}
+  - {fileID: 11400000, guid: b6b4b2eff6a19114e8c7bd46db82950b, type: 2}
+  - {fileID: 11400000, guid: edb2fde4b93e3b345a336bb397d6629c, type: 2}
