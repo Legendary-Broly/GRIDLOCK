@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: b56d3fedc326bfc4595e71d630d7c81f
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Prefabs/Popup Panels/Volume Mixer.prefab
+  uploadId: 718226

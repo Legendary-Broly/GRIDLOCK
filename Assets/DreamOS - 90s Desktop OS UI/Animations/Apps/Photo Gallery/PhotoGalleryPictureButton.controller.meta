@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 69227a5aefd1d9e489b31c9436f97e08
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Apps/Photo Gallery/PhotoGalleryPictureButton.controller
+  uploadId: 718226

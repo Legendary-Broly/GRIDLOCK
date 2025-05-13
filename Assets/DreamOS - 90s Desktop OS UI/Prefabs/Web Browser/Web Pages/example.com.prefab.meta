@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f6d2dbddd562cb04d9f41176acf3c815
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Prefabs/Web Browser/Web Pages/example.com.prefab
+  uploadId: 718226

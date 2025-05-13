@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 55262f8bad2b1d64a9e4149aebf4d52c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Apps/Messaging/ChatLayout_In.anim
+  uploadId: 718226

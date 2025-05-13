@@ -38,8 +38,6 @@ namespace NewGameplay.UI
         {
             if (!compileButton.interactable) return;
 
-            //injectService.UnlockNextHack();
-
             if (shardTracker.TrySpendShards())
             {
                 feedbackText.text = "Compiling...";

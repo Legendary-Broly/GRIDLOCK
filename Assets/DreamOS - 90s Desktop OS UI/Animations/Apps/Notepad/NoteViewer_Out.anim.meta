@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 64c5214fd3e9a724d961ac80d8b1e7d5
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Apps/Notepad/NoteViewer_Out.anim
+  uploadId: 718226

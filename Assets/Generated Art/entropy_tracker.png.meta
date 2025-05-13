@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      entropy_tracker_0: -605919801517917324
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

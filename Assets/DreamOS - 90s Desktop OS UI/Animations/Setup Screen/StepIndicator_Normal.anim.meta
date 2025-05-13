@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5e65fce8ba388aa4ab7d1202a854d5fd
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Setup Screen/StepIndicator_Normal.anim
+  uploadId: 718226

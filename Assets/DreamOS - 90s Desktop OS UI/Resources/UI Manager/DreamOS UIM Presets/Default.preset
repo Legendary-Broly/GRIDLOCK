@@ -1,0 +1,287 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!181963792 &2655988077585873504
+Preset:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Default
+  m_TargetType:
+    m_NativeTypeID: 114
+    m_ManagedTypePPtr: {fileID: 11500000, guid: c37bb929b5e5cba4c892be907e1551f4, type: 3}
+    m_ManagedTypeFallback: 
+  m_Properties:
+  - target: {fileID: 0}
+    propertyPath: m_Enabled
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorHideFlags
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: m_EditorClassIdentifier
+    value: 
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: enableDynamicUpdate
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: enableExtendedColorPicker
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: editorHints
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: selectedTheme
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: hoverSound
+    value: 
+    objectReference: {fileID: 8300000, guid: d23b3dbb6d2a1534ba10a312085e63e0, type: 3}
+  - target: {fileID: 0}
+    propertyPath: clickSound
+    value: 
+    objectReference: {fileID: 8300000, guid: c908263af034a9b40a9ca9a721394610, type: 3}
+  - target: {fileID: 0}
+    propertyPath: errorSound
+    value: 
+    objectReference: {fileID: 8300000, guid: 0cf7205be3566a2488163e99f3875f89, type: 3}
+  - target: {fileID: 0}
+    propertyPath: notificationSound
+    value: 
+    objectReference: {fileID: 8300000, guid: 84aea1bb189532c43bcc36012b436802, type: 3}
+  - target: {fileID: 0}
+    propertyPath: enableKeystrokes
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: enableKeyboardKeystroke
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: enableMouseKeystroke
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: keyboardStrokes.Array.size
+    value: 6
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: keyboardStrokes.Array.data[0]
+    value: 
+    objectReference: {fileID: 8300000, guid: bf68f22d1837c7b4e873c10dbcf48913, type: 3}
+  - target: {fileID: 0}
+    propertyPath: keyboardStrokes.Array.data[1]
+    value: 
+    objectReference: {fileID: 8300000, guid: bcf365ffd5487f740ab9460c1c6e81ad, type: 3}
+  - target: {fileID: 0}
+    propertyPath: keyboardStrokes.Array.data[2]
+    value: 
+    objectReference: {fileID: 8300000, guid: 0d941b0bc164aa14594836b672428d20, type: 3}
+  - target: {fileID: 0}
+    propertyPath: keyboardStrokes.Array.data[3]
+    value: 
+    objectReference: {fileID: 8300000, guid: 356c3b564a9f9ad41bfa5cf79230e355, type: 3}
+  - target: {fileID: 0}
+    propertyPath: keyboardStrokes.Array.data[4]
+    value: 
+    objectReference: {fileID: 8300000, guid: b9d258afc67c3954f8e3416d78bf596b, type: 3}
+  - target: {fileID: 0}
+    propertyPath: keyboardStrokes.Array.data[5]
+    value: 
+    objectReference: {fileID: 8300000, guid: 16fde0accba66e9499d723876c604293, type: 3}
+  - target: {fileID: 0}
+    propertyPath: mouseStrokes.Array.size
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: mouseStrokes.Array.data[0]
+    value: 
+    objectReference: {fileID: 8300000, guid: 5df41e9c90ab71046b3c011329051759, type: 3}
+  - target: {fileID: 0}
+    propertyPath: highlightedColorDark.r
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highlightedColorDark.g
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highlightedColorDark.b
+    value: 0.49019608
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highlightedColorDark.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highlightedColorSecondaryDark.r
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highlightedColorSecondaryDark.g
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highlightedColorSecondaryDark.b
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highlightedColorSecondaryDark.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: primaryColorDark.r
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: primaryColorDark.g
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: primaryColorDark.b
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: primaryColorDark.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: secondaryColorDark.r
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: secondaryColorDark.g
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: secondaryColorDark.b
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: secondaryColorDark.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: windowBGColorDark.r
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: windowBGColorDark.g
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: windowBGColorDark.b
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: windowBGColorDark.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: backgroundColorDark.r
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: backgroundColorDark.g
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: backgroundColorDark.b
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: backgroundColorDark.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: taskBarColorDark.r
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: taskBarColorDark.g
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: taskBarColorDark.b
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: taskBarColorDark.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highlightedColorCustom.r
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highlightedColorCustom.g
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highlightedColorCustom.b
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highlightedColorCustom.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highlightedColorSecondaryCustom.r
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highlightedColorSecondaryCustom.g
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highlightedColorSecondaryCustom.b
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: highlightedColorSecondaryCustom.a
+    value: 1
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: enableUIBlur
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: systemFontThin
+    value: 
+    objectReference: {fileID: 11400000, guid: 69cbfb587e3e5b7458884015647164b5, type: 2}
+  - target: {fileID: 0}
+    propertyPath: systemFontLight
+    value: 
+    objectReference: {fileID: 11400000, guid: 85f5ddea62014d842866d1286de922e6, type: 2}
+  - target: {fileID: 0}
+    propertyPath: systemFontRegular
+    value: 
+    objectReference: {fileID: 11400000, guid: af6ad66f19204a644b126aac86657fca, type: 2}
+  - target: {fileID: 0}
+    propertyPath: systemFontSemiBold
+    value: 
+    objectReference: {fileID: 11400000, guid: 02b257e2db53726498e813ba6865ba82, type: 2}
+  - target: {fileID: 0}
+    propertyPath: systemFontBold
+    value: 
+    objectReference: {fileID: 11400000, guid: 9dae71eaf3b1db042a17e2d1084e5791, type: 2}
+  - target: {fileID: 0}
+    propertyPath: enableLocalization
+    value: 0
+    objectReference: {fileID: 0}
+  - target: {fileID: 0}
+    propertyPath: localizationSettings
+    value: 
+    objectReference: {fileID: 11400000, guid: 306a0ca089807d34787bf5a5b674abee, type: 2}
+  - target: {fileID: 0}
+    propertyPath: currentLanguage
+    value: 
+    objectReference: {fileID: 11400000, guid: 4e26f7f1322fb5d4eac1bd5279162d93, type: 2}
+  m_ExcludedProperties: []

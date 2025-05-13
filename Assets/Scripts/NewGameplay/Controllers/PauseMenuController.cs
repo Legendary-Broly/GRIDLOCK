@@ -1,17 +1,12 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using NewGameplay.Controllers;
 
 public class PauseMenuController : MonoBehaviour
 {
     [SerializeField] private GameObject pauseMenuPanel;
-    [SerializeField] private TutorialPanelController tutorialPanelController;
-
-    public void ShowTutorialPanel()
-    {
-        tutorialPanelController.ShowTutorial();
-        pauseMenuPanel.SetActive(false); // Close the pause menu when tutorial is shown
-    }
-
+    [SerializeField] private TutorialManualController tutorialManualController;
+    
     private void Start()
     {
         pauseMenuPanel.SetActive(false);

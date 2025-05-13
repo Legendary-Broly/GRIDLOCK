@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: b7ccb6b3c6714f24fab98250c65d6b35
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Prefabs/Settings/Settings Element
+    - Button.prefab
+  uploadId: 718226

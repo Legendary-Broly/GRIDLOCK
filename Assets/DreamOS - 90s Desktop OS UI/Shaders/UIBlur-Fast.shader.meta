@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 26a8b63f33f582f4685e7d7c2a6a7336
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Shaders/UIBlur-Fast.shader
+  uploadId: 718226

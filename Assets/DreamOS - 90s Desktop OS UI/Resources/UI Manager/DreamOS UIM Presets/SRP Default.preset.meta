@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: ed288d690cb2d614cb186580d6e834a9
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2655988077585873504
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Resources/UI Manager/DreamOS UIM
+    Presets/SRP Default.preset
+  uploadId: 718226

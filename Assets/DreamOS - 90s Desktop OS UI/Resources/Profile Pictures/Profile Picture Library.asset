@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cee29c91e7b36024e9e21ae05c209698, type: 3}
+  m_Name: Profile Picture Library
+  m_EditorClassIdentifier: 
+  pictures:
+  - pictureID: Default
+    pictureSprite: {fileID: 21300000, guid: f5a2d04a5f5820942bd2b516fb6f7233, type: 3}
+  - pictureID: Picture 1
+    pictureSprite: {fileID: 21300000, guid: e72c5d22e04863a4cb3c232822563e5d, type: 3}
+  - pictureID: Picture 2
+    pictureSprite: {fileID: 21300000, guid: 39193c5abcf836e488becba1fc8384ae, type: 3}
+  - pictureID: Picture 3
+    pictureSprite: {fileID: 21300000, guid: e68b5e084a5972740be99a9169ad1bea, type: 3}
+  - pictureID: Picture 4
+    pictureSprite: {fileID: 21300000, guid: a1f2c91cbd06bb24d9c613d12c153191, type: 3}
+  - pictureID: Picture 5
+    pictureSprite: {fileID: 21300000, guid: 7717d67f4dda64f44ac32fba98156ad7, type: 3}
+  - pictureID: Picture 6
+    pictureSprite: {fileID: 21300000, guid: b970056dca4790e4e9071d67366396d2, type: 3}
+  - pictureID: Picture 7
+    pictureSprite: {fileID: 21300000, guid: 66e7cb079fbe0be4b955831cbeacb155, type: 3}

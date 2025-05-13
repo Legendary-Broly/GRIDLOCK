@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1c846b9c4d5442b46a2e243d7a8cbe56
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Prefabs/Widgets/Music Player.prefab
+  uploadId: 718226

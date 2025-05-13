@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c426ec06101062a4dbc9ef60778cd378
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Localization/Tables/Messaging.asset
+  uploadId: 718226

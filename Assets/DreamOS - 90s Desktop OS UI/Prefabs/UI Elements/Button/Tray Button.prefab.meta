@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1ad356d0c0104204d9053bd19f2c8d08
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Prefabs/UI Elements/Button/Tray Button.prefab
+  uploadId: 718226

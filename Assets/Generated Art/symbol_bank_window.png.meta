@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      symbol_bank_window_0: 4446428784806386682
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

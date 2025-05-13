@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 84f74c631e605d845a14e4a5ea0395d3
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Apps/App Window/Window_Normalize.anim
+  uploadId: 718226

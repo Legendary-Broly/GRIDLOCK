@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f5fc3fb3c0d93e041a8769d9e1ea63ca
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Apps/App Window/Window_In.anim
+  uploadId: 718226

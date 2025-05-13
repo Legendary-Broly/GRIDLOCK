@@ -1,0 +1,92 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 33acf70461fba8240889d1cdcdf19aaf, type: 3}
+  m_Name: Web Library
+  m_EditorClassIdentifier: 
+  homePage:
+    pageTitle: Home Page
+    pageURL: :home
+    pageIcon: {fileID: 21300000, guid: ecb0c1984ac896c45a91645125938ddc, type: 3}
+    pageContent: {fileID: 1986372816519924, guid: 936a6a7cd3d249e42bc206cf603b955f, type: 3}
+    pageSize: 10
+    titleKey: HomePageTitle
+  notFoundPage:
+    pageTitle: Page Not Found
+    pageURL: :pagenotfound
+    pageIcon: {fileID: 21300000, guid: 4c459dcc6f3ae6d4c9835b10a17e5f86, type: 3}
+    pageContent: {fileID: 1958891694494868, guid: c693fcc0a5cc9f7449e8ad486c87ea2d, type: 3}
+    pageSize: 10
+    titleKey: NotFoundTitle
+  noConnectionPage:
+    pageTitle: No Connection
+    pageURL: :noconnection
+    pageIcon: {fileID: 21300000, guid: b55ccfc5a9bf8a34ca1220825da952d7, type: 3}
+    pageContent: {fileID: 1958891694494868, guid: 07e6affff34c8fc4fb1eb657484a3969, type: 3}
+    pageSize: 10
+    titleKey: NoConnectionTitle
+  webPages:
+  - pageTitle: Example Website
+    pageURL: example.com
+    pageIcon: {fileID: 21300000, guid: 3789b437c7afd9e4e945dba629fefde4, type: 3}
+    pageContent: {fileID: 1958891694494868, guid: f6d2dbddd562cb04d9f41176acf3c815, type: 3}
+    pageSize: 20
+    titleKey: 
+  - pageTitle: Downloads
+    pageURL: downloads.com
+    pageIcon: {fileID: 21300000, guid: 0e6e148f7dff8304f80fdf9bbb9813bd, type: 3}
+    pageContent: {fileID: 1958891694494868, guid: fab6df7733d76b8478326c02c7d10cd7, type: 3}
+    pageSize: 5
+    titleKey: 
+  - pageTitle: Eye Bleach
+    pageURL: eyebleach.com
+    pageIcon: {fileID: 21300000, guid: e3dc74f9553bedd47b395a7938098e83, type: 3}
+    pageContent: {fileID: 1958891694494868, guid: 6f7f7552495480a4a88f93a08ef56ef4, type: 3}
+    pageSize: 10
+    titleKey: 
+  dlFiles:
+  - fileName: Downloadable Music
+    fileIcon: {fileID: 21300000, guid: b13a8885e6844bc4eb7ca58c32cc0fc9, type: 3}
+    fileSize: 14
+    fileType: 1
+    musicReference: {fileID: 8300000, guid: 13c5362a767e48e448f5a7cb925809a4, type: 3}
+    photoReference: {fileID: 0}
+    videoReference: {fileID: 0}
+    noteReference: 
+  - fileName: Good Boy
+    fileIcon: {fileID: 21300000, guid: 537430b8d4df59840ae59283a8484173, type: 3}
+    fileSize: 4
+    fileType: 3
+    musicReference: {fileID: 0}
+    photoReference: {fileID: 21300000, guid: 537430b8d4df59840ae59283a8484173, type: 3}
+    videoReference: {fileID: 0}
+    noteReference: 
+  - fileName: SecretNote.txt
+    fileIcon: {fileID: 21300000, guid: 1a46c73762a2e3748bdc199558a73d0c, type: 3}
+    fileSize: 0.1
+    fileType: 2
+    musicReference: {fileID: 0}
+    photoReference: {fileID: 0}
+    videoReference: {fileID: 0}
+    noteReference: 'This is just a sample note created for web browser download demonstration.
+
+
+      You
+      can add your own downloadable content as well! Just click on the <b>Tools >
+      DreamOS > Show Web Library</b> button and start adding new items!'
+  - fileName: Downloadable Video
+    fileIcon: {fileID: 21300000, guid: 6885369c3e9c1c046946e7e3400c75a8, type: 3}
+    fileSize: 68
+    fileType: 4
+    musicReference: {fileID: 0}
+    photoReference: {fileID: 0}
+    videoReference: {fileID: 32900000, guid: 253a1a5307910ea45ab89a8d710356e9, type: 3}
+    noteReference: 

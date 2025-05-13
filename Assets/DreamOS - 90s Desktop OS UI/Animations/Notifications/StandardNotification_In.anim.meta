@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: a71cb607e3d322e449eed5ed18bcce79
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Notifications/StandardNotification_In.anim
+  uploadId: 718226

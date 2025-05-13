@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: ee0e8f590420cf34fb032278cdf9cbdd
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Prefabs/Video Player/Play & Pause
+    Button.prefab
+  uploadId: 718226
