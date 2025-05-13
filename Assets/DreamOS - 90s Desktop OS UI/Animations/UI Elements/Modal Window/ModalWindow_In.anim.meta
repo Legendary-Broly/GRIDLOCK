@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d56c90e9dd4707745b364118459e6d06
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/UI Elements/Modal Window/ModalWindow_In.anim
+  uploadId: 718226

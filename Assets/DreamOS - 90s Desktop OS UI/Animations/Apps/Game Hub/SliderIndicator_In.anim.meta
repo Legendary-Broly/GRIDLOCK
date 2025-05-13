@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 28b208df50c17474e91a3c337a2c4df8
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Apps/Game Hub/SliderIndicator_In.anim
+  uploadId: 718226

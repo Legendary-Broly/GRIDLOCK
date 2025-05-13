@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 767a73a62264f19479f80432fd49e5fd
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Boot/BootScreen.controller
+  uploadId: 718226

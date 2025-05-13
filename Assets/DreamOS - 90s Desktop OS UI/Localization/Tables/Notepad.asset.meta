@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 77e4b89821ef6914c86f04674a1d6b5b
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Localization/Tables/Notepad.asset
+  uploadId: 718226

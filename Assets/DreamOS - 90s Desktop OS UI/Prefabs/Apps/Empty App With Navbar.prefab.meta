@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 9adf2a4c0e9ba984082f0f22ecb52adf
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Prefabs/Apps/Empty App With Navbar.prefab
+  uploadId: 718226

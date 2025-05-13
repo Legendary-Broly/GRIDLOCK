@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 43663c491a5f9ad40908b355f8675443
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Prefabs/Messaging/Chat Message Waiting.prefab
+  uploadId: 718226

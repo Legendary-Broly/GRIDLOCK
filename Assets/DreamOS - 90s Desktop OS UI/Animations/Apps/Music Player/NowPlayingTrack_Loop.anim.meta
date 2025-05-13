@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 1c75ab46e589df846be415c5271a1788
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Apps/Music Player/NowPlayingTrack_Loop.anim
+  uploadId: 718226

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6de25ba34b8b8e2459ad470e4e060180
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Apps/Web Browser/SetFavorite.controller
+  uploadId: 718226

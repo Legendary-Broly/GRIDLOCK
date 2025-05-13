@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using NewGameplay.ScriptableObjects;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "RoundConfigDatabase", menuName = "Gridlock/RoundConfigDatabase")]

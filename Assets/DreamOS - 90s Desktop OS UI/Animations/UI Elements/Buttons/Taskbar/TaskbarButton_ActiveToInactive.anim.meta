@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 27a07410c9387864caa4ec484cf83f16
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/UI Elements/Buttons/Taskbar/TaskbarButton_ActiveToInactive.anim
+  uploadId: 718226

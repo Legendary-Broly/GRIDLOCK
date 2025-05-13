@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 85794e70c750a8948a876d3c2aa33193
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Animated Icons/HamburgerMenu.controller
+  uploadId: 718226

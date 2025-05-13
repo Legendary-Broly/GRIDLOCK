@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3cafc9220c8c0f4468b071604bd5ccdb
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Prefabs/UI Elements/Selectors/Horizontal
+    Selector.prefab
+  uploadId: 718226

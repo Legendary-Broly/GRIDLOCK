@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: da044b50719675f42b5c160e8a1f90f1
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Prefabs/System Panels/Blue Screen
+    of Death.prefab
+  uploadId: 718226

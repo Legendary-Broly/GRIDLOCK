@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bd9fe7574898eb6409c6c8abf5ce4940
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/UI Elements/Buttons/Taskbar/TaskbarButton_ClosedToHighlighted.anim
+  uploadId: 718226

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3fce9a219230e5e47ba3e58be636fd1c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Apps/Music Player/PlayAndPauseButton.controller
+  uploadId: 718226

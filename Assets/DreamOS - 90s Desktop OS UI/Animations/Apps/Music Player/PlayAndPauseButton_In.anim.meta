@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: ec9c13d7ce4ec7c48b08a666e45801f4
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Apps/Music Player/PlayAndPauseButton_In.anim
+  uploadId: 718226

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 9c4f2236d8f797443b97bf8bf5874d69
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Prefabs/Messaging/Beginning Indicator.prefab
+  uploadId: 718226

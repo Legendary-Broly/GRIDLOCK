@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 8a3d4c2fb20e9c042ba5ea4217ad57ce
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Notifications/PopupNotification_Out.anim
+  uploadId: 718226

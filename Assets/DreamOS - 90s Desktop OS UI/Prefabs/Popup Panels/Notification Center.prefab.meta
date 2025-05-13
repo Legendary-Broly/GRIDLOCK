@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: c67ecf76412658c4e9f23c0d26d40178
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Prefabs/Popup Panels/Notification
+    Center.prefab
+  uploadId: 718226

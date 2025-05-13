@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 293bb15aab19d6d4d948d2a583526a91
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Apps/Music Player/RepeatButton_In.anim
+  uploadId: 718226

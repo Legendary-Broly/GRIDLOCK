@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c37bb929b5e5cba4c892be907e1551f4, type: 3}
+  m_Name: DreamOS UI Manager
+  m_EditorClassIdentifier: 
+  enableDynamicUpdate: 1
+  enableExtendedColorPicker: 0
+  editorHints: 1
+  selectedTheme: 0
+  hoverSound: {fileID: 8300000, guid: d23b3dbb6d2a1534ba10a312085e63e0, type: 3}
+  clickSound: {fileID: 8300000, guid: c908263af034a9b40a9ca9a721394610, type: 3}
+  errorSound: {fileID: 8300000, guid: 0cf7205be3566a2488163e99f3875f89, type: 3}
+  notificationSound: {fileID: 8300000, guid: 84aea1bb189532c43bcc36012b436802, type: 3}
+  enableKeystrokes: 0
+  enableKeyboardKeystroke: 1
+  enableMouseKeystroke: 0
+  keyboardStrokes:
+  - {fileID: 8300000, guid: bf68f22d1837c7b4e873c10dbcf48913, type: 3}
+  - {fileID: 8300000, guid: bcf365ffd5487f740ab9460c1c6e81ad, type: 3}
+  - {fileID: 8300000, guid: 0d941b0bc164aa14594836b672428d20, type: 3}
+  - {fileID: 8300000, guid: 356c3b564a9f9ad41bfa5cf79230e355, type: 3}
+  - {fileID: 8300000, guid: b9d258afc67c3954f8e3416d78bf596b, type: 3}
+  - {fileID: 8300000, guid: 16fde0accba66e9499d723876c604293, type: 3}
+  mouseStrokes:
+  - {fileID: 8300000, guid: 5df41e9c90ab71046b3c011329051759, type: 3}
+  highlightedColorDark: {r: 0, g: 0, b: 0.49019608, a: 1}
+  highlightedColorSecondaryDark: {r: 1, g: 1, b: 1, a: 1}
+  primaryColorDark: {r: 1, g: 1, b: 1, a: 1}
+  secondaryColorDark: {r: 0, g: 0, b: 0, a: 1}
+  windowBGColorDark: {r: 1, g: 1, b: 1, a: 1}
+  backgroundColorDark: {r: 1, g: 1, b: 1, a: 1}
+  taskBarColorDark: {r: 1, g: 1, b: 1, a: 1}
+  highlightedColorCustom: {r: 0, g: 0, b: 0, a: 1}
+  highlightedColorSecondaryCustom: {r: 1, g: 1, b: 1, a: 1}
+  enableUIBlur: 0
+  systemFontThin: {fileID: 11400000, guid: 69cbfb587e3e5b7458884015647164b5, type: 2}
+  systemFontLight: {fileID: 11400000, guid: 85f5ddea62014d842866d1286de922e6, type: 2}
+  systemFontRegular: {fileID: 11400000, guid: af6ad66f19204a644b126aac86657fca, type: 2}
+  systemFontSemiBold: {fileID: 11400000, guid: 02b257e2db53726498e813ba6865ba82, type: 2}
+  systemFontBold: {fileID: 11400000, guid: 9dae71eaf3b1db042a17e2d1084e5791, type: 2}
+  enableLocalization: 0
+  localizationSettings: {fileID: 11400000, guid: 306a0ca089807d34787bf5a5b674abee, type: 2}
+  currentLanguage: {fileID: 11400000, guid: 4e26f7f1322fb5d4eac1bd5279162d93, type: 2}

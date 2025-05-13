@@ -1,7 +1,8 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "RoundConfig", menuName = "Gridlock/RoundConfig")]
-
+namespace NewGameplay.ScriptableObjects
+{
+    [CreateAssetMenu(fileName = "RoundConfig", menuName = "Gridlock/RoundConfig")]
     public class RoundConfigSO : ScriptableObject
     {
         public int roundNumber;
@@ -10,4 +11,4 @@ using UnityEngine;
         public int fragmentRequirement;
         public int virusCount;
     }
-
+}

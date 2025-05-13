@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 56e931eff70bd2f40bf0a50e2179823d
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Widgets/WidgetPreset_In.anim
+  uploadId: 718226

@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d605b48fbce046a4eac4aa51d023bc81
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 100100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Prefabs/Messaging/Text Message Sent.prefab
+  uploadId: 718226

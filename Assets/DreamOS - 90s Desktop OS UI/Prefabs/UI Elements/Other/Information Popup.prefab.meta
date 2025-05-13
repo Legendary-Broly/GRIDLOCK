@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 91d68ebbc6d64b247a53900465b04d61
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Prefabs/UI Elements/Other/Information
+    Popup.prefab
+  uploadId: 718226

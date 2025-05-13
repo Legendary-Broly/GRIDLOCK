@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 4b81e002ae1ff6b4d8e91df4a697d896
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Lock Screen/LockScreen_In.anim
+  uploadId: 718226

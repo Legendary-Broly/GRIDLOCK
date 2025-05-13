@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 093c4f4cdb6863746bbd57b34121e81c
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/Desktop/Desktop_InstantOut.anim
+  uploadId: 718226

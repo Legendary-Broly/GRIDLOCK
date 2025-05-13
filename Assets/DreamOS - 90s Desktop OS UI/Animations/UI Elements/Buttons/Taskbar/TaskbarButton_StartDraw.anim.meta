@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 3431f0fcae7275349a5c5c90ed4465b8
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 7400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Animations/UI Elements/Buttons/Taskbar/TaskbarButton_StartDraw.anim
+  uploadId: 718226

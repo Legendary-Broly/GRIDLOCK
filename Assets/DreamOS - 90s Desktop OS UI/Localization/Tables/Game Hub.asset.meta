@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 5be61a8f2561b1b459eeba0252755c94
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Localization/Tables/Game Hub.asset
+  uploadId: 718226

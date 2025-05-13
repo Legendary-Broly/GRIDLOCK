@@ -1,0 +1,28 @@
+fileFormatVersion: 2
+guid: 972f87c71d7e0ad4794563a217394b42
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - m_ViewDataDictionary: {instanceID: 0}
+  - emptyApp: {instanceID: 0}
+  - emptyAppWithTabs: {instanceID: 0}
+  - desktopButton: {instanceID: 0}
+  - taskbarShortcut: {instanceID: 0}
+  - appLibrary: {fileID: 11400000, guid: e26afee468689b843b0dc12061b0ddc8, type: 2}
+  - appIcon: {fileID: 21300000, guid: 925ec49bb33fdf4448a9777024cf69fe, type: 3}
+  - appParent: {instanceID: 0}
+  - shortcutParent: {instanceID: 0}
+  - taskbarParent: {instanceID: 0}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Editor/Scripts/AppCreator.cs
+  uploadId: 718226

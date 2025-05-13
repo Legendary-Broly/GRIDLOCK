@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d8bd5cc38b1aa7f4eb25c04be03c9f32
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Prefabs/UI Elements/Modal Window/Standard
+    Modal Window.prefab
+  uploadId: 718226

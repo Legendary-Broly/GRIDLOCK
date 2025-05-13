@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bbcca6af6292d3d4781f6db0f23e876b
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 304512
+  packageName: DreamOS - 90s Desktop OS UI
+  packageVersion: 3.2.3
+  assetPath: Assets/DreamOS - 90s Desktop OS UI/Prefabs/UI Elements/Button/Quick
+    Center Sub Button.prefab
+  uploadId: 718226
