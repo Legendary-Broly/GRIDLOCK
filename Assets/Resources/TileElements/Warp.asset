@@ -16,5 +16,5 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 64701aa9859a62045bb7f1de54a3a4ea, type: 3}
   displayColor: {r: 0.658376, g: 0.41037738, b: 1, a: 1}
   displayName: ping_trace
-  description: 'adds the ping_trace tile to the grid. moves you to a random, <color=#E44E4E>safe</color>
+  description: 'adds the ping_trace tile to the grid. automatically reveals a <color=#E44E4E>safe</color>
     tile on the grid. '

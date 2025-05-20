@@ -105,7 +105,7 @@ namespace NewGameplay.Views
             {
                 for (int gx = 0; gx < gridService.GridWidth; gx++)
                 {
-                    if (dataFragmentService.IsFragmentAt(new Vector2Int(gx, gy)))
+                    if (dataFragmentService.IsFragmentAt(new Vector2Int(gx, gy)) && !gridService.IsTileRevealed(gx, gy))
                     {
                         int distance = Mathf.Abs(gx - x) + Mathf.Abs(gy - y);
                         minDistance = Mathf.Min(minDistance, distance);
