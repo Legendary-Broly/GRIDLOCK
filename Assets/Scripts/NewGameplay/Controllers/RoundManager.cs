@@ -5,7 +5,11 @@ using NewGameplay.Services;
 using NewGameplay.Strategies;
 using NewGameplay.ScriptableObjects;
 using NewGameplay.Models;
-
+using NewGameplay.Controllers;
+using System.Collections.Generic;
+using NewGameplay.Enums;
+using System;
+using System.Linq;
 
 
 namespace NewGameplay.Controllers
@@ -24,6 +28,13 @@ namespace NewGameplay.Controllers
         private IDataFragmentService dataFragmentService;
         private IVirusService virusService;
         private ITileElementService tileElementService;
+        private RoundPopupManager roundPopupManager;
+        private PayloadManager payloadManager;
+        private ISystemIntegrityService systemIntegrityService;
+        private bool hasStartedAtLeastOneRound = false;
+        private readonly HashSet<TileElementType> chosenTileElements = new();
+        private int lastIndicatorRewardTier = 3; // Default to 3 for first round
+
 
         public void Initialize(
             IRoundService roundService, 
@@ -33,7 +44,10 @@ namespace NewGameplay.Controllers
             IDataFragmentService dataFragmentService,
             IVirusService virusService,
             ITileElementService tileElementService,
-            SymbolToolService symbolToolService)
+            SymbolToolService symbolToolService,
+            PayloadManager payloadManager,
+            ISystemIntegrityService systemIntegrityService,
+            RoundPopupManager roundPopupManager)
         {
             this.roundService = roundService;
             this.gridService = gridService;
@@ -43,29 +57,95 @@ namespace NewGameplay.Controllers
             this.virusService = virusService;
             this.tileElementService = tileElementService;
             this.symbolToolService = symbolToolService;
+            this.payloadManager = payloadManager;
+            this.systemIntegrityService = systemIntegrityService;
+            this.roundPopupManager = roundPopupManager;
 
-            // Subscribe to round reset event
-            this.roundService.onRoundReset += StartNextRound;
         }
 
         public void StartFirstRound()
         {
-            // Optional: Only trigger UI or animations here
-            RebuildGrid();
-            if (injectController != null)
-                injectController.SetInjectButtonInteractable(true);
+            Debug.Log("Starting first round");
+            lastIndicatorRewardTier = 3; // ✅ default for round 1
+            ProceedWithNextRound();
         }
 
         public void StartNextRound()
         {
-            roundService.ResetRound();
+            if (!hasStartedAtLeastOneRound)
+            {
+                hasStartedAtLeastOneRound = true;
+                return; // Skip reward popup at game start
+            }
+
+            var availableTileElements = Enum.GetValues(typeof(TileElementType))
+                .Cast<TileElementType>()
+                .Where(t =>
+                    t != TileElementType.Empty &&
+                    t != TileElementType.CodeShard &&
+                    t != TileElementType.SystemIntegrityIncrease &&
+                    t != TileElementType.ToolRefresh &&
+                    t != TileElementType.Virus &&
+                    t != TileElementType.DataFragment &&
+                    !chosenTileElements.Contains(t))
+                .ToList();
+
+            TileElementType selectedTileElement = TileElementType.Empty;
+
+            if (availableTileElements.Count > 0)
+            {
+                selectedTileElement = availableTileElements[UnityEngine.Random.Range(0, availableTileElements.Count)];
+            }
+
+            roundPopupManager.ShowOptions(
+                onIntegritySelected: () =>
+                {
+                    lastIndicatorRewardTier = 3;
+                    systemIntegrityService.Increase(25f);
+                    ProceedWithNextRound();
+                },
+                onTileElementSelected: (element) =>
+                {
+                    lastIndicatorRewardTier = 2;
+                    tileElementService.AddManualElement(element);
+                    tileElementService.AddToSpawnPool(element);
+                    ProceedWithNextRound();
+                },
+                onPayloadSelected: (payloadId) =>
+                {
+                    lastIndicatorRewardTier = 1;
+                    payloadManager.ActivatePayload(payloadId);
+                    ProceedWithNextRound();
+                },
+                selectedTileElement: selectedTileElement
+            );
+        }
+        public void SetLastIndicatorRewardTier(int count)
+        {
+            lastIndicatorRewardTier = count;
+        }
+        public int GetCurrentIndicatorCount()
+        {
+            return lastIndicatorRewardTier;
+        }
+
+        private void ProceedWithNextRound()
+        {
+            roundService.ResetRound(); // ✅ triggers roundReset event
+            gridStateService.RestoreEchoTiles(); // ✅ REAPPLY echo-retained tiles
             gridView.Initialize(gridService, virusService, tileElementService, inputController, inputController.HandleTileClick, symbolToolService);
-            RebuildGrid();
+            int rowCount = lastIndicatorRewardTier;
+            int colCount = lastIndicatorRewardTier;
+
+            gridView.SetVisibleIndicators(rowCount, colCount, gridService.GridHeight, gridService.GridWidth);
+
+            RebuildGrid(); // ✅ ensures grid is built before refresh
             gridView.RefreshGrid(gridService);
             gridService.UnlockInteraction();
             if (injectController != null)
                 injectController.SetInjectButtonInteractable(true);
         }
+
 
         private void RebuildGrid()
         {
@@ -81,14 +161,6 @@ namespace NewGameplay.Controllers
                 {
                     inputController.RebindView(gridView);
                 }
-                else
-                {
-                    Debug.LogWarning("[RoundManager] Could not find GridInputController in scene");
-                }
-            }
-            else
-            {
-                Debug.LogWarning("[RoundManager] GridView is not assigned.");
             }
         }
     }

@@ -21,7 +21,6 @@ namespace NewGameplay.Services
 
             if (Mathf.Approximately(CurrentIntegrity, 0f))
             {
-                Debug.Log("[SystemIntegrityService] SYSTEM FAILURE: GRIDLOCK triggered.");
                 gameOverController?.ShowGameOver(); // Trigger popup
             }
         }

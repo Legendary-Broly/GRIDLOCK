@@ -33,12 +33,10 @@ public class TerminalInputHandler : MonoBehaviour
         switch (command)
         {
             case "START":
-                Debug.Log("Starting game...");
                 SceneManager.LoadScene("NewGameplay");
                 break;
 
             case "I AM A COWARD":
-                Debug.Log("Exiting...");
                 Application.Quit();
                 break;
 

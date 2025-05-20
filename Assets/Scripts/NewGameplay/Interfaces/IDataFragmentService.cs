@@ -5,7 +5,8 @@ namespace NewGameplay.Interfaces
     public interface IDataFragmentService
     {
         void SpawnFragments(int count);
-        int GetRevealedFragmentCount();
         bool AnyRevealedFragmentsContainVirus();
+        void RegisterFragmentAt(int x, int y);
+        bool IsFragmentAt(Vector2Int pos);
     }
 }

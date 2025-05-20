@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b7d196649bc128409925a6cfe5c176e, type: 3}
+  m_Name: FlagPop
+  m_EditorClassIdentifier: 
+  elementType: 5
+  icon: {fileID: 21300000, guid: 96aed215dfd98764ca9995bb594b313a, type: 3}
+  displayColor: {r: 1, g: 0.5040077, b: 0, a: 1}
+  displayName: flag_pop.exe
+  description: adds the flag_pop.exe tile element to the grid. when revealed, automatically
+    flags <color=#E44E4E>all</color> adjacent viruses.

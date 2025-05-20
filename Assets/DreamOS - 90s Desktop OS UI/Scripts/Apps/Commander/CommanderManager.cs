@@ -58,13 +58,20 @@ namespace Michsky.DreamOS
         void OnEnable()
         {
             commandHistory.text = "";
-            commandInput.text = "";
+            commandInput.text = "type '/help' for a list of commands";
             UpdateColors();
-            if (getTimeData && DateAndTimeManager.instance != null) { UpdateTime(); }
-            commandHistory.text = commandHistory.text + onEnableText;
-            commandInput.ActivateInputField();
+
+            if (getTimeData && DateAndTimeManager.instance != null)
+                UpdateTime();
+
+            commandHistory.text += onEnableText;
+
+            // NEW: Ensure it gets full focus
+            StartCoroutine(FocusInputNextFrame());
+
             StartCoroutine("FixLayout");
         }
+
 
         void Awake()
         {
@@ -293,6 +300,13 @@ namespace Michsky.DreamOS
             yield return new WaitForSeconds(forSec);
             commands[commandIndex].onProcessEvent.Invoke();
             StopCoroutine("WaitForProcessDelay");
+        }
+        IEnumerator FocusInputNextFrame()
+        {
+            yield return null; // Wait one frame
+            EventSystem.current.SetSelectedGameObject(null);
+            commandInput.Select();
+            commandInput.ActivateInputField();
         }
     }
 }

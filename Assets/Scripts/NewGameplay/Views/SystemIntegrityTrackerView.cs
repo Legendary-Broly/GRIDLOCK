@@ -54,19 +54,19 @@ public class SystemIntegrityTrackerView : MonoBehaviour
         int empty = barWidth - filled;
 
         string bar = new string('█', filled) + new string('░', empty);
-        return $"{bar}";
+        return $"> system_integrity:[{bar}]";
     }
 
     private Color GetInterpolatedColor(float value)
     {
-        Color cyan = new Color32(0x00, 0xCF, 0xFD, 255);  // #00CFFD
+        Color white = Color.white;
         Color yellow = Color.yellow;
         Color red = Color.red;
 
         if (value >= 50f)
         {
             float t = Mathf.InverseLerp(100f, 50f, value);
-            return Color.Lerp(cyan, yellow, t);
+            return Color.Lerp(white, yellow, t);
         }
         else
         {

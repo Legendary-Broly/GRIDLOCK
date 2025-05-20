@@ -35,5 +35,6 @@ namespace NewGameplay.Interfaces
         void DisableVirusFlag();
         void SetSymbolToolService(ISymbolToolService service);
         List<Vector2Int> GetValidInitialRevealPositions();
+
     }
 }

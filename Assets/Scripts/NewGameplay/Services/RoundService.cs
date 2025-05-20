@@ -8,6 +8,7 @@ using NewGameplay.Views;
 using NewGameplay.ScriptableObjects;
 
 
+
 namespace NewGameplay.Services
 {
     public class RoundService : IRoundService
@@ -22,6 +23,7 @@ namespace NewGameplay.Services
         public event System.Action onRoundReset;
         private bool isResetting = false;
         private int currentRound = 0;
+        private bool isFirstReset = true;
         private RoundConfigDatabase roundConfigDatabase;
 
         public RoundService(
@@ -31,7 +33,8 @@ namespace NewGameplay.Services
             IInjectService inject,
             IDataFragmentService dataFragmentService,
             IVirusService virusService,
-            ITileElementService tileElementService)
+            ITileElementService tileElementService
+            )
         {
             this.gridStateService = gridStateService;
             this.grid = grid;
@@ -40,6 +43,7 @@ namespace NewGameplay.Services
             this.dataFragmentService = dataFragmentService;
             this.virusService = virusService;
             this.tileElementService = tileElementService;
+            
         }
         public void Initialize(RoundConfigDatabase configDatabase)
         {
@@ -57,7 +61,11 @@ namespace NewGameplay.Services
 
             try
             {
-                currentRound++;
+                if (!isFirstReset)
+                {
+                    currentRound++;
+                }
+                isFirstReset = false;
 
                 // Store the last revealed tile position before resetting
                 Vector2Int? lastRevealedTile = null;
@@ -69,19 +77,18 @@ namespace NewGameplay.Services
                 var config = roundConfigDatabase.GetConfigForRound(currentRound);
                 if (config == null)
                 {
-                    Debug.LogWarning($"[RoundService] No config found for round {currentRound}, defaulting to 7x7");
                     config = new RoundConfigSO { gridWidth = 7, gridHeight = 7, fragmentRequirement = 1, virusCount = 2 };
                 }
                 progress.SetRequiredFragments(config.fragmentRequirement);
                 tileElementService.ResizeGrid(config.gridWidth, config.gridHeight);
 
-                gridStateService.SetGridSize(config.gridWidth, config.gridHeight);
-
                 grid.ClearAllTiles();
+                gridStateService.SetGridSize(config.gridWidth, config.gridHeight);
+                gridStateService.RestoreEchoTiles();
 
                 if (grid is GridService g)
                 {
-                    g.SetFirstRevealPermitted(false);
+                    g.SetFirstRevealPermitted(false); 
                     g.ResetRoundSpawns();
                 }
 
@@ -120,8 +127,11 @@ namespace NewGameplay.Services
                     var pos = lastRevealedTile.Value;
                     if (pos.x < config.gridWidth && pos.y < config.gridHeight)
                     {
-                        gridService4.SetLastRevealedTile(pos);
-                        gridService4.RevealTile(pos.x, pos.y, true);
+                        gridService4.RevealTile(pos.x, pos.y, true);       // Reveal first (this sets it internally)
+                        gridService4.SetLastRevealedTile(pos);             // Then override to guarantee it's set
+                        gridService4.SetFirstRevealPermitted(false);
+                        gridService4.EnableVirusFlag();
+
                     }
                 }
 
@@ -135,10 +145,10 @@ namespace NewGameplay.Services
             }
         }
 
-        public void TriggerRoundReset()
-        {
-            onRoundReset?.Invoke();
-        }
+        //public void TriggerRoundReset()
+        //{
+        //    onRoundReset?.Invoke();
+        //}
 
         public int CurrentRound => currentRound;
     }

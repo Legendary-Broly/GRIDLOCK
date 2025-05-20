@@ -20,7 +20,7 @@ namespace NewGameplay.Services
         private IProgressTrackerService progressService;
         private ISymbolToolService symbolToolService;
         private IChatLogService chatLogService;
-        //public event Action OnCorrectFlagPlaced; <--- this is the event that will be triggered when the correct flag is placed(WIP)
+        private IDataFragmentService dataFragmentService;
         private Vector2Int? lastRevealedTile = null;
         private bool gridInteractionLocked = true;
         private bool firstRevealPermitted = false;
@@ -29,6 +29,8 @@ namespace NewGameplay.Services
         public void EnableVirusFlag() => canUseVirusFlag = true;
         public void DisableVirusFlag() => canUseVirusFlag = false;
         public bool CanUseVirusFlag() => canUseVirusFlag;
+        private PayloadManager payloadManager;
+        public void SetPayloadManager(PayloadManager manager) => payloadManager = manager;
 
         public event Action OnGridUpdated;
         public int GridWidth => gridStateService.GridWidth;
@@ -40,11 +42,12 @@ namespace NewGameplay.Services
 
         public GridService(
             IGridStateService gridStateService,
-            IVirusService virusService)
+            IVirusService virusService,
+            IChatLogService chatLogService)
         {
             this.gridStateService = gridStateService;
             this.virusService = virusService;
-
+            this.chatLogService = chatLogService;
             gridStateService.OnGridStateChanged += HandleGridStateChanged;
         }
 
@@ -70,7 +73,7 @@ namespace NewGameplay.Services
 
         public void UnlockInteraction()
         {
-            Debug.Log("[GridService] Grid interaction unlocked.");
+
             gridInteractionLocked = false;
         }
 
@@ -81,8 +84,6 @@ namespace NewGameplay.Services
         
         public void RevealTile(int x, int y, bool forceReveal = false)
         {
-            Debug.Log($"[GridService] RevealTile called for ({x},{y}) - forceReveal={forceReveal}");
-            Debug.Log($"[GridService] Current state - inBounds={IsInBounds(x, y)}, lastRevealedTile={lastRevealedTile}");
 
             if (!IsInBounds(x, y))
             {
@@ -113,21 +114,41 @@ namespace NewGameplay.Services
                 return;
             }
 
-            Debug.Log($"[GridService] Proceeding with reveal at ({x},{y})");
             gridStateService.SetTileState(x, y, TileState.Revealed);
             
-            // Check if this is a virus reveal
-            if (GetSymbolAt(x, y) == "X")
+            // Remove the duplicate virus check since it's handled in GridInputController
+            if (payloadManager != null && payloadManager.ShouldRevealRandomTilesOnVirus() && GetSymbolAt(x, y) == "X")
             {
-                chatLogService?.LogVirusReveal();
+                var hidden = new List<Vector2Int>();
+
+                for (int gy = 0; gy < GridHeight; gy++)
+                {
+                    for (int gx = 0; gx < GridWidth; gx++)
+                    {
+                        if (!IsTileRevealed(gx, gy) && !virusService.HasVirusAt(gx, gy))
+                        {
+                            hidden.Add(new Vector2Int(gx, gy));
+                        }
+                    }
+                }
+
+                for (int i = 0; i < 2 && hidden.Count > 0; i++)
+                {
+                    int index = UnityEngine.Random.Range(0, hidden.Count);
+                    var pos = hidden[index];
+                    hidden.RemoveAt(index);
+
+                    RevealTile(pos.x, pos.y, true);
+                    Debug.Log($"[Phishing Payload] Bonus revealed tile at ({pos.x},{pos.y})");
+                }
             }
-            
-            Debug.Log($"[GridService] Triggering element effect at ({x},{y})...");
+
             tileElementService?.TriggerElementEffect(x, y);
 
-            if (progressService != null && GetSymbolAt(x, y) == "DF")
+            if (progressService != null && dataFragmentService != null && dataFragmentService.IsFragmentAt(new Vector2Int(x, y)))
             {
-                progressService.NotifyFragmentRevealed();
+                chatLogService?.LogDataFragmentReveal();
+                progressService.NotifyFragmentRevealed(x, y);
             }
 
             lastRevealedTile = new Vector2Int(x, y);
@@ -135,7 +156,7 @@ namespace NewGameplay.Services
 
             EnableVirusFlag();
             OnGridUpdated?.Invoke();
-            Debug.Log($"[GridService] RevealTile completed - lastRevealedTile now ({lastRevealedTile?.x},{lastRevealedTile?.y})");
+
         }
 
         private bool IsValidDiagonalMove(int x, int y)
@@ -231,15 +252,10 @@ namespace NewGameplay.Services
 
         public void ClearAllTiles()
         {
-            for (int y = 0; y < GridHeight; y++)
-            {
-                for (int x = 0; x < GridWidth; x++)
-                {
-                    SetSymbol(x, y, "");
-                }
-            }
+            gridStateService.ClearAllTiles(); // ✅ the real clearing now happens here
             OnGridUpdated?.Invoke();
         }
+
 
         private void HandleGridStateChanged()
         {
@@ -325,6 +341,11 @@ namespace NewGameplay.Services
         public void SetProgressService(IProgressTrackerService service)
         {
             this.progressService = service;
+        }
+
+        public void SetDataFragmentService(IDataFragmentService service)
+        {
+            this.dataFragmentService = service;
         }
 
         public void SetFirstRevealPermitted(bool value)

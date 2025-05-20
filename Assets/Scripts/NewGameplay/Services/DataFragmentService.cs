@@ -6,16 +6,20 @@ using NewGameplay.Models;
 using NewGameplay.Enums;
 using System;
 using NewGameplay.Views;
+using NewGameplay.Controllers;
 
 namespace NewGameplay.Services
 {
     public class DataFragmentService : IDataFragmentService
     {
         private readonly IGridService gridService;
-        private List<Vector2Int> fragmentPositions = new();
-        private const string FRAGMENT_SYMBOL = "DF";
+        private readonly List<Vector2Int> fragmentPositions = new();
+
+        private const string FRAGMENT_SYMBOL = "DATA";
         private GridViewNew gridView;
         private ITileElementService tileElementService;
+        private PayloadManager payloadManager;
+
 
         public DataFragmentService(IGridService gridService)
         {
@@ -30,55 +34,98 @@ namespace NewGameplay.Services
         public void SetTileElementService(ITileElementService service)
         {
             tileElementService = service;
-            Debug.Log($"[DataFragmentService] TileElementService set: {(service != null ? "valid" : "null")}");
+
         }
 
         public void SpawnFragments(int count)
         {
             fragmentPositions.Clear();
-            Debug.Log($"[DataFragmentService] Starting to spawn {count} data fragments");
 
-            var positions = gridService.GetAllEmptyTilePositions();
-            Debug.Log($"[DataFragmentService] Found {positions.Count} empty positions before filtering");
-            
-            // Filter positions to only include tiles with Empty element type
+            var allPositions = gridService.GetAllEmptyTilePositions();
+
             if (tileElementService != null)
             {
-                foreach (var pos in positions)
+                allPositions = allPositions
+                    .Where(pos => tileElementService.GetElementAt(pos.x, pos.y) == TileElementType.Empty)
+                    .ToList();
+            }
+
+            allPositions = allPositions.OrderBy(_ => UnityEngine.Random.value).ToList();
+
+            for (int i = 0; i < count && allPositions.Count > 0; i++)
+            {
+                Vector2Int chosenPos;
+
+                // First fragment: pick randomly
+                if (i == 0 || !payloadManager.ShouldClusterDataFragments())
                 {
-                    var element = tileElementService.GetElementAt(pos.x, pos.y);
+                    chosenPos = allPositions[0];
                 }
-                positions = positions.Where(pos => 
-                    tileElementService.GetElementAt(pos.x, pos.y) == TileElementType.Empty
-                ).ToList();
-                Debug.Log($"[DataFragmentService] After filtering for empty elements: {positions.Count} positions remain");
-            }
-            else
-            {
-                Debug.LogWarning("[DataFragmentService] TileElementService is null, skipping element type filtering");
-            }
-            
-            positions = positions.OrderBy(_ => UnityEngine.Random.value).ToList();
-            Debug.Log($"[DataFragmentService] Randomly ordered {positions.Count} valid positions");
+                else
+                {
+                    Vector2Int previous = fragmentPositions[i - 1];
+                    List<Vector2Int> nearby = GetAdjacentUnoccupiedTiles(previous, allPositions);
 
-            for (int i = 0; i < count && i < positions.Count; i++)
-            {
-                var pos = positions[i];
-                fragmentPositions.Add(pos);
-                gridService.SetSymbol(pos.x, pos.y, FRAGMENT_SYMBOL);
-            }
+                    bool cluster = UnityEngine.Random.value <= 0.5f;
 
-            Debug.Log($"[DataFragmentService] Completed spawning {fragmentPositions.Count} fragments. Final fragment positions: {string.Join(", ", fragmentPositions.Select(p => $"({p.x},{p.y})"))}");
+                    if (cluster && nearby.Count > 0)
+                    {
+                        chosenPos = nearby[UnityEngine.Random.Range(0, nearby.Count)];
+                    }
+                    else
+                    {
+                        chosenPos = allPositions[0];
+                    }
+                }
+
+                fragmentPositions.Add(chosenPos);
+                gridService.SetSymbol(chosenPos.x, chosenPos.y, FRAGMENT_SYMBOL);
+                RegisterFragmentAt(chosenPos.x, chosenPos.y);
+                allPositions.Remove(chosenPos);
+            }
         }
-
-        public int GetRevealedFragmentCount()
+        
+        private List<Vector2Int> GetAdjacentUnoccupiedTiles(Vector2Int center, List<Vector2Int> validPool)
         {
-            return fragmentPositions.Count(pos => gridService.IsTileRevealed(pos.x, pos.y));
+            List<Vector2Int> result = new();
+
+            Vector2Int[] directions = new Vector2Int[]
+            {
+                Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
+            };
+
+            foreach (var dir in directions)
+            {
+                Vector2Int neighbor = center + dir;
+                if (validPool.Contains(neighbor))
+                    result.Add(neighbor);
+            }
+
+            return result;
         }
 
         public bool AnyRevealedFragmentsContainVirus()
         {
             return fragmentPositions.Any(pos => gridService.GetSymbolAt(pos.x, pos.y) == "X" && gridService.IsTileRevealed(pos.x, pos.y));
+        }
+
+        public void SetPayloadManager(PayloadManager manager)
+        {
+            payloadManager = manager;
+        }
+        public void RegisterFragmentAt(int x, int y)
+        {
+            var pos = new Vector2Int(x, y);
+            if (!fragmentPositions.Contains(pos))
+            {
+                fragmentPositions.Add(pos);
+
+            }
+        }
+
+        public bool IsFragmentAt(Vector2Int pos)
+        {
+            return fragmentPositions.Contains(pos);
         }
     }
 }

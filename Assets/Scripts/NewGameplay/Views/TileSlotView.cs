@@ -80,7 +80,7 @@ namespace NewGameplay.Views
             if (symbolToolService != null && symbolToolService.IsPivotActive())
             
             {
-                Debug.Log($"[TileSlotView] ({x},{y}) Refreshing virus hint — PivotActive: {symbolToolService?.IsPivotActive()}");
+
                 dirs = new[] { new Vector2Int(1, 1), new Vector2Int(-1, 1), new Vector2Int(1, -1), new Vector2Int(-1, -1) };
             }
             else
@@ -108,7 +108,6 @@ namespace NewGameplay.Views
             if (revealed && !wasActive)
             {
                 var sym = gridService.GetSymbolAt(x, y);
-                Debug.Log($"[TileSlotView] ({x},{y}) transitioned to revealed: symbol='{sym}', gridService: {gridService.GetHashCode()} at {Time.time}");
             }
 
             bool canReveal = gridService.CanRevealTile(x, y);

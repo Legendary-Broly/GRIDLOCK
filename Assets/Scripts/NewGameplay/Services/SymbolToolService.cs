@@ -67,7 +67,6 @@ namespace NewGameplay.Services
 
         public void UsePivotTool()
         {
-            Debug.Log("[SymbolToolService] Pivot tool activated. Broadcasting OnPivotActivated.");
             isPivotActive = true;
             OnPivotActivated?.Invoke();
             OnToolUsed?.Invoke();
