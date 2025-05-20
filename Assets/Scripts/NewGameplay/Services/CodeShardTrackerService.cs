@@ -18,23 +18,5 @@ namespace NewGameplay.Services
             currentShardCount++;
             OnShardCountChanged?.Invoke();
         }
-
-        public void SetShardsRequired(int amount)
-        {
-            shardsRequiredForNextHack = amount;
-            OnShardCountChanged?.Invoke();
-        }
-
-        public bool TrySpendShards()
-        {
-            if (currentShardCount >= shardsRequiredForNextHack)
-            {
-                currentShardCount -= shardsRequiredForNextHack;
-                OnShardCountChanged?.Invoke();
-                return true;
-            }
-
-            return false;
-        }
     }
 }

@@ -54,7 +54,7 @@ public class SystemIntegrityTrackerView : MonoBehaviour
         int empty = barWidth - filled;
 
         string bar = new string('█', filled) + new string('░', empty);
-        return $"SYSTEM INTEGRITY: [{bar}] {Mathf.RoundToInt(current)}%";
+        return $"{bar}";
     }
 
     private Color GetInterpolatedColor(float value)

@@ -5,9 +5,9 @@ namespace NewGameplay.Interfaces
 {
     public static class ToolConstants
     {
-        public const string PURGE_TOOL = "∆:/run_PURGE.exe";
-        public const string FORK_TOOL = "Ψ:/run_FORK.exe";
-        public const string PIVOT_TOOL = "Σ:/run_PIVOT.exe";
+        public const string PURGE_TOOL = "PURGE";
+        public const string FORK_TOOL = "FORK";
+        public const string PIVOT_TOOL = "PIVOT";
         public const string VIRUS_SYMBOL = "X";
     }
 

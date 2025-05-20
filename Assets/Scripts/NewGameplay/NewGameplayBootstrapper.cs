@@ -44,7 +44,7 @@ namespace NewGameplay
         [SerializeField] private SystemIntegrityTrackerView systemIntegrityTrackerView;
         [SerializeField] private RoundPopupManager roundPopupManager;
         [SerializeField] private CSTrackerView csTrackerView;
-        [SerializeField] private CompileButtonController compileButtonController;
+        //[SerializeField] private CompileButtonController compileButtonController;
         [SerializeField] private RoundManager roundManager;
         [SerializeField] private RoundConfigDatabase roundConfigDatabase;
         [SerializeField] private GameOverController gameOverController;
@@ -146,7 +146,7 @@ namespace NewGameplay
 
             systemIntegrityService.SetGameOverController(gameOverController);
             csTrackerView.Initialize(codeShardTrackerService);
-            compileButtonController.Initialize(codeShardTrackerService, injectService);
+            //compileButtonController.Initialize(codeShardTrackerService, injectService);
             gridService.SetChatLogService(chatLogService);
             roundService.onRoundReset += () =>
             {
@@ -156,7 +156,7 @@ namespace NewGameplay
                 injectController.RefreshUI();
             };
 
-            StartCoroutine(BeginIntroChatSequence());
+            //StartCoroutine(BeginIntroChatSequence());
         }
         private IEnumerator BeginIntroChatSequence()
         {

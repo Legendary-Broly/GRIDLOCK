@@ -18,7 +18,7 @@ namespace NewGameplay.Views
 
         private void UpdateShardText()
         {
-            csText.text = $"> c0de_$hards: [{codeShardTracker.CurrentShardCount}]\n> required for new hack: [{codeShardTracker.ShardsRequiredForNextHack}]";
+            csText.text = $"$CRIPTS: [{codeShardTracker.CurrentShardCount}]";
         }
 
         private void OnDestroy()
