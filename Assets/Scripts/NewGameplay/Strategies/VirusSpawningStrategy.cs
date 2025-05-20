@@ -16,7 +16,7 @@ namespace NewGameplay.Strategies
 
         // Virus configuration
         public const string VIRUS_SYMBOL = "X";
-        public const string DATA_FRAGMENT_SYMBOL = "DF";
+        public const string DATA_FRAGMENT_SYMBOL = "DATA";
 
         public VirusSpawningStrategy(
             IVirusService virusService,

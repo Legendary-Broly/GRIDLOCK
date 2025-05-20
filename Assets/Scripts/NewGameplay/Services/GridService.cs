@@ -314,7 +314,7 @@ namespace NewGameplay.Services
                     string symbol = GetSymbolAt(x, y);
                     bool isEmpty = string.IsNullOrEmpty(symbol);
                     bool isVirus = symbol == "X";
-                    bool isDataFragment = symbol == "DF";
+                    bool isDataFragment = symbol == "DATA";
                     bool hasElement = tileElementService?.GetElementAt(x, y) != TileElementType.Empty;
 
                     if (isEmpty && !isVirus && !isDataFragment && !hasElement)

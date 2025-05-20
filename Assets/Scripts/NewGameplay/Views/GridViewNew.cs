@@ -29,6 +29,7 @@ namespace NewGameplay.Views
         private IGridService gridService;
         private IVirusService virusService;
         private ITileElementService tileElementService;
+        private IDataFragmentService dataFragmentService;
         private GridInputController inputController;
         private ISymbolToolService symbolToolService;
         private TextMeshProUGUI[] columnLabels;
@@ -58,6 +59,21 @@ namespace NewGameplay.Views
             originalColorBlocks = new ColorBlock[width, height];
 
             BuildGrid(width, height, onTileClicked);
+        }
+
+        public void SetDataFragmentService(IDataFragmentService service)
+        {
+            this.dataFragmentService = service;
+            if (slots != null)
+            {
+                for (int y = 0; y < gridService.GridHeight; y++)
+                {
+                    for (int x = 0; x < gridService.GridWidth; x++)
+                    {
+                        slots[x, y]?.SetDataFragmentService(service);
+                    }
+                }
+            }
         }
 
         public void BuildGrid(int width, int height, Action<int, int, PointerEventData.InputButton> onTileClicked)
@@ -122,8 +138,6 @@ namespace NewGameplay.Views
                         int col = x - 1;
                         int virusCount = CountVirusesInColumn(col, height);
                         columnLabels[col] = InstantiateLabelCell(virusCount.ToString());
-
-
                         continue;
                     }
 
@@ -132,8 +146,6 @@ namespace NewGameplay.Views
                         int row = y - 1;
                         int virusCount = CountVirusesInRow(row, width);
                         rowLabels[row] = InstantiateLabelCell(virusCount.ToString());
-
-
                         continue;
                     }
 
@@ -143,6 +155,10 @@ namespace NewGameplay.Views
                     tiles[gridX, gridY] = slotGO;
                     var slot = slotGO.GetComponent<TileSlotView>();
                     slot.Initialize(virusService, tileElementService, gridService, gridX, gridY, inputController, symbolToolService);
+                    if (dataFragmentService != null)
+                    {
+                        slot.SetDataFragmentService(dataFragmentService);
+                    }
                     slots[gridX, gridY] = slot;
 
                     var btn = slotGO.GetComponentInChildren<Button>();

@@ -244,7 +244,7 @@ namespace NewGameplay.Services
 
                 case 2: // Data Fragment
                     gridElements[x, y] = TileElementType.Empty;
-                    gridService.SetSymbol(x, y, "DF");
+                    gridService.SetSymbol(x, y, "DATA");
                     dataFragmentService?.RegisterFragmentAt(x, y);
                     progressService?.NotifyFragmentRevealed(x, y);
                     chatLogService?.LogDataFragmentReveal();

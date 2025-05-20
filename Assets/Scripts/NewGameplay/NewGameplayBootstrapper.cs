@@ -154,6 +154,8 @@ namespace NewGameplay
                 symbolToolService
             );
             
+            gridView.SetDataFragmentService(dataFragmentService);
+            
             roundService.ResetRound();
             tileElementService.ResizeGrid(gridService.GridWidth, gridService.GridHeight);
 
