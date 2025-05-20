@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-
+using TMPro;
 namespace Michsky.DreamOS
 {
     public class SettingsManager : MonoBehaviour
@@ -148,6 +148,36 @@ namespace Michsky.DreamOS
             Color colorHelper;
             ColorUtility.TryParseHtmlString("#" + colorCodeReversed, out colorHelper);
             UIManagerAsset.highlightedColorSecondaryCustom = new Color(colorHelper.r, colorHelper.g, colorHelper.b, UIManagerAsset.highlightedColorSecondaryCustom.a);
+        }
+        // === GRIDLOCK POST PROCESSING TOGGLE HOOKS ===
+
+        public GameObject lensDistortionFX;
+        public GameObject chromaticAberrationFX;
+        public GameObject filmGrainFX;
+        public GameObject vignetteFX;
+
+        public void SetLensDistortion(bool state)
+        {
+            if (lensDistortionFX != null)
+                lensDistortionFX.SetActive(state);
+        }
+
+        public void SetChromaticAberration(bool state)
+        {
+            if (chromaticAberrationFX != null)
+                chromaticAberrationFX.SetActive(state);
+        }
+
+        public void SetFilmGrain(bool state)
+        {
+            if (filmGrainFX != null)
+                filmGrainFX.SetActive(state);
+        }
+
+        public void SetVignette(bool state)
+        {
+            if (vignetteFX != null)
+                vignetteFX.SetActive(state);
         }
     }
 }

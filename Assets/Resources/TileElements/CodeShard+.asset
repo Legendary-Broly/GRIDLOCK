@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b7d196649bc128409925a6cfe5c176e, type: 3}
+  m_Name: CodeShard+
+  m_EditorClassIdentifier: 
+  elementType: 7
+  icon: {fileID: 21300000, guid: 5d7252e30b1211c4fa46ee6a32b61006, type: 3}
+  displayColor: {r: 0, g: 0.8998494, b: 1, a: 1}
+  displayName: $CRIPT_upgrade.exe
+  description: adds a blue coin tile to the grid, worth <color=#E44E4E>Double the
+    value</color> of green coins on the grid.

@@ -5,7 +5,7 @@ using NewGameplay.Controllers;
 public class PauseMenuController : MonoBehaviour
 {
     [SerializeField] private GameObject pauseMenuPanel;
-    [SerializeField] private TutorialManualController tutorialManualController;
+    //[SerializeField] private TutorialManualController tutorialManualController;
     
     private void Start()
     {

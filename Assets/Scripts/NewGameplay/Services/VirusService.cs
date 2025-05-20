@@ -68,8 +68,6 @@ namespace NewGameplay.Services
                     placed++;
                 }
             }
-
-            Debug.Log($"[VirusService] Spawned {placed} viruses after {attempted} attempts.");
         }
     }
 }

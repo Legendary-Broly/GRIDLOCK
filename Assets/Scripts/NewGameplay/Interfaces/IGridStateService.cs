@@ -20,11 +20,11 @@ namespace NewGameplay.Interfaces
         void SetTileState(int x, int y, TileState newState);
 
         void SetGridSize(int width, int height);
-        void ClearAllTiles();
         string GetSymbolAt(int x, int y);
         void SetVirusFlag(int x, int y, bool flagged);
         bool IsFlaggedAsVirus(int x, int y);
-        // Optional helper
-        // bool IsValidTile(int x, int y);
+        void ClearAllTiles();
+        void PrecomputeEchoTiles();
+        void RestoreEchoTiles();
     }
 }

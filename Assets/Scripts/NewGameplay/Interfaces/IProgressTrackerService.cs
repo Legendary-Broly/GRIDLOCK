@@ -15,5 +15,7 @@ namespace NewGameplay.Interfaces
         bool HasMetGoal();
         void ResetProgress();
         void NotifyFragmentRevealed();
+        void NotifyFragmentRevealed(int x, int y); 
+        int GetRevealedFragmentCount();
     }
 }

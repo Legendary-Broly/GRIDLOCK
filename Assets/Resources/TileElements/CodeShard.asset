@@ -13,5 +13,5 @@ MonoBehaviour:
   m_Name: CodeShard
   m_EditorClassIdentifier: 
   elementType: 3
-  icon: {fileID: 21300000, guid: 95801a0bc7e55c243ba59db6050b3893, type: 3}
+  icon: {fileID: 21300000, guid: 5d7252e30b1211c4fa46ee6a32b61006, type: 3}
   displayColor: {r: 0.09743297, g: 1, b: 0, a: 1}

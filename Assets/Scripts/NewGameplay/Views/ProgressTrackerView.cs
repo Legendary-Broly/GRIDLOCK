@@ -88,6 +88,7 @@ public class ProgressTrackerView : MonoBehaviour
 
     public void Refresh()
     {
+
         progressText.text = $"FRAGMENTS:{progress.FragmentsFound}/{progress.RequiredFragments}";
         UpdateJitterEffect();
     }

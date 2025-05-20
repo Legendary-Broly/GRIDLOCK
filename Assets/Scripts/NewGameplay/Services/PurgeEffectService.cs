@@ -22,7 +22,6 @@ namespace NewGameplay.Services
             if (symbolAtTile == "X") // Virus
             {
                 gridService.SetSymbol(x, y, ""); // Clear the virus
-                Debug.Log($"[PurgeEffectService] Virus purged at ({x},{y})");
                 return true;
             }
             return false;

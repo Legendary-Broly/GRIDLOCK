@@ -7,6 +7,7 @@ namespace NewGameplay.Interfaces
     public interface IExtractService
     {
         void ExtractGrid();
-        event System.Action onGridUpdated;
+        event System.Action OnExtractComplete;
+
     }
 }

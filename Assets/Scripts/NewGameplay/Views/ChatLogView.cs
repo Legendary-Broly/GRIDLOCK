@@ -15,79 +15,79 @@ namespace NewGameplay.Views
         [SerializeField] private GameObject chatEntryPrefab;
         [SerializeField] private ChatLogSettings settings;
 
-        public void DisplayMessage(string message, ChatMessageType type, ChatDisplayMode mode = ChatDisplayMode.Instant)
+        public void DisplayMessage(string message, ChatMessageType type, ChatDisplayMode mode = ChatDisplayMode.Instant, bool skipTyping = false)
         {
-            GameObject entry;
-
-            if (mode == ChatDisplayMode.Typewriter)
-            {
-                entry = Instantiate(chatEntryPrefab, contentRoot);
-                var text = entry.GetComponentInChildren<TextMeshProUGUI>();
-                text.color = GetColorForType(type);
-                text.text = "";
-
-                bool isVirus = type == ChatMessageType.Virus;
-                StartCoroutine(AnimateMessage(entry, text, message, isVirus));
-            }
-            else
-            {
-                entry = DisplayMessageInstant(message, type);
-
-                if (type == ChatMessageType.Virus)
-                {
-                    var flash = entry.GetComponent<ChatFlashEffect>();
-                    flash?.BeginFlash();
-                }
-            }
-        }
-
-        private GameObject DisplayMessageInstant(string message, ChatMessageType type)
-        {
-            var entry = Instantiate(chatEntryPrefab, contentRoot);
+            GameObject entry = Instantiate(chatEntryPrefab, contentRoot);
             var text = entry.GetComponentInChildren<TextMeshProUGUI>();
-            text.text = message;
             text.color = GetColorForType(type);
 
-            Canvas.ForceUpdateCanvases();
+            if (skipTyping || mode == ChatDisplayMode.Instant)
+            {
+                text.text = message;
 
-            // ⬇ Scroll to bottom
-            ScrollToBottom();
+                // ⬇ Force layout and scroll
+                LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)contentRoot);
+                Canvas.ForceUpdateCanvases();
+                ScrollToBottom();
 
-            return entry;
+                if (type == ChatMessageType.Virus)
+                    entry.GetComponent<ChatFlashEffect>()?.BeginFlash();
+
+                return;
+            }
+
+            // Extract prefix (e.g. <b>...</b>) from message
+            string prefix = "";
+            string body = message;
+
+            int prefixEnd = message.IndexOf("</b>");
+            if (prefixEnd != -1)
+            {
+                int length = prefixEnd + 4;
+                prefix = message.Substring(0, length);
+                body = message.Substring(length);
+            }
+
+            text.text = prefix;
+            StartCoroutine(AnimateMessage(entry, text, body, type == ChatMessageType.Virus));
         }
 
-        private IEnumerator AnimateMessage(GameObject entry, TextMeshProUGUI text, string message, bool isVirus)
+        private IEnumerator AnimateMessage(GameObject entry, TextMeshProUGUI text, string messageBody, bool isVirus)
         {
             LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)contentRoot);
             Canvas.ForceUpdateCanvases();
 
-            yield return new WaitForSeconds(0.3f); // optional startup delay
+            yield return new WaitForSeconds(0.2f);
 
-            for (int i = 0; i <= message.Length; i++)
+            string fullText = text.text;
+
+            for (int i = 0; i <= messageBody.Length; i++)
             {
-                text.text = message.Substring(0, i);
+                text.text = fullText + messageBody.Substring(0, i);
                 yield return new WaitForSeconds(0.006f);
             }
 
-            Canvas.ForceUpdateCanvases();
-
-            // ⬇ Scroll to bottom
             ScrollToBottom();
 
-            // 🔥 Trigger virus flash AFTER message is fully typed
             if (isVirus)
             {
-                var flash = entry.GetComponent<ChatFlashEffect>();
-                flash?.BeginFlash();
+                entry.GetComponent<ChatFlashEffect>()?.BeginFlash();
             }
         }
 
         private void ScrollToBottom()
         {
+            StartCoroutine(ScrollToBottomDelayed());
+        }
+
+        private IEnumerator ScrollToBottomDelayed()
+        {
+            // Wait one frame for Unity to finalize layout rebuild
+            yield return null;
+
             var scrollRect = GetComponentInParent<ScrollRect>();
             if (scrollRect != null)
             {
-                Canvas.ForceUpdateCanvases();
                 scrollRect.verticalNormalizedPosition = 0f;
             }
         }

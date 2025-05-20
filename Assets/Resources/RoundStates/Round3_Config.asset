@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Round3_Config
   m_EditorClassIdentifier: 
   roundNumber: 3
-  gridWidth: 9
-  gridHeight: 9
+  gridWidth: 11
+  gridHeight: 8
   fragmentRequirement: 3
   virusCount: 32

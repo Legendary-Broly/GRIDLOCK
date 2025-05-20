@@ -12,20 +12,19 @@ namespace NewGameplay.Services
 {
     public class ProgressTrackerService : IProgressTrackerService
     {
-        
         public event System.Action OnProgressChanged;
         private readonly IDataFragmentService dataFragmentService;
-        
+        private readonly List<Vector2Int> revealedFragments = new();
+        private readonly IExtractService extractService;
+
         private int requiredFragments = 1;
 
-        public int FragmentsFound => dataFragmentService.GetRevealedFragmentCount();
+        public int FragmentsFound => GetRevealedFragmentCount();
         public int RequiredFragments => requiredFragments;
 
         public void SetRequiredFragments(int count)
         {
-            Debug.Log($"[ProgressTracker] Setting required fragments to {count}");
             requiredFragments = count;
-            Debug.Log($"[ProgressTracker] Progress reset to 0/{requiredFragments}");
             OnProgressChanged?.Invoke();
         }
 
@@ -36,13 +35,32 @@ namespace NewGameplay.Services
 
         public void ResetProgress()
         {
-            Debug.Log("[ProgressTracker] Resetting progress");
+            revealedFragments.Clear();
             OnProgressChanged?.Invoke();
         }
 
         public void NotifyFragmentRevealed()
         {
             OnProgressChanged?.Invoke();
+        }
+
+        public void NotifyFragmentRevealed(int x, int y)
+        {
+
+
+            var pos = new Vector2Int(x, y);
+            if (!revealedFragments.Contains(pos))
+            {
+                revealedFragments.Add(pos);
+                
+                OnProgressChanged?.Invoke();
+            }
+        }
+
+        public int GetRevealedFragmentCount()
+        {
+            var count = revealedFragments.Count(pos => dataFragmentService.IsFragmentAt(pos));
+            return count;
         }
 
         public ProgressTrackerService(IDataFragmentService dataFragmentService)

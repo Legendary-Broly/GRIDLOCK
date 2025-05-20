@@ -10,9 +10,12 @@ namespace NewGameplay.Interfaces
     public interface IChatLogService
     {
         void Log(string message, ChatMessageType type = ChatMessageType.Info, ChatDisplayMode mode = ChatDisplayMode.Instant);
-        void SystemMessage(string message, ChatMessageType type = ChatMessageType.Info, ChatDisplayMode mode = ChatDisplayMode.Instant);
+        void SystemMessage(string message, ChatMessageType type = ChatMessageType.Info);
         void LogRandomInjectLine();
         void LogTileElementReveal(TileElementType type);
         void LogVirusReveal();
+        void LogCorrectFlag();
+        void LogIncorrectFlag();
+        void LogDataFragmentReveal();
     }
 }

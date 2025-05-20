@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using System;
+using NewGameplay.Services;
+using NewGameplay.Controllers;
 
 namespace NewGameplay.Interfaces
 {
@@ -17,7 +19,9 @@ namespace NewGameplay.Interfaces
         string GetSelectedTool();
         void RemoveSelectedTool();
         void ClearToolBank();
-
+        void AddTool(string toolName);
         string SelectedTool { get; }
+        void SetPayloadManager(PayloadManager payloadManager);
+
     }
 } 

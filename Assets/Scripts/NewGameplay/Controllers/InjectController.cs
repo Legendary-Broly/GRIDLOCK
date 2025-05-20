@@ -7,6 +7,7 @@ using System.Linq;
 using TMPro;
 using NewGameplay.Views;
 using NewGameplay.ScriptableObjects;
+using NewGameplay.Enums;
 namespace NewGameplay.Controllers
 {
     public class InjectController : MonoBehaviour
@@ -14,11 +15,15 @@ namespace NewGameplay.Controllers
         [SerializeField] private List<Button> toolButtons;
         [SerializeField] private List<TextMeshProUGUI> toolSlots;
         [SerializeField] private Button injectButton;
+        [SerializeField] private Transform toolButtonRoot;
+
 
         private IInjectService injectService;
         private IGridService gridService;
         private GridViewNew gridView;
         private IChatLogService chatLogService;
+        private PayloadManager payloadManager;
+        public void SetPayloadManager(PayloadManager manager) => payloadManager = manager;
         public void Initialize(IInjectService injectService, IGridService gridService, IChatLogService chatLogService)
         {
             this.injectService = injectService;
@@ -48,7 +53,7 @@ namespace NewGameplay.Controllers
 
             // (1) reset the symbol‐bank as you already do
             injectService.ResetForNewRound();
-            Debug.Log("Tools after reset: " + string.Join(", ", injectService.GetCurrentTools()));
+
             RefreshUI();
             gridService.UnlockInteraction();            // allow clicks
             gridService.SetFirstRevealPermitted(true);  // allow the very first reveal
@@ -63,10 +68,7 @@ namespace NewGameplay.Controllers
                 gridService.SetLastRevealedTile(pos);
                 gridService.SetFirstRevealPermitted(false); // Reset after reveal to ensure next move must be adjacent
             }
-            else
-            {
-                Debug.LogWarning("[InjectController] No valid initial reveal positions found!");
-            }
+
 
             // (3) finally repaint the grid
             var gridView = FindFirstObjectByType<GridViewNew>();
@@ -110,11 +112,24 @@ namespace NewGameplay.Controllers
         {
             if (injectService == null) return;
             var tools = injectService.GetCurrentTools();
-            Debug.Log("RefreshUI tools: " + string.Join(", ", tools));
+
+            // Update all tool slots
             for (int i = 0; i < toolSlots.Count; i++)
             {
-                toolSlots[i].text = i < tools.Count ? tools[i] : "";
-                toolButtons[i].interactable = i < tools.Count;
+                bool hasTool = i < tools.Count;
+                toolSlots[i].text = hasTool ? tools[i] : "";
+                
+                // Special handling for the fourth slot
+                if (i == 3)
+                {
+                    bool toolkitExpansionActive = payloadManager != null && payloadManager.IsPayloadActive(PayloadType.ToolkitExpansion);
+                    toolButtons[i].gameObject.SetActive(toolkitExpansionActive);
+                    toolButtons[i].interactable = toolkitExpansionActive && hasTool;
+                }
+                else
+                {
+                    toolButtons[i].interactable = hasTool;
+                }
             }
 
             UpdateToolSelection();
@@ -127,6 +142,54 @@ namespace NewGameplay.Controllers
             string selectedTool = injectService.SelectedTool;
             // No color adjustment here; only interactable state is managed in code.
         }
+        public void EnableNextToolSlot()
+        {
+            if (toolButtonRoot == null)
+            {
+                Debug.LogError("[ToolkitController] ToolButton root not assigned.");
+                return;
+            }
+
+            var allButtons = toolButtonRoot.GetComponentsInChildren<Transform>(true);
+            foreach (var button in allButtons)
+            {
+                if (button.name.StartsWith("ToolButton") && !button.gameObject.activeSelf)
+                {
+                    button.gameObject.SetActive(true);
+
+                    return;
+                }
+            }
+
+
+        }
+        public void AssignRandomToolToNextSlot()
+        {
+            if (injectService == null) return;
+
+            string[] availableTools = new string[]
+            {
+                ToolConstants.PURGE_TOOL,
+                ToolConstants.FORK_TOOL,
+                ToolConstants.PIVOT_TOOL
+            };
+
+            // Choose one at random
+            string selectedTool = availableTools[UnityEngine.Random.Range(0, availableTools.Length)];
+
+            var tools = injectService.GetCurrentTools();
+            if (tools.Count >= 4)
+            {
+
+                return;
+            }
+
+            injectService.AddTool(selectedTool); // 🆕 (see next step)
+
+
+            RefreshUI(); // updates button visuals and interactivity
+        }
+
 
         public void ClearToolSlots()
         {

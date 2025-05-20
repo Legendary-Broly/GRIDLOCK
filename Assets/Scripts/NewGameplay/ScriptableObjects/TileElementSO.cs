@@ -9,5 +9,7 @@ namespace NewGameplay.ScriptableObjects
         public TileElementType elementType;
         public Sprite icon;
         public Color displayColor;
+        public string displayName;
+        public string description;
     }
 }
