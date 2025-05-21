@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using NewGameplay.Views;
 using NewGameplay.ScriptableObjects;
-
+using NewGameplay.Data;
 
 
 namespace NewGameplay.Services
@@ -25,6 +25,9 @@ namespace NewGameplay.Services
         private int currentRound = 0;
         private bool isFirstReset = true;
         private RoundConfigDatabase roundConfigDatabase;
+        public RoundConfigSO RoundConfig => roundConfigDatabase.GetConfigForRound(currentRound);
+
+
 
         public RoundService(
             IGridStateService gridStateService,
@@ -43,7 +46,7 @@ namespace NewGameplay.Services
             this.dataFragmentService = dataFragmentService;
             this.virusService = virusService;
             this.tileElementService = tileElementService;
-            
+
         }
         public void Initialize(RoundConfigDatabase configDatabase)
         {
@@ -75,22 +78,32 @@ namespace NewGameplay.Services
                 }
 
                 var config = roundConfigDatabase.GetConfigForRound(currentRound);
+                
                 if (config == null)
                 {
                     config = new RoundConfigSO { gridWidth = 7, gridHeight = 7, fragmentRequirement = 1, virusCount = 2 };
                 }
-                progress.SetRequiredFragments(config.fragmentRequirement);
-                tileElementService.ResizeGrid(config.gridWidth, config.gridHeight);
 
+
+                if (config.useSplitGrid)
+                {
+                    Debug.Log($"[RoundService] Split grid round detected — setup will be handled by SplitGridController.");
+                    onRoundReset?.Invoke();
+                    return;
+                }
+
+                // === SINGLE GRID ROUND SETUP ===
                 grid.ClearAllTiles();
-                gridStateService.SetGridSize(config.gridWidth, config.gridHeight);
-                gridStateService.RestoreEchoTiles();
-
                 if (grid is GridService g)
                 {
                     g.SetFirstRevealPermitted(false); 
                     g.ResetRoundSpawns();
+                    g.InitializeTileStates(config.gridWidth, config.gridHeight);
                 }
+
+                tileElementService.ResizeGrid(config.gridWidth, config.gridHeight);
+                gridStateService.SetGridSize(config.gridWidth, config.gridHeight);
+                gridStateService.RestoreEchoTiles();
 
                 // Deactivate pivot tool if it's active
                 if (grid is GridService gridServiceWithTools && gridServiceWithTools.SymbolToolService != null)
@@ -98,15 +111,8 @@ namespace NewGameplay.Services
                     gridServiceWithTools.SymbolToolService.DeactivatePivot();
                 }
 
+                progress.SetRequiredFragments(config.fragmentRequirement);
                 progress.ResetProgress();
-
-                if (grid is GridService gridService2)
-                {
-                    gridService2.InitializeTileStates(gridService2.GridWidth, gridService2.GridHeight);
-                }
-
-                int fragmentCount = Mathf.Clamp(currentRound, 1, 3); // Up to 3 fragments max
-                int virusCount = Mathf.Clamp(currentRound * 2, 2, 12); // Increase over time, capped at 12
 
                 dataFragmentService.SpawnFragments(config.fragmentRequirement);
 
@@ -115,7 +121,6 @@ namespace NewGameplay.Services
                     concreteVirusService.SpawnViruses(config.virusCount, config.gridWidth, config.gridHeight, lastRevealedTile);
                 }
 
-                // Generate elements after viruses are placed
                 if (grid is GridService gridService3)
                 {
                     gridService3.TileElementService?.GenerateElements();
@@ -127,11 +132,10 @@ namespace NewGameplay.Services
                     var pos = lastRevealedTile.Value;
                     if (pos.x < config.gridWidth && pos.y < config.gridHeight)
                     {
-                        gridService4.RevealTile(pos.x, pos.y, true);       // Reveal first (this sets it internally)
-                        gridService4.SetLastRevealedTile(pos);             // Then override to guarantee it's set
+                        gridService4.RevealTile(pos.x, pos.y, true);
+                        gridService4.SetLastRevealedTile(pos);
                         gridService4.SetFirstRevealPermitted(false);
                         gridService4.EnableVirusFlag();
-
                     }
                 }
 
@@ -144,6 +148,7 @@ namespace NewGameplay.Services
                 isResetting = false;
             }
         }
+
 
         //public void TriggerRoundReset()
         //{

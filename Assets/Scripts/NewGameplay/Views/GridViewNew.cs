@@ -37,8 +37,6 @@ namespace NewGameplay.Views
         private HashSet<int> visibleRows = new();
         private HashSet<int> visibleColumns = new();
 
-
-
         public void Initialize(
             IGridService gridService,
             IVirusService virusService,
@@ -78,98 +76,110 @@ namespace NewGameplay.Views
 
         public void BuildGrid(int width, int height, Action<int, int, PointerEventData.InputButton> onTileClicked)
         {
-            foreach (Transform child in gridParent)
+            Debug.Log($"[GridViewNew.BuildGrid] width={width}, height={height}");
+            try
             {
-                Destroy(child.gameObject);
-            }
-
-            if (gridParent == null)
-            {
-                Debug.LogError("[GridViewNew] gridParent is null!");
-                return;
-            }
-
-            var layoutGroup = gridParent.GetComponent<GridLayoutGroup>();
-            if (layoutGroup == null)
-            {
-                Debug.LogError("[GridViewNew] Missing GridLayoutGroup on gridParent!");
-                return;
-            }
-
-            RectTransform panelRect = gridParent.GetComponent<RectTransform>();
-
-            // FIXED outer dimensions and inner padding
-            float containerWidth = 1475f;
-            float containerHeight = 960f;
-            float padding = 5f;
-
-            float panelWidth = containerWidth - padding * 2f;   // 1465
-            float panelHeight = containerHeight - padding * 2f; // 950
-
-            int totalColumns = width + 1;  // grid + column labels
-            int totalRows = height + 1;    // grid + row labels
-
-            float finalCellWidth = panelWidth / totalColumns;
-            float finalCellHeight = panelHeight / totalRows;
-
-            // Apply layout
-            layoutGroup.padding = new RectOffset(0, 0, 0, 0); // Padding is handled by RectTransform
-            layoutGroup.cellSize = new Vector2(finalCellWidth, finalCellHeight);
-            layoutGroup.spacing = Vector2.zero;
-            layoutGroup.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            layoutGroup.constraintCount = totalColumns;
-
-            tiles = new GameObject[width, height];
-            slots = new TileSlotView[width, height];
-            columnLabels = new TextMeshProUGUI[width];
-            rowLabels = new TextMeshProUGUI[height];
-
-            for (int y = 0; y <= height; y++)
-            {
-                for (int x = 0; x <= width; x++)
+                foreach (Transform child in gridParent)
                 {
-                    if (x == 0 && y == 0)
-                    {
-                        InstantiateIndicatorCorner();
-                        continue;
-                    }
-                    if (y == 0)
-                    {
-                        int col = x - 1;
-                        int virusCount = CountVirusesInColumn(col, height);
-                        columnLabels[col] = InstantiateLabelCell(virusCount.ToString());
-                        continue;
-                    }
-
-                    if (x == 0)
-                    {
-                        int row = y - 1;
-                        int virusCount = CountVirusesInRow(row, width);
-                        rowLabels[row] = InstantiateLabelCell(virusCount.ToString());
-                        continue;
-                    }
-
-                    int gridX = x - 1;
-                    int gridY = y - 1;
-                    GameObject slotGO = Instantiate(gridTilePrefab, gridParent);
-                    tiles[gridX, gridY] = slotGO;
-                    var slot = slotGO.GetComponent<TileSlotView>();
-                    slot.Initialize(virusService, tileElementService, gridService, gridX, gridY, inputController, symbolToolService);
-                    if (dataFragmentService != null)
-                    {
-                        slot.SetDataFragmentService(dataFragmentService);
-                    }
-                    slots[gridX, gridY] = slot;
-
-                    var btn = slotGO.GetComponentInChildren<Button>();
-                    if (btn == null)
-                        Debug.LogError($"[GridViewNew] No Button on tile prefab!");
-                    else
-                        btn.onClick.AddListener(() => onTileClicked(gridX, gridY, PointerEventData.InputButton.Left));
+                    Destroy(child.gameObject);
                 }
-            }
 
-            GenerateDividers(width, height);
+                if (gridParent == null)
+                {
+                    Debug.LogError("[GridViewNew] gridParent is null!");
+                    return;
+                }
+
+                var layoutGroup = gridParent.GetComponent<GridLayoutGroup>();
+                Debug.Log($"[GridViewNew.BuildGrid] layoutGroup is null? {layoutGroup == null}");
+                if (layoutGroup == null)
+                {
+                    Debug.LogError("[GridViewNew] Missing GridLayoutGroup on gridParent!");
+                    return;
+                }
+
+                RectTransform panelRect = gridParent.GetComponent<RectTransform>();
+
+                // FIXED outer dimensions and inner padding
+                float containerWidth = 1475f;
+                float containerHeight = 960f;
+                float padding = 5f;
+
+                float panelWidth = containerWidth - padding * 2f;   // 1465
+                float panelHeight = containerHeight - padding * 2f; // 950
+
+                int totalColumns = width + 1;  // grid + column labels
+                int totalRows = height + 1;    // grid + row labels
+
+                float finalCellWidth = panelWidth / totalColumns;
+                float finalCellHeight = panelHeight / totalRows;
+
+                // Apply layout
+                layoutGroup.padding = new RectOffset(0, 0, 0, 0); // Padding is handled by RectTransform
+                layoutGroup.cellSize = new Vector2(finalCellWidth, finalCellHeight);
+                layoutGroup.spacing = Vector2.zero;
+                layoutGroup.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+                layoutGroup.constraintCount = totalColumns;
+
+                Debug.Log($"[GridViewNew.BuildGrid] Creating arrays: tiles, slots, columnLabels, rowLabels with width={width}, height={height}");
+                tiles = new GameObject[width, height];
+                slots = new TileSlotView[width, height];
+                columnLabels = new TextMeshProUGUI[width];
+                rowLabels = new TextMeshProUGUI[height];
+
+                for (int y = 0; y <= height; y++)
+                {
+                    for (int x = 0; x <= width; x++)
+                    {
+                        Debug.Log($"[GridViewNew.BuildGrid] x={x}, y={y}");
+                        if (x == 0 && y == 0)
+                        {
+                            InstantiateIndicatorCorner();
+                            continue;
+                        }
+                        if (y == 0)
+                        {
+                            int col = x - 1;
+                            int virusCount = CountVirusesInColumn(col, height);
+                            columnLabels[col] = InstantiateLabelCell(virusCount.ToString());
+                            continue;
+                        }
+
+                        if (x == 0)
+                        {
+                            int row = y - 1;
+                            int virusCount = CountVirusesInRow(row, width);
+                            rowLabels[row] = InstantiateLabelCell(virusCount.ToString());
+                            continue;
+                        }
+
+                        int gridX = x - 1;
+                        int gridY = y - 1;
+                        GameObject slotGO = Instantiate(gridTilePrefab, gridParent);
+                        tiles[gridX, gridY] = slotGO;
+                        var slot = slotGO.GetComponent<TileSlotView>();
+                        slot.Initialize(virusService, tileElementService, gridService, gridX, gridY, inputController, symbolToolService);
+                        if (dataFragmentService != null)
+                        {
+                            slot.SetDataFragmentService(dataFragmentService);
+                        }
+                        slots[gridX, gridY] = slot;
+
+                        var btn = slotGO.GetComponentInChildren<Button>();
+                        if (btn == null)
+                            Debug.LogError($"[GridViewNew] No Button on tile prefab!");
+                        else
+                            btn.onClick.AddListener(() => onTileClicked(gridX, gridY, PointerEventData.InputButton.Left));
+                    }
+                }
+
+                GenerateDividers(width, height);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError($"[GridViewNew.BuildGrid] Exception: {ex}");
+                throw;
+            }
         }
         public void ApplyIndicatorVisibility()
         {

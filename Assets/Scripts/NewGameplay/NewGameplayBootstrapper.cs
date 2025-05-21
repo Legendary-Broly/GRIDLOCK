@@ -1,17 +1,15 @@
 using UnityEngine;
-using NewGameplay.Services;
 using NewGameplay.Interfaces;
+using NewGameplay.Services;
 using NewGameplay.Controllers;
-using System.Collections.Generic;
+using NewGameplay.UI;
 using System.Linq;
 using NewGameplay.Enums;
 using NewGameplay.Views;
-using NewGameplay.UI;
 using NewGameplay.Strategies;
 using NewGameplay.ScriptableObjects;
-using System;
-using NewGameplay.Models;
 using System.Collections;
+using NewGameplay.Data;
 
 namespace NewGameplay
 {
@@ -38,6 +36,8 @@ namespace NewGameplay
         private IChatLogService chatLogService;
         private DebugController debugController;
         private IDamageOverTimeService dotService;
+
+        [Header("Standard Grid Services")]
         [SerializeField] private GridInputController inputController;
         [SerializeField] private GridViewNew gridView;
         [SerializeField] private InjectController injectController;
@@ -46,12 +46,21 @@ namespace NewGameplay
         [SerializeField] private SystemIntegrityTrackerView systemIntegrityTrackerView;
         [SerializeField] private RoundPopupManager roundPopupManager;
         [SerializeField] private CSTrackerView csTrackerView;
-        //[SerializeField] private CompileButtonController compileButtonController;
         [SerializeField] private RoundManager roundManager;
         [SerializeField] private RoundConfigDatabase roundConfigDatabase;
         [SerializeField] private GameOverController gameOverController;
         [SerializeField] private ChatLogView chatLogView;
         [SerializeField] private PayloadManager payloadManager;
+
+        [Header("Split Grid Services")]
+        [SerializeField] private GridInputController inputControllerA;
+        [SerializeField] private GridInputController inputControllerB;
+        [SerializeField] private GridViewNew gridViewA;
+        [SerializeField] private GridViewNew gridViewB;
+        [SerializeField] private SplitGridController splitGridController;
+        [SerializeField] private SplitGridInputController splitGridInputController;
+        [SerializeField] private SplitGridView splitGridView;
+
 
         
         private void Awake()
@@ -155,6 +164,7 @@ namespace NewGameplay
             );
             
             gridView.SetDataFragmentService(dataFragmentService);
+
             
             roundService.ResetRound();
             tileElementService.ResizeGrid(gridService.GridWidth, gridService.GridHeight);
@@ -194,6 +204,77 @@ namespace NewGameplay
             {
                 gridView.RefreshVirusLabels(); // 🆕 Update row/column label counts
             };
+
+            // === SPLIT GRID SETUP ===
+            var gridStateA = new GridStateService();
+            var virusA = new VirusService(gridStateA);
+            var tileElementsA = new TileElementService(7, 7, tileElementConfigs);
+            var gridA = new GridService(gridStateA, virusA, chatLogService);
+            tileElementsA.SetGridService(gridA);
+            gridA.SetTileElementService(tileElementsA);
+            virusA.SetGridService(gridA);
+
+            var fragmentA = new DataFragmentService(gridA);
+            fragmentA.SetGridView(gridViewA);
+            fragmentA.SetTileElementService(tileElementsA);
+            gridA.SetDataFragmentService(fragmentA);
+            var progressA = new ProgressTrackerService(fragmentA);
+            gridA.SetProgressService(progressA);
+            tileElementsA.SetDataFragmentService(fragmentA);
+            tileElementsA.SetProgressTrackerService(progressA);
+
+            // B Grid
+            var gridStateB = new GridStateService();
+            var virusB = new VirusService(gridStateB);
+            var tileElementsB = new TileElementService(7, 7, tileElementConfigs);
+            var gridB = new GridService(gridStateB, virusB, chatLogService);
+            tileElementsB.SetGridService(gridB);
+            gridB.SetTileElementService(tileElementsB);
+            virusB.SetGridService(gridB);
+
+            var fragmentB = new DataFragmentService(gridB);
+            fragmentB.SetGridView(gridViewB);
+            fragmentB.SetTileElementService(tileElementsB);
+            gridB.SetDataFragmentService(fragmentB);
+            var progressB = new ProgressTrackerService(fragmentB);
+            gridB.SetProgressService(progressB);
+            tileElementsB.SetDataFragmentService(fragmentB);
+            tileElementsB.SetProgressTrackerService(progressB);
+
+            // Shared dependencies
+            tileElementsA.SetSystemIntegrityService(systemIntegrityService);
+            tileElementsB.SetSystemIntegrityService(systemIntegrityService);
+            tileElementsA.SetInjectService(injectService);
+            tileElementsB.SetInjectService(injectService);
+            tileElementsA.SetPayloadManager(payloadManager);
+            tileElementsB.SetPayloadManager(payloadManager);
+            tileElementsA.SetChatLogService(chatLogService);
+            tileElementsB.SetChatLogService(chatLogService);
+
+            fragmentA.SetPayloadManager(payloadManager);
+            fragmentB.SetPayloadManager(payloadManager);
+
+            gridStateA.SetPayloadManager(payloadManager);
+            gridStateB.SetPayloadManager(payloadManager);
+
+            // Tracker service
+            var splitFlagManager = new SplitFlagManager();
+            var splitService = new SplitGridServiceLocator(gridA, gridB, virusA, virusB, tileElementsA, tileElementsB, fragmentA, fragmentB, payloadManager);
+            splitGridController.Initialize(
+                gridA, gridB,
+                virusA, virusB,
+                splitService, splitFlagManager,
+                tileElementsA, tileElementsB,
+                fragmentA, fragmentB
+            );
+
+            splitGridInputController.Initialize(inputControllerA, inputControllerB, splitGridController);
+
+            // Inject remaining dependencies into the views/controllers
+            //DgridViewA.Initialize(gridA, virusA, tileElementsA, inputControllerA, (x, y, btn) => splitGridInputController.HandleTileClick(x, y, GridID.A, btn));
+            //gridViewB.Initialize(gridB, virusB, tileElementsB, inputControllerB, (x, y, btn) => splitGridInputController.HandleTileClick(x, y, GridID.B, btn));
+            gridViewA.SetDataFragmentService(fragmentA);
+            gridViewB.SetDataFragmentService(fragmentB);
 
             roundService.onRoundReset += () =>
             {

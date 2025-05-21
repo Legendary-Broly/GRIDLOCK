@@ -10,5 +10,16 @@ namespace NewGameplay.ScriptableObjects
         public int gridHeight;
         public int fragmentRequirement;
         public int virusCount;
+
+        [Header("Split Grid Settings")]
+        public bool useSplitGrid;
+        public int gridAWidth;
+        public int gridAHeight;
+        public int gridBWidth;
+        public int gridBHeight;
+        public int virusCountA;
+        public int virusCountB;
+        public int fragmentRequirementA;
+        public int fragmentRequirementB;
     }
 }
