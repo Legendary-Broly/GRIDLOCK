@@ -757,261 +757,6 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 4660046249330070272, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
   m_PrefabInstance: {fileID: 348878494}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &130350008
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 130350009}
-  - component: {fileID: 130350012}
-  - component: {fileID: 130350011}
-  m_Layer: 5
-  m_Name: Text (TMP)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &130350009
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 130350008}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1675605401}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 74.5, y: 2.6}
-  m_SizeDelta: {x: 256.1, y: 11.52}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &130350011
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 130350008}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_text: "      \n               \u2588\u2588\u2588\u2588                                                                                                                     
-    \u2588\u2588\u2588\u2588           \n               \u2588\u2588 \u2588\u2588\u2588                                                                                                                
-    \u2588\u2588\u2588  \u2588\u2588           \n               \u2588\u2588   \u2588\u2588\u2588                                                                                                            
-    \u2588\u2588\u2588\u2588   \u2588\u2588           \n               \u2588\u2588    
-    \u2588\u2588\u2588                                                                                                        
-    \u2588\u2588\u2588      \u2588\u2588           \n               \u2588\u2588      
-    \u2588\u2588\u2588                                                                                                    
-    \u2588\u2588\u2588        \u2588\u2588           \n               \u2588\u2588        
-    \u2588\u2588\u2588                                                                                                
-    \u2588\u2588\u2588          \u2588\u2588           \n               \u2588\u2588          
-    \u2588\u2588\u2588                                                                                            
-    \u2588\u2588\u2588            \u2588\u2588           \n               \u2588\u2588            
-    \u2588\u2588\u2588\u2588                                                                                       
-    \u2588\u2588\u2588              \u2588\u2588           \n               \u2588\u2588              
-    \u2588\u2588\u2588\u2588                                                                                  
-    \u2588\u2588\u2588\u2588                \u2588\u2588           \n              
-    \u2588\u2588                  \u2588\u2588\u2588                                                                               
-    \u2588\u2588\u2588                  \u2588\u2588           \n               \u2588\u2588                  
-    \u2588\u2588\u2588\u2588                                                                          
-    \u2588\u2588\u2588                     \u2588\u2588           \n              
-    \u2588\u2588                      \u2588\u2588\u2588                                                                      
-    \u2588\u2588\u2588                       \u2588\u2588           \n              
-    \u2588\u2588                        \u2588\u2588\u2588                                                                  
-    \u2588\u2588\u2588                         \u2588\u2588           \n              
-    \u2588\u2588                          \u2588\u2588\u2588                \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588               
-    \u2588\u2588\u2588                           \u2588\u2588           \n              
-    \u2588\u2588                            \u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588     
-    \u2588\u2588\u2588                             \u2588\u2588           \n              
-    \u2588\u2588                              \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                                       
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                              
-    \u2588\u2588           \n               \u2588\u2588                               
-    \u2588\u2588\u2588                                                    \u2588\u2588                                
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n              \u2588\u2588\u2588                                                                                                                         
-    \u2588\u2588\u2588          \n              \u2588\u2588                                                                                                                           
-    \u2588\u2588          \n             \u2588\u2588\u2588                                                                                                                           
-    \u2588\u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588\u2588                                                                                                                           
-    \u2588\u2588\u2588         \n             \u2588\u2588\u2588                                                                                                        
-    \u2588\u2588                 \u2588\u2588          \n              \u2588\u2588\u2588                
-    \u2588\u2588\u2588\u2588\u2588\u2588                                                                          
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                \u2588\u2588\u2588         
-    \n               \u2588\u2588                  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588                                                  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                
-    \u2588\u2588           \n               \u2588\u2588\u2588                  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                 \u2588\u2588\u2588          
-    \n                \u2588\u2588\u2588                   \u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588                 
-    \u2588\u2588\u2588            \n                 \u2588\u2588\u2588                   
-    \u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588                   \u2588\u2588\u2588             \n                 
-    \u2588\u2588\u2588                     \u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588                    \u2588\u2588\u2588              \n                  
-    \u2588\u2588\u2588                        \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                       
-    \u2588\u2588\u2588               \n                    \u2588\u2588\u2588\u2588                      
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                     
-    \u2588\u2588\u2588\u2588                \n                      \u2588\u2588\u2588                        
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588                         \u2588\u2588\u2588                 
-    \n                       \u2588\u2588\u2588\u2588                           \u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588                         
-    \u2588\u2588\u2588\u2588                   \n                         \u2588\u2588\u2588\u2588                              
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                              
-    \u2588\u2588\u2588\u2588                     \n                           \u2588\u2588\u2588\u2588                                                                                             
-    \u2588\u2588\u2588\u2588                       \n                            
-    \u2588\u2588\u2588\u2588                                                                                         
-    \u2588\u2588\u2588\u2588                         \n                              
-    \u2588\u2588\u2588\u2588\u2588                                                                                   
-    \u2588\u2588\u2588\u2588\u2588                           \n                                 
-    \u2588\u2588\u2588\u2588                                                                               
-    \u2588\u2588\u2588\u2588                              \n                                    
-    \u2588\u2588\u2588\u2588\u2588                                                                       
-    \u2588\u2588\u2588\u2588\u2588\u2588                                \n                                       
-    \u2588\u2588\u2588\u2588\u2588\u2588                                                               
-    \u2588\u2588\u2588\u2588\u2588\u2588                                    \n                                           
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588                                                     
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588                                       
-    \n                                                \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                                         
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                                           
-    \n                                                      \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                         
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                                                 
-    \n                                                             \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588"
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
-  m_sharedMaterial: {fileID: -4509799713525957626, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
-  m_fontSharedMaterials: []
-  m_fontMaterial: {fileID: 0}
-  m_fontMaterials: []
-  m_fontColor32:
-    serializedVersion: 2
-    rgba: 4282400965
-  m_fontColor: {r: 0.7725491, g: 0.2509804, b: 0.2509804, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
-  m_fontColorGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
-  m_tintAllSprites: 0
-  m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: -1183493901
-  m_overrideHtmlColors: 0
-  m_faceColor:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontSize: 0.9
-  m_fontSizeBase: 0.9
-  m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
-  m_fontStyle: 1
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 512
-  m_textAlignment: 65535
-  m_characterSpacing: -8.98
-  m_wordSpacing: 10.35
-  m_lineSpacing: -8.73
-  m_lineSpacingMax: 0
-  m_paragraphSpacing: 3.41
-  m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 0
-  m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
-  m_linkedTextComponent: {fileID: 0}
-  parentLinkedComponent: {fileID: 0}
-  m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
-  m_enableExtraPadding: 0
-  checkPaddingRequired: 0
-  m_isRichText: 1
-  m_EmojiFallbackSupport: 1
-  m_parseCtrlCharacters: 1
-  m_isOrthographic: 1
-  m_isCullingEnabled: 0
-  m_horizontalMapping: 0
-  m_verticalMapping: 0
-  m_uvLineOffset: -36.7
-  m_geometrySortingOrder: 0
-  m_IsTextObjectScaleStatic: 0
-  m_VertexBufferAutoSizeReduction: 0
-  m_useMaxVisibleDescender: 1
-  m_pageToDisplay: 1
-  m_margin: {x: 0.94, y: 370.8, z: 0, w: 370.8}
-  m_isUsingLegacyAnimationComponent: 0
-  m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
-  m_baseMaterial: {fileID: 0}
-  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!222 &130350012
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 130350008}
-  m_CullTransparentMesh: 1
 --- !u!1 &141930531
 GameObject:
   m_ObjectHideFlags: 0
@@ -2467,7 +2212,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 947144243780562401, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 947144243780562401, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_AnchorMin.y
@@ -2487,19 +2232,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 947144243780562401, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -480
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2550352508341975600, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_Color.b
-      value: 0.91764706
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2550352508341975600, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_Color.g
-      value: 0.91764706
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2550352508341975600, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_Color.r
-      value: 0.91764706
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3479838480316081779, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_Color.b
@@ -2551,7 +2296,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_AnchorMax.y
@@ -2559,7 +2304,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_AnchorMin.y
@@ -2603,11 +2348,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -771.5
+      value: 189.8
       objectReference: {fileID: 0}
     - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -33.6
+      value: -32.95
       objectReference: {fileID: 0}
     - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2649,9 +2394,15 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1799341179}
+    - targetCorrespondingSourceObject: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1799341180}
     - targetCorrespondingSourceObject: {fileID: 8852207361416029686, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1879211017}
+    - targetCorrespondingSourceObject: {fileID: 8852207361416029686, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1879211020}
   m_SourcePrefab: {fileID: 100100000, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
 --- !u!1 &221344836
 GameObject:
@@ -3942,7 +3693,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_Name
-      value: Grid
+      value: SingleGrid
       objectReference: {fileID: 0}
     - target: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_IsActive
@@ -5217,7 +4968,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -10, y: -10}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &452222116
 MonoBehaviour:
@@ -5503,7 +5254,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &493519953
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6520,7 +6271,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.91764706, g: 0.91764706, b: 0.91764706, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -8625,7 +8376,6 @@ RectTransform:
   m_Children:
   - {fileID: 910500399}
   - {fileID: 1200229928}
-  - {fileID: 1495910389}
   m_Father: {fileID: 597432351}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -9767,7 +9517,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -10, y: -10}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &910500400
 MonoBehaviour:
@@ -9863,7 +9613,7 @@ MonoBehaviour:
   horizontalDividerPrefab: {fileID: 3854813823360930598, guid: 00a896772e0b7bb418b1f1943fec959d, type: 3}
   verticalDividerPrefab: {fileID: 8180981085047075541, guid: c6f5f8de7f548b742aba5257bf237673, type: 3}
   dividerLayer: {fileID: 1200229928}
-  indicatorCornerPrefab: {fileID: 2258433216880475918, guid: 9d8d24fb53414e14d9b8a0bee1c9ff43, type: 3}
+  indicatorCornerPrefab: {fileID: 2258433216880475918, guid: aa54861f9192e7a4d9edf03908bc213e, type: 3}
 --- !u!1 &911935518
 GameObject:
   m_ObjectHideFlags: 0
@@ -10061,162 +9811,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 916456105}
   m_CullTransparentMesh: 1
---- !u!1001 &923600271
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1918211265}
-    m_Modifications:
-    - target: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Name
-      value: MgrBox
-      objectReference: {fileID: 0}
-    - target: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2550352508341975600, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.b
-      value: 0.91764706
-      objectReference: {fileID: 0}
-    - target: {fileID: 2550352508341975600, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.g
-      value: 0.91764706
-      objectReference: {fileID: 0}
-    - target: {fileID: 2550352508341975600, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.r
-      value: 0.91764706
-      objectReference: {fileID: 0}
-    - target: {fileID: 3479838480316081779, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3479838480316081779, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3479838480316081779, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.r
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3860725693875335166, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4660046249330070272, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: -4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4660046249330070272, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: -4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4660046249330070272, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4660046249330070272, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Pivot.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Pivot.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 55.299988
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -56.899994
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8852207361416029686, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 8852207361416029686, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 130350009}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1675605403}
-  m_SourcePrefab: {fileID: 100100000, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
 --- !u!1 &924358141
 GameObject:
   m_ObjectHideFlags: 0
@@ -10986,7 +10580,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -10, y: -10}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1022108566
 MonoBehaviour:
@@ -11147,162 +10741,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1663976937}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1001 &1038719730
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 741281267}
-    m_Modifications:
-    - target: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Name
-      value: MgrBox
-      objectReference: {fileID: 0}
-    - target: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2550352508341975600, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.b
-      value: 0.91764706
-      objectReference: {fileID: 0}
-    - target: {fileID: 2550352508341975600, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.g
-      value: 0.91764706
-      objectReference: {fileID: 0}
-    - target: {fileID: 2550352508341975600, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.r
-      value: 0.91764706
-      objectReference: {fileID: 0}
-    - target: {fileID: 3479838480316081779, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3479838480316081779, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3479838480316081779, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.r
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3860725693875335166, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4660046249330070272, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: -4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4660046249330070272, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: -4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4660046249330070272, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4660046249330070272, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Pivot.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Pivot.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 55.299927
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -56.899994
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8852207361416029686, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 8852207361416029686, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1274687822}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1495910390}
-  m_SourcePrefab: {fileID: 100100000, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
 --- !u!1 &1042739469
 GameObject:
   m_ObjectHideFlags: 0
@@ -12171,46 +11609,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1134542745}
   m_CullTransparentMesh: 1
---- !u!1 &1153449424 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-  m_PrefabInstance: {fileID: 2125136570}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &1153449425 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-  m_PrefabInstance: {fileID: 2125136570}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1153449426
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1153449424}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1182724928
 GameObject:
   m_ObjectHideFlags: 0
@@ -12743,7 +12141,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -10, y: -10}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1200229929
 MonoBehaviour:
@@ -13044,261 +12442,6 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1208532686}
-  m_CullTransparentMesh: 1
---- !u!1 &1218622004
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1218622005}
-  - component: {fileID: 1218622007}
-  - component: {fileID: 1218622006}
-  m_Layer: 5
-  m_Name: Text (TMP)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1218622005
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1218622004}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1153449425}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 74.5, y: 2.6}
-  m_SizeDelta: {x: 256.1, y: 11.52}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1218622006
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1218622004}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_text: "      \n               \u2588\u2588\u2588\u2588                                                                                                                     
-    \u2588\u2588\u2588\u2588           \n               \u2588\u2588 \u2588\u2588\u2588                                                                                                                
-    \u2588\u2588\u2588  \u2588\u2588           \n               \u2588\u2588   \u2588\u2588\u2588                                                                                                            
-    \u2588\u2588\u2588\u2588   \u2588\u2588           \n               \u2588\u2588    
-    \u2588\u2588\u2588                                                                                                        
-    \u2588\u2588\u2588      \u2588\u2588           \n               \u2588\u2588      
-    \u2588\u2588\u2588                                                                                                    
-    \u2588\u2588\u2588        \u2588\u2588           \n               \u2588\u2588        
-    \u2588\u2588\u2588                                                                                                
-    \u2588\u2588\u2588          \u2588\u2588           \n               \u2588\u2588          
-    \u2588\u2588\u2588                                                                                            
-    \u2588\u2588\u2588            \u2588\u2588           \n               \u2588\u2588            
-    \u2588\u2588\u2588\u2588                                                                                       
-    \u2588\u2588\u2588              \u2588\u2588           \n               \u2588\u2588              
-    \u2588\u2588\u2588\u2588                                                                                  
-    \u2588\u2588\u2588\u2588                \u2588\u2588           \n              
-    \u2588\u2588                  \u2588\u2588\u2588                                                                               
-    \u2588\u2588\u2588                  \u2588\u2588           \n               \u2588\u2588                  
-    \u2588\u2588\u2588\u2588                                                                          
-    \u2588\u2588\u2588                     \u2588\u2588           \n              
-    \u2588\u2588                      \u2588\u2588\u2588                                                                      
-    \u2588\u2588\u2588                       \u2588\u2588           \n              
-    \u2588\u2588                        \u2588\u2588\u2588                                                                  
-    \u2588\u2588\u2588                         \u2588\u2588           \n              
-    \u2588\u2588                          \u2588\u2588\u2588                \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588               
-    \u2588\u2588\u2588                           \u2588\u2588           \n              
-    \u2588\u2588                            \u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588     
-    \u2588\u2588\u2588                             \u2588\u2588           \n              
-    \u2588\u2588                              \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                                       
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                              
-    \u2588\u2588           \n               \u2588\u2588                               
-    \u2588\u2588\u2588                                                    \u2588\u2588                                
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n              \u2588\u2588\u2588                                                                                                                         
-    \u2588\u2588\u2588          \n              \u2588\u2588                                                                                                                           
-    \u2588\u2588          \n             \u2588\u2588\u2588                                                                                                                           
-    \u2588\u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588\u2588                                                                                                                           
-    \u2588\u2588\u2588         \n             \u2588\u2588\u2588                                                                                                        
-    \u2588\u2588                 \u2588\u2588          \n              \u2588\u2588\u2588                
-    \u2588\u2588\u2588\u2588\u2588\u2588                                                                          
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                \u2588\u2588\u2588         
-    \n               \u2588\u2588                  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588                                                  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                
-    \u2588\u2588           \n               \u2588\u2588\u2588                  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                 \u2588\u2588\u2588          
-    \n                \u2588\u2588\u2588                   \u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588                 
-    \u2588\u2588\u2588            \n                 \u2588\u2588\u2588                   
-    \u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588                   \u2588\u2588\u2588             \n                 
-    \u2588\u2588\u2588                     \u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588                    \u2588\u2588\u2588              \n                  
-    \u2588\u2588\u2588                        \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                       
-    \u2588\u2588\u2588               \n                    \u2588\u2588\u2588\u2588                      
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                     
-    \u2588\u2588\u2588\u2588                \n                      \u2588\u2588\u2588                        
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588                         \u2588\u2588\u2588                 
-    \n                       \u2588\u2588\u2588\u2588                           \u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588                         
-    \u2588\u2588\u2588\u2588                   \n                         \u2588\u2588\u2588\u2588                              
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                              
-    \u2588\u2588\u2588\u2588                     \n                           \u2588\u2588\u2588\u2588                                                                                             
-    \u2588\u2588\u2588\u2588                       \n                            
-    \u2588\u2588\u2588\u2588                                                                                         
-    \u2588\u2588\u2588\u2588                         \n                              
-    \u2588\u2588\u2588\u2588\u2588                                                                                   
-    \u2588\u2588\u2588\u2588\u2588                           \n                                 
-    \u2588\u2588\u2588\u2588                                                                               
-    \u2588\u2588\u2588\u2588                              \n                                    
-    \u2588\u2588\u2588\u2588\u2588                                                                       
-    \u2588\u2588\u2588\u2588\u2588\u2588                                \n                                       
-    \u2588\u2588\u2588\u2588\u2588\u2588                                                               
-    \u2588\u2588\u2588\u2588\u2588\u2588                                    \n                                           
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588                                                     
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588                                       
-    \n                                                \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                                         
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                                           
-    \n                                                      \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                         
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                                                 
-    \n                                                             \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588"
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
-  m_sharedMaterial: {fileID: -4509799713525957626, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
-  m_fontSharedMaterials: []
-  m_fontMaterial: {fileID: 0}
-  m_fontMaterials: []
-  m_fontColor32:
-    serializedVersion: 2
-    rgba: 4282400965
-  m_fontColor: {r: 0.7725491, g: 0.2509804, b: 0.2509804, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
-  m_fontColorGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
-  m_tintAllSprites: 0
-  m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: -1183493901
-  m_overrideHtmlColors: 0
-  m_faceColor:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontSize: 0.9
-  m_fontSizeBase: 0.9
-  m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
-  m_fontStyle: 1
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 512
-  m_textAlignment: 65535
-  m_characterSpacing: -8.98
-  m_wordSpacing: 10.35
-  m_lineSpacing: -8.73
-  m_lineSpacingMax: 0
-  m_paragraphSpacing: 3.41
-  m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 0
-  m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
-  m_linkedTextComponent: {fileID: 0}
-  parentLinkedComponent: {fileID: 0}
-  m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
-  m_enableExtraPadding: 0
-  checkPaddingRequired: 0
-  m_isRichText: 1
-  m_EmojiFallbackSupport: 1
-  m_parseCtrlCharacters: 1
-  m_isOrthographic: 1
-  m_isCullingEnabled: 0
-  m_horizontalMapping: 0
-  m_verticalMapping: 0
-  m_uvLineOffset: -36.7
-  m_geometrySortingOrder: 0
-  m_IsTextObjectScaleStatic: 0
-  m_VertexBufferAutoSizeReduction: 0
-  m_useMaxVisibleDescender: 1
-  m_pageToDisplay: 1
-  m_margin: {x: 0.94, y: 370.8, z: 0, w: 370.8}
-  m_isUsingLegacyAnimationComponent: 0
-  m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
-  m_baseMaterial: {fileID: 0}
-  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!222 &1218622007
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1218622004}
   m_CullTransparentMesh: 1
 --- !u!1 &1221231744
 GameObject:
@@ -13858,261 +13001,6 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1267298927}
-  m_CullTransparentMesh: 1
---- !u!1 &1274687821
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1274687822}
-  - component: {fileID: 1274687824}
-  - component: {fileID: 1274687823}
-  m_Layer: 5
-  m_Name: Text (TMP)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1274687822
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1274687821}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1495910389}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 74.5, y: 2.6}
-  m_SizeDelta: {x: 256.1, y: 11.52}
-  m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1274687823
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1274687821}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_text: "      \n               \u2588\u2588\u2588\u2588                                                                                                                     
-    \u2588\u2588\u2588\u2588           \n               \u2588\u2588 \u2588\u2588\u2588                                                                                                                
-    \u2588\u2588\u2588  \u2588\u2588           \n               \u2588\u2588   \u2588\u2588\u2588                                                                                                            
-    \u2588\u2588\u2588\u2588   \u2588\u2588           \n               \u2588\u2588    
-    \u2588\u2588\u2588                                                                                                        
-    \u2588\u2588\u2588      \u2588\u2588           \n               \u2588\u2588      
-    \u2588\u2588\u2588                                                                                                    
-    \u2588\u2588\u2588        \u2588\u2588           \n               \u2588\u2588        
-    \u2588\u2588\u2588                                                                                                
-    \u2588\u2588\u2588          \u2588\u2588           \n               \u2588\u2588          
-    \u2588\u2588\u2588                                                                                            
-    \u2588\u2588\u2588            \u2588\u2588           \n               \u2588\u2588            
-    \u2588\u2588\u2588\u2588                                                                                       
-    \u2588\u2588\u2588              \u2588\u2588           \n               \u2588\u2588              
-    \u2588\u2588\u2588\u2588                                                                                  
-    \u2588\u2588\u2588\u2588                \u2588\u2588           \n              
-    \u2588\u2588                  \u2588\u2588\u2588                                                                               
-    \u2588\u2588\u2588                  \u2588\u2588           \n               \u2588\u2588                  
-    \u2588\u2588\u2588\u2588                                                                          
-    \u2588\u2588\u2588                     \u2588\u2588           \n              
-    \u2588\u2588                      \u2588\u2588\u2588                                                                      
-    \u2588\u2588\u2588                       \u2588\u2588           \n              
-    \u2588\u2588                        \u2588\u2588\u2588                                                                  
-    \u2588\u2588\u2588                         \u2588\u2588           \n              
-    \u2588\u2588                          \u2588\u2588\u2588                \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588               
-    \u2588\u2588\u2588                           \u2588\u2588           \n              
-    \u2588\u2588                            \u2588\u2588\u2588       \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588     
-    \u2588\u2588\u2588                             \u2588\u2588           \n              
-    \u2588\u2588                              \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                                       
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                              
-    \u2588\u2588           \n               \u2588\u2588                               
-    \u2588\u2588\u2588                                                    \u2588\u2588                                
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n               \u2588\u2588                                                                                                                         
-    \u2588\u2588           \n              \u2588\u2588\u2588                                                                                                                         
-    \u2588\u2588\u2588          \n              \u2588\u2588                                                                                                                           
-    \u2588\u2588          \n             \u2588\u2588\u2588                                                                                                                           
-    \u2588\u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588                                                                                                                             
-    \u2588\u2588         \n             \u2588\u2588\u2588                                                                                                                           
-    \u2588\u2588\u2588         \n             \u2588\u2588\u2588                                                                                                        
-    \u2588\u2588                 \u2588\u2588          \n              \u2588\u2588\u2588                
-    \u2588\u2588\u2588\u2588\u2588\u2588                                                                          
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                \u2588\u2588\u2588         
-    \n               \u2588\u2588                  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588                                                  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                
-    \u2588\u2588           \n               \u2588\u2588\u2588                  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                 \u2588\u2588\u2588          
-    \n                \u2588\u2588\u2588                   \u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588                 
-    \u2588\u2588\u2588            \n                 \u2588\u2588\u2588                   
-    \u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588                   \u2588\u2588\u2588             \n                 
-    \u2588\u2588\u2588                     \u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588                    \u2588\u2588\u2588              \n                  
-    \u2588\u2588\u2588                        \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                       
-    \u2588\u2588\u2588               \n                    \u2588\u2588\u2588\u2588                      
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                     
-    \u2588\u2588\u2588\u2588                \n                      \u2588\u2588\u2588                        
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588                         \u2588\u2588\u2588                 
-    \n                       \u2588\u2588\u2588\u2588                           \u2588\u2588\u2588 
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  \u2588\u2588\u2588\u2588                         
-    \u2588\u2588\u2588\u2588                   \n                         \u2588\u2588\u2588\u2588                              
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588   \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588  
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                              
-    \u2588\u2588\u2588\u2588                     \n                           \u2588\u2588\u2588\u2588                                                                                             
-    \u2588\u2588\u2588\u2588                       \n                            
-    \u2588\u2588\u2588\u2588                                                                                         
-    \u2588\u2588\u2588\u2588                         \n                              
-    \u2588\u2588\u2588\u2588\u2588                                                                                   
-    \u2588\u2588\u2588\u2588\u2588                           \n                                 
-    \u2588\u2588\u2588\u2588                                                                               
-    \u2588\u2588\u2588\u2588                              \n                                    
-    \u2588\u2588\u2588\u2588\u2588                                                                       
-    \u2588\u2588\u2588\u2588\u2588\u2588                                \n                                       
-    \u2588\u2588\u2588\u2588\u2588\u2588                                                               
-    \u2588\u2588\u2588\u2588\u2588\u2588                                    \n                                           
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588                                                     
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588                                       
-    \n                                                \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                                         
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                                           
-    \n                                                      \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                         
-    \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588                                                 
-    \n                                                             \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588"
-  m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
-  m_sharedMaterial: {fileID: -4509799713525957626, guid: 5100b485e16c5fe478e6c22cd1a0428b, type: 2}
-  m_fontSharedMaterials: []
-  m_fontMaterial: {fileID: 0}
-  m_fontMaterials: []
-  m_fontColor32:
-    serializedVersion: 2
-    rgba: 4293984000
-  m_fontColor: {r: 0, g: 1, b: 0.94248676, a: 1}
-  m_enableVertexGradient: 0
-  m_colorMode: 3
-  m_fontColorGradient:
-    topLeft: {r: 1, g: 1, b: 1, a: 1}
-    topRight: {r: 1, g: 1, b: 1, a: 1}
-    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
-    bottomRight: {r: 1, g: 1, b: 1, a: 1}
-  m_fontColorGradientPreset: {fileID: 0}
-  m_spriteAsset: {fileID: 0}
-  m_tintAllSprites: 0
-  m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: -1183493901
-  m_overrideHtmlColors: 0
-  m_faceColor:
-    serializedVersion: 2
-    rgba: 4294967295
-  m_fontSize: 0.9
-  m_fontSizeBase: 0.9
-  m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
-  m_fontStyle: 1
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 512
-  m_textAlignment: 65535
-  m_characterSpacing: -8.98
-  m_wordSpacing: 10.35
-  m_lineSpacing: -8.73
-  m_lineSpacingMax: 0
-  m_paragraphSpacing: 3.41
-  m_charWidthMaxAdj: 0
-  m_TextWrappingMode: 0
-  m_wordWrappingRatios: 0.4
-  m_overflowMode: 0
-  m_linkedTextComponent: {fileID: 0}
-  parentLinkedComponent: {fileID: 0}
-  m_enableKerning: 0
-  m_ActiveFontFeatures: 6e72656b
-  m_enableExtraPadding: 0
-  checkPaddingRequired: 0
-  m_isRichText: 1
-  m_EmojiFallbackSupport: 1
-  m_parseCtrlCharacters: 1
-  m_isOrthographic: 1
-  m_isCullingEnabled: 0
-  m_horizontalMapping: 0
-  m_verticalMapping: 0
-  m_uvLineOffset: -36.7
-  m_geometrySortingOrder: 0
-  m_IsTextObjectScaleStatic: 0
-  m_VertexBufferAutoSizeReduction: 0
-  m_useMaxVisibleDescender: 1
-  m_pageToDisplay: 1
-  m_margin: {x: 0.94, y: 370.8, z: 0, w: 370.8}
-  m_isUsingLegacyAnimationComponent: 0
-  m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
-  m_baseMaterial: {fileID: 0}
-  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!222 &1274687824
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1274687821}
   m_CullTransparentMesh: 1
 --- !u!1 &1275274244
 GameObject:
@@ -16852,46 +15740,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1483739768}
   m_CullTransparentMesh: 1
---- !u!1 &1495910388 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-  m_PrefabInstance: {fileID: 1038719730}
-  m_PrefabAsset: {fileID: 0}
---- !u!224 &1495910389 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-  m_PrefabInstance: {fileID: 1038719730}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1495910390
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1495910388}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1515120283
 GameObject:
   m_ObjectHideFlags: 0
@@ -17849,11 +16697,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   view: {fileID: 2044628735}
---- !u!1 &1600142632 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-  m_PrefabInstance: {fileID: 923600271}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1611389200
 GameObject:
   m_ObjectHideFlags: 0
@@ -18098,13 +16941,12 @@ RectTransform:
   m_Children:
   - {fileID: 1022108565}
   - {fileID: 452222115}
-  - {fileID: 1153449425}
   m_Father: {fileID: 1879211014}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: -4, y: -4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1635910961
 MonoBehaviour:
@@ -18925,41 +17767,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1672495629}
   m_CullTransparentMesh: 1
---- !u!224 &1675605401 stripped
-RectTransform:
-  m_CorrespondingSourceObject: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-  m_PrefabInstance: {fileID: 923600271}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1675605403
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1600142632}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1701339362
 GameObject:
   m_ObjectHideFlags: 0
@@ -20181,7 +18988,7 @@ MonoBehaviour:
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 1
-  m_ChildControlHeight: 1
+  m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
@@ -20209,6 +19016,36 @@ MonoBehaviour:
   splitGridContainer: {fileID: 1799341175}
   gridAContainer: {fileID: 1879211013}
   gridBContainer: {fileID: 597432350}
+--- !u!114 &1799341180
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1799341175}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 0}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &1802981109
 GameObject:
   m_ObjectHideFlags: 0
@@ -20598,6 +19435,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   view: {fileID: 1022108571}
+--- !u!114 &1879211020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1879211013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: 0
+  m_MinHeight: -1
+  m_PreferredWidth: 0
+  m_PreferredHeight: -1
+  m_FlexibleWidth: 1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &1885646131
 GameObject:
   m_ObjectHideFlags: 0
@@ -21139,7 +19996,6 @@ RectTransform:
   m_Children:
   - {fileID: 2044628732}
   - {fileID: 457711118}
-  - {fileID: 1675605401}
   m_Father: {fileID: 126882604}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0.5}
@@ -23745,162 +22601,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2115477853}
   m_CullTransparentMesh: 1
---- !u!1001 &2125136570
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 1635910960}
-    m_Modifications:
-    - target: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Name
-      value: MgrBox
-      objectReference: {fileID: 0}
-    - target: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2550352508341975600, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.b
-      value: 0.91764706
-      objectReference: {fileID: 0}
-    - target: {fileID: 2550352508341975600, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.g
-      value: 0.91764706
-      objectReference: {fileID: 0}
-    - target: {fileID: 2550352508341975600, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.r
-      value: 0.91764706
-      objectReference: {fileID: 0}
-    - target: {fileID: 3479838480316081779, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.b
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3479838480316081779, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.g
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3479838480316081779, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Color.r
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3860725693875335166, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4660046249330070272, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: -4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4660046249330070272, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: -4
-      objectReference: {fileID: 0}
-    - target: {fileID: 4660046249330070272, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4660046249330070272, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Pivot.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_Pivot.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchorMin.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: -0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 55.299927
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_AnchoredPosition.y
-      value: -56.899994
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8852207361416029686, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 8852207361416029686, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-    m_AddedGameObjects:
-    - targetCorrespondingSourceObject: {fileID: 6263829762000267876, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1218622005}
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1153449426}
-  m_SourcePrefab: {fileID: 100100000, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
 --- !u!1 &2127462643
 GameObject:
   m_ObjectHideFlags: 0

@@ -39,18 +39,18 @@ namespace NewGameplay.Services
 
         public void SpawnFragments(int count)
         {
-            Debug.Log($"[DataFragmentService] Spawning {count} fragments");
+
             fragmentPositions.Clear();
 
             var allPositions = gridService.GetAllEmptyTilePositions();
-            Debug.Log($"[DataFragmentService] Found {allPositions.Count} empty positions");
+
 
             if (tileElementService != null)
             {
                 allPositions = allPositions
                     .Where(pos => tileElementService.GetElementAt(pos.x, pos.y) == TileElementType.Empty)
                     .ToList();
-                Debug.Log($"[DataFragmentService] After filtering empty elements, {allPositions.Count} positions remain");
+
             }
 
             allPositions = allPositions.OrderBy(_ => UnityEngine.Random.value).ToList();
@@ -84,10 +84,10 @@ namespace NewGameplay.Services
                 fragmentPositions.Add(chosenPos);
                 gridService.SetSymbol(chosenPos.x, chosenPos.y, FRAGMENT_SYMBOL);
                 RegisterFragmentAt(chosenPos.x, chosenPos.y);
-                Debug.Log($"[DataFragmentService] Spawned fragment at ({chosenPos.x}, {chosenPos.y})");
+
                 allPositions.Remove(chosenPos);
             }
-            Debug.Log($"[DataFragmentService] Total fragments spawned: {fragmentPositions.Count}");
+
         }
         
         private List<Vector2Int> GetAdjacentUnoccupiedTiles(Vector2Int center, List<Vector2Int> validPool)
@@ -124,7 +124,7 @@ namespace NewGameplay.Services
             if (!fragmentPositions.Contains(pos))
             {
                 fragmentPositions.Add(pos);
-                Debug.Log($"[DataFragmentService] Registered fragment at ({x}, {y})");
+
             }
         }
 

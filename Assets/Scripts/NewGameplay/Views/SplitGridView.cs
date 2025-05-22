@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NewGameplay.UI
+namespace NewGameplay.Views
 {
     public class SplitGridView : MonoBehaviour
     {

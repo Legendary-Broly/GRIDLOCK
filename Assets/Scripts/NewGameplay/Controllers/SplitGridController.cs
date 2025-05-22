@@ -5,7 +5,9 @@ using NewGameplay.ScriptableObjects;
 using NewGameplay.Controllers;
 using NewGameplay.Data;
 using NewGameplay.Interfaces;
-
+using NewGameplay.Views;
+using UnityEngine.UI;
+using System;
 namespace NewGameplay.Controllers
 {
     public class SplitGridController : MonoBehaviour
@@ -20,7 +22,14 @@ namespace NewGameplay.Controllers
         private DataFragmentService dataFragmentServiceB;
         private ISplitGridService splitGridService;
         private SplitFlagManager flagManager;
-
+        private GridInputController inputControllerA;
+        private GridInputController inputControllerB;
+        private GridViewNew gridViewA;
+        private GridViewNew gridViewB;
+        private SplitGridInputController splitGridInputController;  
+        private IProgressTrackerService progressTrackerService;
+        private ProgressTrackerView progressTrackerView;
+        private InjectController injectController;
         public void Initialize(
             GridService gridServiceA,
             GridService gridServiceB,
@@ -31,7 +40,16 @@ namespace NewGameplay.Controllers
             TileElementService tileA,
             TileElementService tileB,
             DataFragmentService fragmentA,
-            DataFragmentService fragmentB)
+            DataFragmentService fragmentB,
+            GridInputController inputControllerA,
+            GridInputController inputControllerB,
+            GridViewNew gridViewA,
+            GridViewNew gridViewB,
+            SplitGridInputController splitGridInputController,
+            IProgressTrackerService progressTrackerService,
+            ProgressTrackerView progressTrackerView,
+            InjectController injectController
+            )
         {
             this.gridA = gridServiceA;
             this.gridB = gridServiceB;
@@ -43,6 +61,14 @@ namespace NewGameplay.Controllers
             this.dataFragmentServiceB = fragmentB;
             this.splitGridService = splitService;
             this.flagManager = flagManager;
+            this.inputControllerA = inputControllerA;
+            this.inputControllerB = inputControllerB;
+            this.gridViewA = gridViewA;
+            this.gridViewB = gridViewB;
+            this.splitGridInputController = splitGridInputController;
+            this.progressTrackerService = progressTrackerService;
+            this.progressTrackerView = progressTrackerView;
+            this.injectController = injectController;
         }
 
         public void RevealCenterTiles()
@@ -80,26 +106,81 @@ namespace NewGameplay.Controllers
         {
             if (!config.useSplitGrid) return;
 
+            if (gridA == null || gridB == null ||
+                gridViewA == null || gridViewB == null ||
+                inputControllerA == null || inputControllerB == null)
+            {
+                Debug.LogError("[SplitGridController] One or more dependencies are null in ApplyRoundConfig.");
+                return;
+            }
+
             Debug.Log($"[SplitGridController] Applying split config for round {config.roundNumber}");
 
-            // Grid A
+
+            // Grid A setup
             gridA.ClearAllTiles();
             gridA.InitializeTileStates(config.gridAWidth, config.gridAHeight);
             tileElementServiceA.ResizeGrid(config.gridAWidth, config.gridAHeight);
             dataFragmentServiceA.SpawnFragments(config.fragmentRequirementA);
             virusA.SpawnViruses(config.virusCountA, config.gridAWidth, config.gridAHeight);
+            gridA.TriggerGridUpdate();
 
-            // Grid B
+            // Grid B setup
             gridB.ClearAllTiles();
             gridB.InitializeTileStates(config.gridBWidth, config.gridBHeight);
             tileElementServiceB.ResizeGrid(config.gridBWidth, config.gridBHeight);
             dataFragmentServiceB.SpawnFragments(config.fragmentRequirementB);
             virusB.SpawnViruses(config.virusCountB, config.gridBWidth, config.gridBHeight);
-
-            gridA.TriggerGridUpdate();
             gridB.TriggerGridUpdate();
-        }
 
+            var rectA = gridViewA.GetComponent<RectTransform>();
+            var rectB = gridViewB.GetComponent<RectTransform>();
+            LayoutRebuilder.ForceRebuildLayoutImmediate(rectA);
+            LayoutRebuilder.ForceRebuildLayoutImmediate(rectB);
+
+            // Initialize views after grid setup
+            gridViewA.Initialize(
+                gridA,
+                virusA,
+                tileElementServiceA,
+                null,
+                (x, y, btn) => splitGridInputController.HandleTileClick(x, y, GridID.A, btn),
+                gridA.SymbolToolService
+            );
+
+            if (progressTrackerService == null)
+            {
+                Debug.LogError("[SplitGridController] progressTrackerService is null!");
+            }
+            else
+            {
+                progressTrackerService.SetRequiredFragments(config.fragmentRequirementA + config.fragmentRequirementB);
+            }
+
+            progressTrackerService.ResetProgress();
+
+            progressTrackerView.Initialize(progressTrackerService, gridA); // or gridB if preferred
+
+
+            gridViewB.Initialize(
+                gridB,
+                virusB,
+                tileElementServiceB,
+                null,
+                (x, y, btn) => splitGridInputController.HandleTileClick(x, y, GridID.B, btn),
+                gridB.SymbolToolService
+            );
+
+            inputControllerA.RebindView(gridViewA);
+            inputControllerB.RebindView(gridViewB);
+            gridViewA.RefreshGrid(gridA);
+            gridViewB.RefreshGrid(gridB);
+            gridA.SetGridView(gridViewA);
+            gridB.SetGridView(gridViewB);
+            injectController.SetInjectButtonInteractable(true);
+
+            Debug.Log("[SplitGridController] Finished applying split grid config");
+        }
         public void ResetFlags() => flagManager.ResetFlags();
     }
 }

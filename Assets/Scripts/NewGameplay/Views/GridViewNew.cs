@@ -76,7 +76,6 @@ namespace NewGameplay.Views
 
         public void BuildGrid(int width, int height, Action<int, int, PointerEventData.InputButton> onTileClicked)
         {
-            Debug.Log($"[GridViewNew.BuildGrid] width={width}, height={height}");
             try
             {
                 foreach (Transform child in gridParent)
@@ -91,7 +90,7 @@ namespace NewGameplay.Views
                 }
 
                 var layoutGroup = gridParent.GetComponent<GridLayoutGroup>();
-                Debug.Log($"[GridViewNew.BuildGrid] layoutGroup is null? {layoutGroup == null}");
+
                 if (layoutGroup == null)
                 {
                     Debug.LogError("[GridViewNew] Missing GridLayoutGroup on gridParent!");
@@ -99,29 +98,29 @@ namespace NewGameplay.Views
                 }
 
                 RectTransform panelRect = gridParent.GetComponent<RectTransform>();
+                LayoutRebuilder.ForceRebuildLayoutImmediate(panelRect);
 
-                // FIXED outer dimensions and inner padding
-                float containerWidth = 1475f;
-                float containerHeight = 960f;
-                float padding = 5f;
+                float containerWidth = panelRect.rect.width;
+                float containerHeight = panelRect.rect.height;
 
-                float panelWidth = containerWidth - padding * 2f;   // 1465
-                float panelHeight = containerHeight - padding * 2f; // 950
+                if (containerWidth <= 0f || containerHeight <= 0f)
+                {
+                    Debug.LogWarning($"[GridViewNew] Skipping BuildGrid: invalid rect dimensions ({containerWidth}x{containerHeight}) on {name}");
+                    return;
+                }
 
-                int totalColumns = width + 1;  // grid + column labels
-                int totalRows = height + 1;    // grid + row labels
+                int totalColumns = width + 1;
+                int totalRows = height + 1;
 
-                float finalCellWidth = panelWidth / totalColumns;
-                float finalCellHeight = panelHeight / totalRows;
+                float finalCellWidth = containerWidth / totalColumns;
+                float finalCellHeight = containerHeight / totalRows;
 
-                // Apply layout
-                layoutGroup.padding = new RectOffset(0, 0, 0, 0); // Padding is handled by RectTransform
-                layoutGroup.cellSize = new Vector2(finalCellWidth, finalCellHeight);
+                layoutGroup.padding = new RectOffset(0, 0, 0, 0);
                 layoutGroup.spacing = Vector2.zero;
+                layoutGroup.cellSize = new Vector2(finalCellWidth, finalCellHeight);
                 layoutGroup.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
                 layoutGroup.constraintCount = totalColumns;
 
-                Debug.Log($"[GridViewNew.BuildGrid] Creating arrays: tiles, slots, columnLabels, rowLabels with width={width}, height={height}");
                 tiles = new GameObject[width, height];
                 slots = new TileSlotView[width, height];
                 columnLabels = new TextMeshProUGUI[width];
@@ -131,7 +130,6 @@ namespace NewGameplay.Views
                 {
                     for (int x = 0; x <= width; x++)
                     {
-                        Debug.Log($"[GridViewNew.BuildGrid] x={x}, y={y}");
                         if (x == 0 && y == 0)
                         {
                             InstantiateIndicatorCorner();
@@ -144,7 +142,6 @@ namespace NewGameplay.Views
                             columnLabels[col] = InstantiateLabelCell(virusCount.ToString());
                             continue;
                         }
-
                         if (x == 0)
                         {
                             int row = y - 1;
@@ -167,7 +164,7 @@ namespace NewGameplay.Views
 
                         var btn = slotGO.GetComponentInChildren<Button>();
                         if (btn == null)
-                            Debug.LogError($"[GridViewNew] No Button on tile prefab!");
+                            Debug.LogError("[GridViewNew] No Button on tile prefab!");
                         else
                             btn.onClick.AddListener(() => onTileClicked(gridX, gridY, PointerEventData.InputButton.Left));
                     }
@@ -181,6 +178,7 @@ namespace NewGameplay.Views
                 throw;
             }
         }
+
         public void ApplyIndicatorVisibility()
         {
             if (columnLabels != null)

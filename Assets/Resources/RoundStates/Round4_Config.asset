@@ -18,11 +18,11 @@ MonoBehaviour:
   fragmentRequirement: 4
   virusCount: 40
   useSplitGrid: 1
-  gridAWidth: 0
-  gridAHeight: 0
-  gridBWidth: 0
-  gridBHeight: 0
-  virusCountA: 0
-  virusCountB: 0
-  fragmentRequirementA: 0
-  fragmentRequirementB: 0
+  gridAWidth: 3
+  gridAHeight: 5
+  gridBWidth: 3
+  gridBHeight: 5
+  virusCountA: 6
+  virusCountB: 6
+  fragmentRequirementA: 1
+  fragmentRequirementB: 1

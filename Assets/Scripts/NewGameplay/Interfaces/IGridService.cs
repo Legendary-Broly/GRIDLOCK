@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using NewGameplay.Models;
-
+using NewGameplay.Views;
 namespace NewGameplay.Interfaces
 {
     public interface IGridService
@@ -35,6 +35,11 @@ namespace NewGameplay.Interfaces
         void DisableVirusFlag();
         void SetSymbolToolService(ISymbolToolService service);
         List<Vector2Int> GetValidInitialRevealPositions();
+        void SetGridView(GridViewNew view);
 
+
+
+
+        
     }
 }

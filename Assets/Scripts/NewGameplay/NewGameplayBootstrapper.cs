@@ -27,8 +27,10 @@ namespace NewGameplay
         private VirusService virusService;
         private GridStateService gridStateService;
         private GridService gridService;
+        private IGridService gridServiceA;
+        private IGridService gridServiceB;
         private TileElementService tileElementService;
-        private ProgressTrackerService progressService;
+        private IProgressTrackerService progressService;
         private RoundService roundService;
         private ExtractService extractService;
         private SymbolToolService symbolToolService;
@@ -36,6 +38,7 @@ namespace NewGameplay
         private IChatLogService chatLogService;
         private DebugController debugController;
         private IDamageOverTimeService dotService;
+
 
         [Header("Standard Grid Services")]
         [SerializeField] private GridInputController inputController;
@@ -76,6 +79,8 @@ namespace NewGameplay
             );
 
             gridService = new GridService(gridStateService, virusService, chatLogService);
+            gridServiceA = new GridService(gridStateService, virusService, chatLogService);
+            gridServiceB = new GridService(gridStateService, virusService, chatLogService);
             gridService.SetTileElementService(tileElementService);
             tileElementService.SetGridService(gridService);
             tileElementService.SetGameRunner(this);
@@ -151,7 +156,9 @@ namespace NewGameplay
                 symbolToolService,
                 payloadManager,
                 systemIntegrityService,
-                roundPopupManager
+                roundPopupManager,
+                splitGridController,
+                splitGridView
             );
 
             gridView.Initialize(
@@ -178,7 +185,18 @@ namespace NewGameplay
             tileElementService.ResizeGrid(gridService.GridWidth, gridService.GridHeight);
             gridView.RefreshGrid(gridService);
 
-            injectController.Initialize(injectService, gridService, chatLogService);
+            injectController.Initialize(
+                injectService,
+                gridService,
+                chatLogService,
+                roundService,
+                gridServiceA,
+                gridServiceB,
+                splitGridController,
+                gridViewA,
+                gridViewB
+            );
+
             injectController.SetChatLogService(chatLogService);
 
             extractController.Initialize(
@@ -250,6 +268,8 @@ namespace NewGameplay
             tileElementsB.SetPayloadManager(payloadManager);
             tileElementsA.SetChatLogService(chatLogService);
             tileElementsB.SetChatLogService(chatLogService);
+            tileElementsA.SetVirusService(virusA);
+            tileElementsB.SetVirusService(virusB);
 
             fragmentA.SetPayloadManager(payloadManager);
             fragmentB.SetPayloadManager(payloadManager);
@@ -260,19 +280,26 @@ namespace NewGameplay
             // Tracker service
             var splitFlagManager = new SplitFlagManager();
             var splitService = new SplitGridServiceLocator(gridA, gridB, virusA, virusB, tileElementsA, tileElementsB, fragmentA, fragmentB, payloadManager);
+
             splitGridController.Initialize(
                 gridA, gridB,
                 virusA, virusB,
                 splitService, splitFlagManager,
                 tileElementsA, tileElementsB,
-                fragmentA, fragmentB
+                fragmentA, fragmentB,
+                inputControllerA, inputControllerB,
+                gridViewA, gridViewB,
+                splitGridInputController,
+                progressService,
+                progressTrackerView,
+                injectController
             );
 
             splitGridInputController.Initialize(inputControllerA, inputControllerB, splitGridController);
 
             // Inject remaining dependencies into the views/controllers
-            //DgridViewA.Initialize(gridA, virusA, tileElementsA, inputControllerA, (x, y, btn) => splitGridInputController.HandleTileClick(x, y, GridID.A, btn));
-            //gridViewB.Initialize(gridB, virusB, tileElementsB, inputControllerB, (x, y, btn) => splitGridInputController.HandleTileClick(x, y, GridID.B, btn));
+            gridViewA.Initialize(gridA, virusA, tileElementsA, inputControllerA, (x, y, btn) => splitGridInputController.HandleTileClick(x, y, GridID.A, btn));
+            gridViewB.Initialize(gridB, virusB, tileElementsB, inputControllerB, (x, y, btn) => splitGridInputController.HandleTileClick(x, y, GridID.B, btn));
             gridViewA.SetDataFragmentService(fragmentA);
             gridViewB.SetDataFragmentService(fragmentB);
 

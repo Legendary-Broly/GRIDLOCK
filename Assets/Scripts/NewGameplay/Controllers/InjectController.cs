@@ -23,12 +23,35 @@ namespace NewGameplay.Controllers
         private GridViewNew gridView;
         private IChatLogService chatLogService;
         private PayloadManager payloadManager;
+        private IRoundService roundService;
+        private SplitGridController splitGridController;
+        private IGridService gridServiceA;
+        private IGridService gridServiceB;
+        private GridViewNew gridViewA;
+        private GridViewNew gridViewB;
         public void SetPayloadManager(PayloadManager manager) => payloadManager = manager;
-        public void Initialize(IInjectService injectService, IGridService gridService, IChatLogService chatLogService)
+        public void Initialize(
+            IInjectService injectService, 
+            IGridService gridService, 
+            IChatLogService chatLogService,
+            IRoundService roundService,
+            IGridService gridServiceA,
+            IGridService gridServiceB,
+            SplitGridController splitGridController,
+            GridViewNew gridViewA,
+            GridViewNew gridViewB
+        )
         {
             this.injectService = injectService;
             this.gridService = gridService;
             this.chatLogService = chatLogService;
+            this.roundService = roundService;
+            this.splitGridController = splitGridController;
+            this.gridServiceA = gridServiceA;
+            this.gridServiceB = gridServiceB;
+            this.gridViewA = gridViewA;
+            this.gridViewB = gridViewB;
+
 
             injectService.OnToolsUpdated += RefreshUI;
             injectService.OnToolSelected += UpdateToolSelection;
@@ -51,34 +74,65 @@ namespace NewGameplay.Controllers
         {
             if (injectService == null || (injectButton != null && !injectButton.interactable)) return;
 
-            // (1) reset the symbol‐bank as you already do
-            injectService.ResetForNewRound();
+            if (roundService.RoundConfig != null && roundService.RoundConfig.useSplitGrid)
+            {
+                Debug.Log("[InjectController] Executing split grid inject");
 
+                // Grid A safe reveal
+                var safeA = gridServiceA.GetValidInitialRevealPositions();
+                if (safeA.Count > 0)
+                {
+                    var posA = safeA[UnityEngine.Random.Range(0, safeA.Count)];
+                    gridServiceA.RevealTile(posA.x, posA.y, true);
+                    gridServiceA.SetLastRevealedTile(posA);
+                    gridServiceA.UnlockInteraction();
+                    gridServiceA.SetFirstRevealPermitted(false);
+
+                }
+
+                // Grid B safe reveal
+                var safeB = gridServiceB.GetValidInitialRevealPositions();
+                if (safeB.Count > 0)
+                {
+                    var posB = safeB[UnityEngine.Random.Range(0, safeB.Count)];
+                    gridServiceB.RevealTile(posB.x, posB.y, true);
+                    gridServiceB.SetLastRevealedTile(posB);
+                    gridServiceB.UnlockInteraction();
+                    gridServiceB.SetFirstRevealPermitted(false);
+                }
+                gridViewA?.RefreshGrid(gridServiceA);
+                gridViewB?.RefreshGrid(gridServiceB);
+
+                gridServiceA.TriggerGridUpdate();
+                gridServiceB.TriggerGridUpdate();
+
+                SetInjectButtonInteractable(false);
+                chatLogService?.LogRandomInjectLine();
+                return;
+            }
+
+
+            // === Single Grid behavior ===
+            injectService.ResetForNewRound();
             RefreshUI();
-            gridService.UnlockInteraction();            // allow clicks
-            gridService.SetFirstRevealPermitted(true);  // allow the very first reveal
-            
-            // (2) pick a random empty/playable tile
+            gridService.UnlockInteraction();
+            gridService.SetFirstRevealPermitted(true);
+
             var positions = gridService.GetValidInitialRevealPositions();
             if (positions.Count > 0)
             {
                 var pos = positions[UnityEngine.Random.Range(0, positions.Count)];
-                // force a reveal (skips adjacency check)
                 gridService.RevealTile(pos.x, pos.y, forceReveal: true);
                 gridService.SetLastRevealedTile(pos);
-                gridService.SetFirstRevealPermitted(false); // Reset after reveal to ensure next move must be adjacent
+                gridService.SetFirstRevealPermitted(false);
             }
 
-
-            // (3) finally repaint the grid
             var gridView = FindFirstObjectByType<GridViewNew>();
             if (gridView != null)
                 gridView.RefreshGrid(gridService);
 
             gridService.TriggerGridUpdate();
-
-            SetInjectButtonInteractable(false); // Disable after use
-
+            SetInjectButtonInteractable(false);
             chatLogService?.LogRandomInjectLine();
         }
 

@@ -87,9 +87,8 @@ namespace NewGameplay.Services
 
                 if (config.useSplitGrid)
                 {
-                    Debug.Log($"[RoundService] Split grid round detected — setup will be handled by SplitGridController.");
-                    onRoundReset?.Invoke();
-                    return;
+                    Debug.Log($"[RoundService] Split grid round detected — skipping single-grid logic.");
+                    return; // Do NOT call onRoundReset — let RoundManager handle split setup
                 }
 
                 // === SINGLE GRID ROUND SETUP ===

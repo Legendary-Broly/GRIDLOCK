@@ -54,7 +54,10 @@ namespace NewGameplay.Controllers
             SymbolToolService symbolToolService,
             PayloadManager payloadManager,
             ISystemIntegrityService systemIntegrityService,
-            RoundPopupManager roundPopupManager)
+            RoundPopupManager roundPopupManager,
+            SplitGridController splitGridController,
+            SplitGridView splitGridView
+            )
         {
             this.roundService = roundService;
             this.gridService = gridService;
@@ -67,7 +70,8 @@ namespace NewGameplay.Controllers
             this.payloadManager = payloadManager;
             this.systemIntegrityService = systemIntegrityService;
             this.roundPopupManager = roundPopupManager;
-
+            this.splitGridController = splitGridController;
+            this.splitGridView = splitGridView;
         }
 
         public void StartFirstRound()
@@ -117,7 +121,7 @@ namespace NewGameplay.Controllers
 
                     if (roundService.CurrentRound >= 4)
                     {
-                        splitService.AddTileElement(element); // 🧠 applies to both grids
+                        splitService.AddTileElement(element); // applies to both grids
                     }
                     else
                     {
@@ -134,7 +138,7 @@ namespace NewGameplay.Controllers
 
                     if (roundService.CurrentRound >= 4)
                     {
-                        splitService.ApplyPayload(payloadId); // 🧠 new shared method
+                        splitService.ApplyPayload(payloadId); // new shared method
                     }
                     else
                     {
@@ -156,30 +160,31 @@ namespace NewGameplay.Controllers
             return lastIndicatorRewardTier;
         }
 
-        private void ProceedWithNextRound()
+        public void ProceedWithNextRound()
         {
             roundService.ResetRound(); // ✅ triggers roundReset event
 
-            // Enable Split Grid after Round 3
+            var config = roundService.RoundConfig;
+
             if (roundService.CurrentRound >= 4)
             {
                 Debug.Log("[RoundManager] Enabling Split Grid mode");
 
-                if (singleGridContainer != null)
-                    singleGridContainer.SetActive(false); // Hide original grid
+                if (inputController != null)
+                    inputController.enabled = false; // Disable single grid input during split grid
 
-                splitGridView.ShowSplitGrid();            // Enable split layout
-                splitGridController.RevealCenterTiles();  // Reveal center tiles on both grids
-                var splitConfig = roundService.RoundConfig; // Add a getter if needed
+                if (singleGridContainer != null)
+                    singleGridContainer.SetActive(false);
+
+                splitGridView.ShowSplitGrid();
+                splitGridController.RevealCenterTiles();
+                var splitConfig = roundService.RoundConfig;
                 splitGridController.ApplyRoundConfig(splitConfig);
 
                 return;
             }
 
             gridStateService.RestoreEchoTiles(); // REAPPLY echo-retained tiles
-            
-
-            Debug.Log($"[RoundManager] ProceedWithNextRound: gridService={gridService.GridWidth}x{gridService.GridHeight}, tileElementService={tileElementService.GridWidth}x{tileElementService.GridHeight}, virusService={virusService.GetType().Name}");
             gridView.Initialize(gridService, virusService, tileElementService, inputController, inputController.HandleTileClick, symbolToolService);
 
             if (gridService.GridHeight <= 0 || gridService.GridWidth <= 0)

@@ -102,7 +102,7 @@ namespace NewGameplay.Controllers
                 {
                     roundManager.SetLastIndicatorRewardTier(3); // 3 indicators
                     systemIntegrityService.Increase(25f);
-                    roundService.ResetRound();
+                    roundManager.ProceedWithNextRound();
                     gridService.UnlockInteraction();
                 },
                 onTileElementSelected: (element) =>
@@ -111,14 +111,14 @@ namespace NewGameplay.Controllers
                     tileElementService.AddToSpawnPool(element);
                     tileElementService.AddManualElement(element);
                     chosenTileElements.Add(element);
-                    roundService.ResetRound();
+                    roundManager.ProceedWithNextRound();
                     gridService.UnlockInteraction();
                 },
                 onPayloadSelected: (payloadId) =>
                 {
                     roundManager.SetLastIndicatorRewardTier(1); // 1 indicator
                     payloadManager?.ActivatePayload(payloadId);
-                    roundService.ResetRound();
+                    roundManager.ProceedWithNextRound();
                     gridService.UnlockInteraction();
                 },
                 selectedTileElement: selectedTileElement
