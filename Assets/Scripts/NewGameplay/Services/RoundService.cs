@@ -84,11 +84,12 @@ namespace NewGameplay.Services
                     config = new RoundConfigSO { gridWidth = 7, gridHeight = 7, fragmentRequirement = 1, virusCount = 2 };
                 }
 
-
                 if (config.useSplitGrid)
                 {
                     Debug.Log($"[RoundService] Split grid round detected — skipping single-grid logic.");
-                    return; // Do NOT call onRoundReset — let RoundManager handle split setup
+                    // Still trigger the event for other systems that need to know about the round change
+                    onRoundReset?.Invoke();
+                    return;
                 }
 
                 // === SINGLE GRID ROUND SETUP ===

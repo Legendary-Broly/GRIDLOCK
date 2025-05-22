@@ -14,8 +14,8 @@ namespace NewGameplay.Services
 {
     public class GridService : IGridService
     {
-        private readonly IGridStateService gridStateService;
-        private readonly IVirusService virusService;
+        private IGridStateService gridStateService;
+        private IVirusService virusService;
         private ITileElementService tileElementService;
         private IProgressTrackerService progressService;
         private ISymbolToolService symbolToolService;
@@ -43,11 +43,19 @@ namespace NewGameplay.Services
         public GridService(
             IGridStateService gridStateService,
             IVirusService virusService,
-            IChatLogService chatLogService)
+            IChatLogService chatLogService, 
+            IDataFragmentService dataFragmentService, 
+            ITileElementService tileElementService,
+            IProgressTrackerService progressService
+            )
         {
             this.gridStateService = gridStateService;
             this.virusService = virusService;
             this.chatLogService = chatLogService;
+            this.dataFragmentService = dataFragmentService;
+            this.tileElementService = tileElementService;
+            this.progressService = progressService;
+
             gridStateService.OnGridStateChanged += HandleGridStateChanged;
         }
 
@@ -374,5 +382,11 @@ namespace NewGameplay.Services
         {
             this.chatLogService = chatLogService;
         }
+
+        public void SetVirusService(IVirusService service)
+        {
+            this.virusService = service;
+        }
+
     }
 }

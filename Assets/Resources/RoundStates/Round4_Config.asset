@@ -13,16 +13,16 @@ MonoBehaviour:
   m_Name: Round4_Config
   m_EditorClassIdentifier: 
   roundNumber: 4
-  gridWidth: 12
-  gridHeight: 9
-  fragmentRequirement: 4
-  virusCount: 40
+  gridWidth: 0
+  gridHeight: 0
+  fragmentRequirement: 0
+  virusCount: 0
   useSplitGrid: 1
   gridAWidth: 3
   gridAHeight: 5
   gridBWidth: 3
   gridBHeight: 5
-  virusCountA: 6
-  virusCountB: 6
+  virusCountA: 0
+  virusCountB: 0
   fragmentRequirementA: 1
   fragmentRequirementB: 1

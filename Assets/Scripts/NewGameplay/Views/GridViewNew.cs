@@ -236,6 +236,7 @@ namespace NewGameplay.Views
 
         public void RefreshGrid(IGridService gridService)
         {
+            Debug.Log($"[GridViewNew] RefreshGrid called for {gridService}");
             for (int y = 0; y < gridService.GridHeight; y++)
             {
                 for (int x = 0; x < gridService.GridWidth; x++)

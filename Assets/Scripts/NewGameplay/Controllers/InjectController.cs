@@ -8,6 +8,9 @@ using TMPro;
 using NewGameplay.Views;
 using NewGameplay.ScriptableObjects;
 using NewGameplay.Enums;
+
+
+
 namespace NewGameplay.Controllers
 {
     public class InjectController : MonoBehaviour
@@ -29,6 +32,8 @@ namespace NewGameplay.Controllers
         private IGridService gridServiceB;
         private GridViewNew gridViewA;
         private GridViewNew gridViewB;
+        private GridInputController inputController;
+
         public void SetPayloadManager(PayloadManager manager) => payloadManager = manager;
         public void Initialize(
             IInjectService injectService, 
@@ -39,7 +44,9 @@ namespace NewGameplay.Controllers
             IGridService gridServiceB,
             SplitGridController splitGridController,
             GridViewNew gridViewA,
-            GridViewNew gridViewB
+            GridViewNew gridViewB,
+            GridInputController inputController
+
         )
         {
             this.injectService = injectService;
@@ -51,6 +58,7 @@ namespace NewGameplay.Controllers
             this.gridServiceB = gridServiceB;
             this.gridViewA = gridViewA;
             this.gridViewB = gridViewB;
+            this.inputController = inputController;
 
 
             injectService.OnToolsUpdated += RefreshUI;
@@ -86,8 +94,8 @@ namespace NewGameplay.Controllers
                     gridServiceA.RevealTile(posA.x, posA.y, true);
                     gridServiceA.SetLastRevealedTile(posA);
                     gridServiceA.UnlockInteraction();
-                    gridServiceA.SetFirstRevealPermitted(false);
-
+                    gridServiceA.SetFirstRevealPermitted(true);
+                    gridViewA?.RefreshGrid(gridServiceA);
                 }
 
                 // Grid B safe reveal
@@ -98,16 +106,17 @@ namespace NewGameplay.Controllers
                     gridServiceB.RevealTile(posB.x, posB.y, true);
                     gridServiceB.SetLastRevealedTile(posB);
                     gridServiceB.UnlockInteraction();
-                    gridServiceB.SetFirstRevealPermitted(false);
+                    gridServiceB.SetFirstRevealPermitted(true);
+                    gridViewB?.RefreshGrid(gridServiceB);
                 }
-                gridViewA?.RefreshGrid(gridServiceA);
-                gridViewB?.RefreshGrid(gridServiceB);
 
                 gridServiceA.TriggerGridUpdate();
                 gridServiceB.TriggerGridUpdate();
 
                 SetInjectButtonInteractable(false);
                 chatLogService?.LogRandomInjectLine();
+                Debug.Log($"[InjectController] GridA valid positions: {safeA.Count} {string.Join(",", safeA)}");
+                Debug.Log($"[InjectController] GridB valid positions: {safeB.Count} {string.Join(",", safeB)}");
                 return;
             }
 

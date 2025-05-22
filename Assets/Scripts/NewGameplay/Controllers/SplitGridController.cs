@@ -116,10 +116,12 @@ namespace NewGameplay.Controllers
 
             Debug.Log($"[SplitGridController] Applying split config for round {config.roundNumber}");
 
-
             // Grid A setup
             gridA.ClearAllTiles();
             gridA.InitializeTileStates(config.gridAWidth, config.gridAHeight);
+            gridA.SetTileElementService(tileElementServiceA);
+            gridA.SetVirusService(virusA);
+            gridA.SetDataFragmentService(dataFragmentServiceA);
             tileElementServiceA.ResizeGrid(config.gridAWidth, config.gridAHeight);
             dataFragmentServiceA.SpawnFragments(config.fragmentRequirementA);
             virusA.SpawnViruses(config.virusCountA, config.gridAWidth, config.gridAHeight);
@@ -128,24 +130,31 @@ namespace NewGameplay.Controllers
             // Grid B setup
             gridB.ClearAllTiles();
             gridB.InitializeTileStates(config.gridBWidth, config.gridBHeight);
+            gridB.SetTileElementService(tileElementServiceB);
+            gridB.SetVirusService(virusB);
+            gridB.SetDataFragmentService(dataFragmentServiceB);
             tileElementServiceB.ResizeGrid(config.gridBWidth, config.gridBHeight);
             dataFragmentServiceB.SpawnFragments(config.fragmentRequirementB);
             virusB.SpawnViruses(config.virusCountB, config.gridBWidth, config.gridBHeight);
             gridB.TriggerGridUpdate();
 
-            var rectA = gridViewA.GetComponent<RectTransform>();
-            var rectB = gridViewB.GetComponent<RectTransform>();
-            LayoutRebuilder.ForceRebuildLayoutImmediate(rectA);
-            LayoutRebuilder.ForceRebuildLayoutImmediate(rectB);
-
-            // Initialize views after grid setup
+            // Initialize views with correct input controllers
             gridViewA.Initialize(
                 gridA,
                 virusA,
                 tileElementServiceA,
-                null,
+                inputControllerA,
                 (x, y, btn) => splitGridInputController.HandleTileClick(x, y, GridID.A, btn),
                 gridA.SymbolToolService
+            );
+
+            gridViewB.Initialize(
+                gridB,
+                virusB,
+                tileElementServiceB,
+                inputControllerB,
+                (x, y, btn) => splitGridInputController.HandleTileClick(x, y, GridID.B, btn),
+                gridB.SymbolToolService
             );
 
             if (progressTrackerService == null)
@@ -158,26 +167,24 @@ namespace NewGameplay.Controllers
             }
 
             progressTrackerService.ResetProgress();
+            progressTrackerView.Initialize(progressTrackerService, gridA);
 
-            progressTrackerView.Initialize(progressTrackerService, gridA); // or gridB if preferred
-
-
-            gridViewB.Initialize(
-                gridB,
-                virusB,
-                tileElementServiceB,
-                null,
-                (x, y, btn) => splitGridInputController.HandleTileClick(x, y, GridID.B, btn),
-                gridB.SymbolToolService
-            );
-
+            // Ensure views are bound to their respective controllers
             inputControllerA.RebindView(gridViewA);
             inputControllerB.RebindView(gridViewB);
-            gridViewA.RefreshGrid(gridA);
-            gridViewB.RefreshGrid(gridB);
+            
+            // Set grid views on services
             gridA.SetGridView(gridViewA);
             gridB.SetGridView(gridViewB);
+
+            // Initial grid refresh
+            gridViewA.RefreshGrid(gridA);
+            gridViewB.RefreshGrid(gridB);
+
             injectController.SetInjectButtonInteractable(true);
+
+            Debug.Log($"[SplitGridController] GridA: {gridA.GridWidth}x{gridA.GridHeight}, empty positions: {gridA.GetValidInitialRevealPositions().Count}");
+            Debug.Log($"[SplitGridController] GridB: {gridB.GridWidth}x{gridB.GridHeight}, empty positions: {gridB.GetValidInitialRevealPositions().Count}");
 
             Debug.Log("[SplitGridController] Finished applying split grid config");
         }

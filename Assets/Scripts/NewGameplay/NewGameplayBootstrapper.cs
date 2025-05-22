@@ -38,6 +38,8 @@ namespace NewGameplay
         private IChatLogService chatLogService;
         private DebugController debugController;
         private IDamageOverTimeService dotService;
+        private IInjectService injectServiceA;
+        private IInjectService injectServiceB;
 
 
         [Header("Standard Grid Services")]
@@ -78,9 +80,9 @@ namespace NewGameplay
                 tileElementConfigs
             );
 
-            gridService = new GridService(gridStateService, virusService, chatLogService);
-            gridServiceA = new GridService(gridStateService, virusService, chatLogService);
-            gridServiceB = new GridService(gridStateService, virusService, chatLogService);
+            gridService = new GridService(gridStateService, virusService, chatLogService, dataFragmentService, tileElementService, progressService);
+            gridServiceA = new GridService(gridStateService, virusService, chatLogService, dataFragmentService, tileElementService, progressService);
+            gridServiceB = new GridService(gridStateService, virusService, chatLogService, dataFragmentService, tileElementService, progressService);
             gridService.SetTileElementService(tileElementService);
             tileElementService.SetGridService(gridService);
             tileElementService.SetGameRunner(this);
@@ -194,7 +196,8 @@ namespace NewGameplay
                 gridServiceB,
                 splitGridController,
                 gridViewA,
-                gridViewB
+                gridViewB,
+                inputController
             );
 
             injectController.SetChatLogService(chatLogService);
@@ -227,7 +230,7 @@ namespace NewGameplay
             var gridStateA = new GridStateService();
             var virusA = new VirusService(gridStateA);
             var tileElementsA = new TileElementService(7, 7, tileElementConfigs);
-            var gridA = new GridService(gridStateA, virusA, chatLogService);
+            var gridA = new GridService(gridStateA, virusA, chatLogService, dataFragmentService, tileElementService, progressService);
             tileElementsA.SetGridService(gridA);
             gridA.SetTileElementService(tileElementsA);
             virusA.SetGridService(gridA);
@@ -245,7 +248,7 @@ namespace NewGameplay
             var gridStateB = new GridStateService();
             var virusB = new VirusService(gridStateB);
             var tileElementsB = new TileElementService(7, 7, tileElementConfigs);
-            var gridB = new GridService(gridStateB, virusB, chatLogService);
+            var gridB = new GridService(gridStateB, virusB, chatLogService, dataFragmentService, tileElementService, progressService);
             tileElementsB.SetGridService(gridB);
             gridB.SetTileElementService(tileElementsB);
             virusB.SetGridService(gridB);
