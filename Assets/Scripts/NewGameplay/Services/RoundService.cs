@@ -89,7 +89,6 @@ namespace NewGameplay.Services
                 if (grid is GridService g)
                 {
                     g.SetFirstRevealPermitted(false); 
-                    g.ResetRoundSpawns();
                 }
 
                 // Deactivate pivot tool if it's active
@@ -144,12 +143,7 @@ namespace NewGameplay.Services
                 isResetting = false;
             }
         }
-
-        //public void TriggerRoundReset()
-        //{
-        //    onRoundReset?.Invoke();
-        //}
-
         public int CurrentRound => currentRound;
+
     }
 }

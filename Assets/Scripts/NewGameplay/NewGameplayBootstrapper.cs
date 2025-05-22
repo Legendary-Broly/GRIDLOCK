@@ -38,6 +38,8 @@ namespace NewGameplay
         private IChatLogService chatLogService;
         private DebugController debugController;
         private IDamageOverTimeService dotService;
+        private int width;
+        private int height;
         [SerializeField] private GridInputController inputController;
         [SerializeField] private GridViewNew gridView;
         [SerializeField] private InjectController injectController;
@@ -75,10 +77,10 @@ namespace NewGameplay
                 vs.SetGridService(gridService);
 
             dataFragmentService = new DataFragmentService(gridService);
-            dataFragmentService.SetGridView(gridView);
+            
             dataFragmentService.SetTileElementService(tileElementService);
 
-            gridService.SetGridView(gridView);
+            
             gridService.SetDataFragmentService(dataFragmentService);
             progressService = new ProgressTrackerService(dataFragmentService);
             ExposedProgressService = progressService;
@@ -145,16 +147,21 @@ namespace NewGameplay
                 roundPopupManager
             );
 
-            gridView.Initialize(
-                gridService,
-                virusService,
-                tileElementService,
-                inputController,
+            gridView.BuildGrid(
+                gridService.GridWidth,
+                gridService.GridHeight,
+                (col, h) => virusService.CountVirusesInColumn(col, h),
+                (row, w) => virusService.CountVirusesInRow(row, w),
                 (x, y, button) => inputController.HandleTileClick(x, y, button),
-                symbolToolService
+                (x, y, slot) =>
+                {
+                    slot.Initialize(x, y, gridService, virusService, tileElementService, symbolToolService, (tx, ty, btn) => inputController.HandleTileClick(tx, ty, btn));
+                    slot.SetDataFragmentService(dataFragmentService);
+                }
             );
+
             
-            gridView.SetDataFragmentService(dataFragmentService);
+
             
             roundService.ResetRound();
             tileElementService.ResizeGrid(gridService.GridWidth, gridService.GridHeight);
@@ -163,13 +170,16 @@ namespace NewGameplay
 
             progressTrackerView.Initialize(progressService, gridService);
             systemIntegrityTrackerView.Initialize(systemIntegrityService);
-            gridView.BuildGrid(gridService.GridWidth, gridService.GridHeight, (x, y, button) => inputController.HandleTileClick(x, y, button));
-            gridView.RebindSymbolToolService(symbolToolService);
+
+
             tileElementService.ResizeGrid(gridService.GridWidth, gridService.GridHeight);
-            gridView.RefreshGrid(gridService);
+            gridView.RenderGrid();
 
             injectController.Initialize(injectService, gridService, chatLogService);
             injectController.SetChatLogService(chatLogService);
+            injectController.SetGridView(gridView);
+            injectController.SetInputController(inputController);
+
 
             extractController.Initialize(
                 gridService, 
@@ -192,23 +202,37 @@ namespace NewGameplay
             gridService.SetChatLogService(chatLogService);
             gridService.OnGridUpdated += () =>
             {
-                gridView.RefreshVirusLabels(); // 🆕 Update row/column label counts
+                gridView.RefreshVirusLabels(
+                    (col, h) => virusService.CountVirusesInColumn(col, h),
+                    (row, w) => virusService.CountVirusesInRow(row, w)
+                );
+
             };
 
             roundService.onRoundReset += () =>
             {
-                // Rebuild visual grid BEFORE refreshing it
-                gridView.BuildGrid(gridService.GridWidth, gridService.GridHeight, (x, y, button) => inputController.HandleTileClick(x, y, button));
-                gridView.RebindSymbolToolService(symbolToolService);
+                gridView.BuildGrid(
+                    gridService.GridWidth,
+                    gridService.GridHeight,
+                    (col, h) => virusService.CountVirusesInColumn(col, h),
+                    (row, w) => virusService.CountVirusesInRow(row, w),
+                    (x, y, button) => inputController.HandleTileClick(x, y, button),
+                    (x, y, slot) =>
+                    {
+                        slot.Initialize(x, y, gridService, virusService, tileElementService, symbolToolService, (tx, ty, btn) => inputController.HandleTileClick(tx, ty, btn));
+                        slot.SetDataFragmentService(dataFragmentService);
+                    }
+                );
 
                 int indicatorCount = roundManager.GetCurrentIndicatorCount();
                 gridView.SetVisibleIndicators(indicatorCount, indicatorCount, gridService.GridHeight, gridService.GridWidth);
-                gridView.ApplyIndicatorVisibility(); //apply to freshly built label objects
+                gridView.ApplyIndicatorVisibility();
 
-                gridView.RefreshGrid(gridService);
+                gridView.RenderGrid();
                 progressTrackerView.Refresh();
                 injectController.RefreshUI();
             };
+
             StartCoroutine(BeginIntroChatSequence());
 
             debugController = FindObjectOfType<DebugController>();

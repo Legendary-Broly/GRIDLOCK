@@ -69,5 +69,25 @@ namespace NewGameplay.Services
                 }
             }
         }
+        public int CountVirusesInColumn(int col, int height)
+        {
+            int count = 0;
+            for (int y = 0; y < height; y++)
+            {
+                if (HasVirusAt(col, y)) count++;
+            }
+            return count;
+        }
+
+        public int CountVirusesInRow(int row, int width)
+        {
+            int count = 0;
+            for (int x = 0; x < width; x++)
+            {
+                if (HasVirusAt(x, row)) count++;
+            }
+            return count;
+        }
+
     }
 }

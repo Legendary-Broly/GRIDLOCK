@@ -1,13 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
-using System.Collections.Generic;
-using NewGameplay.Interfaces;
-using NewGameplay.Services;
-using System.Linq;
 using TMPro;
+using System.Collections.Generic;
+using System.Linq;
+using NewGameplay.Interfaces;
 using NewGameplay.Views;
 using NewGameplay.ScriptableObjects;
 using NewGameplay.Enums;
+using NewGameplay.Services;
+
 namespace NewGameplay.Controllers
 {
     public class InjectController : MonoBehaviour
@@ -17,14 +18,17 @@ namespace NewGameplay.Controllers
         [SerializeField] private Button injectButton;
         [SerializeField] private Transform toolButtonRoot;
 
-
         private IInjectService injectService;
         private IGridService gridService;
-        private GridViewNew gridView;
         private IChatLogService chatLogService;
+        private GridViewNew gridView;
+        private GridInputController inputController;
         private PayloadManager payloadManager;
-        public void SetPayloadManager(PayloadManager manager) => payloadManager = manager;
-        public void Initialize(IInjectService injectService, IGridService gridService, IChatLogService chatLogService)
+
+        public void Initialize(
+            IInjectService injectService,
+            IGridService gridService,
+            IChatLogService chatLogService)
         {
             this.injectService = injectService;
             this.gridService = gridService;
@@ -35,53 +39,44 @@ namespace NewGameplay.Controllers
 
             for (int i = 0; i < toolButtons.Count; i++)
             {
-                int index = i; // Capture for lambda
+                int index = i;
                 toolButtons[i].onClick.AddListener(() => OnToolButtonClicked(index));
             }
-               if (injectButton != null)
+
+            if (injectButton != null)
                 injectButton.onClick.AddListener(OnInject);
 
             RefreshUI();
         }
-        public void SetChatLogService(IChatLogService chatLogService)
-        {
-            this.chatLogService = chatLogService;
-        }
+
+        public void SetGridView(GridViewNew view) => gridView = view;
+        public void SetInputController(GridInputController controller) => inputController = controller;
+        public void SetPayloadManager(PayloadManager manager) => payloadManager = manager;
+        public void SetChatLogService(IChatLogService chatLogService) => this.chatLogService = chatLogService;
+
         private void OnInject()
         {
             if (injectService == null || (injectButton != null && !injectButton.interactable)) return;
 
-            // (1) reset the symbol‐bank as you already do
             injectService.ResetForNewRound();
-
             RefreshUI();
-            gridService.UnlockInteraction();            // allow clicks
-            gridService.SetFirstRevealPermitted(true);  // allow the very first reveal
-            
-            // (2) pick a random empty/playable tile
+            gridService.UnlockInteraction();
+            gridService.SetFirstRevealPermitted(true);
+
             var positions = gridService.GetValidInitialRevealPositions();
             if (positions.Count > 0)
             {
-                var pos = positions[UnityEngine.Random.Range(0, positions.Count)];
-                // force a reveal (skips adjacency check)
-                gridService.RevealTile(pos.x, pos.y, forceReveal: true);
+                var pos = positions[Random.Range(0, positions.Count)];
+                gridService.RevealTile(pos.x, pos.y, true);
                 gridService.SetLastRevealedTile(pos);
-                gridService.SetFirstRevealPermitted(false); // Reset after reveal to ensure next move must be adjacent
+                gridService.SetFirstRevealPermitted(false);
             }
 
-
-            // (3) finally repaint the grid
-            var gridView = FindFirstObjectByType<GridViewNew>();
-            if (gridView != null)
-                gridView.RefreshGrid(gridService);
-
+            gridView?.RenderGrid();
             gridService.TriggerGridUpdate();
-
-            SetInjectButtonInteractable(false); // Disable after use
-
+            SetInjectButtonInteractable(false);
             chatLogService?.LogRandomInjectLine();
         }
-
 
         private void OnToolButtonClicked(int index)
         {
@@ -93,10 +88,8 @@ namespace NewGameplay.Controllers
             injectService.SetSelectedTool(index);
             UpdateToolSelection();
 
-            // If the selected tool is Pivot, immediately activate it and refresh the grid
             if (tool == ToolConstants.PIVOT_TOOL)
             {
-                var inputController = FindFirstObjectByType<GridInputController>();
                 inputController?.ActivatePivotToolAndRefreshGrid();
             }
         }
@@ -113,16 +106,16 @@ namespace NewGameplay.Controllers
             if (injectService == null) return;
             var tools = injectService.GetCurrentTools();
 
-            // Update all tool slots
             for (int i = 0; i < toolSlots.Count; i++)
             {
                 bool hasTool = i < tools.Count;
                 toolSlots[i].text = hasTool ? tools[i] : "";
-                
-                // Special handling for the fourth slot
+
                 if (i == 3)
                 {
-                    bool toolkitExpansionActive = payloadManager != null && payloadManager.IsPayloadActive(PayloadType.ToolkitExpansion);
+                    bool toolkitExpansionActive = payloadManager != null &&
+                        payloadManager.IsPayloadActive(PayloadType.ToolkitExpansion);
+
                     toolButtons[i].gameObject.SetActive(toolkitExpansionActive);
                     toolButtons[i].interactable = toolkitExpansionActive && hasTool;
                 }
@@ -138,15 +131,15 @@ namespace NewGameplay.Controllers
         private void UpdateToolSelection()
         {
             if (injectService == null) return;
-
             string selectedTool = injectService.SelectedTool;
-            // No color adjustment here; only interactable state is managed in code.
+            // Visual feedback handled via UI prefab configuration
         }
+
         public void EnableNextToolSlot()
         {
             if (toolButtonRoot == null)
             {
-                Debug.LogError("[ToolkitController] ToolButton root not assigned.");
+                Debug.LogError("[InjectController] ToolButton root not assigned.");
                 return;
             }
 
@@ -156,40 +149,29 @@ namespace NewGameplay.Controllers
                 if (button.name.StartsWith("ToolButton") && !button.gameObject.activeSelf)
                 {
                     button.gameObject.SetActive(true);
-
                     return;
                 }
             }
-
-
         }
+
         public void AssignRandomToolToNextSlot()
         {
             if (injectService == null) return;
 
-            string[] availableTools = new string[]
-            {
+            string[] availableTools = {
                 ToolConstants.PURGE_TOOL,
                 ToolConstants.FORK_TOOL,
                 ToolConstants.PIVOT_TOOL
             };
 
-            // Choose one at random
-            string selectedTool = availableTools[UnityEngine.Random.Range(0, availableTools.Length)];
+            string selectedTool = availableTools[Random.Range(0, availableTools.Length)];
 
             var tools = injectService.GetCurrentTools();
-            if (tools.Count >= 4)
-            {
+            if (tools.Count >= 4) return;
 
-                return;
-            }
-
-            injectService.AddTool(selectedTool); // 🆕 (see next step)
-
-
-            RefreshUI(); // updates button visuals and interactivity
+            injectService.AddTool(selectedTool);
+            RefreshUI();
         }
-
 
         public void ClearToolSlots()
         {
@@ -203,9 +185,7 @@ namespace NewGameplay.Controllers
         public void SetInjectButtonInteractable(bool interactable)
         {
             if (injectButton != null)
-            {
                 injectButton.interactable = interactable;
-            }
         }
     }
 }

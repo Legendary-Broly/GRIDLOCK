@@ -133,14 +133,14 @@ namespace NewGameplay.Controllers
         {
             roundService.ResetRound(); // ✅ triggers roundReset event
             gridStateService.RestoreEchoTiles(); // ✅ REAPPLY echo-retained tiles
-            gridView.Initialize(gridService, virusService, tileElementService, inputController, inputController.HandleTileClick, symbolToolService);
+
             int rowCount = lastIndicatorRewardTier;
             int colCount = lastIndicatorRewardTier;
 
             gridView.SetVisibleIndicators(rowCount, colCount, gridService.GridHeight, gridService.GridWidth);
 
             RebuildGrid(); // ✅ ensures grid is built before refresh
-            gridView.RefreshGrid(gridService);
+            gridView.RenderGrid();
             gridService.UnlockInteraction();
             if (injectController != null)
                 injectController.SetInjectButtonInteractable(true);
@@ -154,8 +154,19 @@ namespace NewGameplay.Controllers
 
             if (gridView != null)
             {
-                gridView.BuildGrid(width, height, inputController.HandleTileClick);
-                
+                gridView.BuildGrid(
+                    gridService.GridWidth,
+                    gridService.GridHeight,
+                    (col, h) => virusService.CountVirusesInColumn(col, h),
+                    (row, w) => virusService.CountVirusesInRow(row, w),
+                    (x, y, button) => inputController.HandleTileClick(x, y, button),
+                    (x, y, slot) =>
+                    {
+                        slot.Initialize(x, y, gridService, virusService, tileElementService, symbolToolService, (tx, ty, btn) => inputController.HandleTileClick(tx, ty, btn));
+                        slot.SetDataFragmentService(dataFragmentService);
+                    }
+                );
+
                 // Find and rebind the GridInputController
                 if (inputController != null)
                 {

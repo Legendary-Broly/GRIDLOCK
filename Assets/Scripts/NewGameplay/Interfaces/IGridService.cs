@@ -24,7 +24,6 @@ namespace NewGameplay.Interfaces
         void ClearAllExceptViruses();
         void LockInteraction();
         void UnlockInteraction();
-        void RefreshTile(int x, int y);
         void TriggerGridUpdate();
         List<Vector2Int> GetAllEmptyTilePositions();
         Vector2Int? GetLastRevealedTile();

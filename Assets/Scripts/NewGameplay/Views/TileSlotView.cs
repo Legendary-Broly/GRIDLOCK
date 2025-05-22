@@ -1,12 +1,12 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.EventSystems;
+using System;
+using System.Collections;
 using NewGameplay.Enums;
 using NewGameplay.Interfaces;
 using NewGameplay.Models;
-using UnityEngine.EventSystems;
-using NewGameplay.Controllers;
-using System.Collections;
 
 namespace NewGameplay.Views
 {
@@ -19,179 +19,100 @@ namespace NewGameplay.Views
         [SerializeField] private Image flagIcon;
         [SerializeField] private Image elementIcon;
         [SerializeField] private Image tileBackground;
-        
+
+        private Button tileButton;
+        private int x, y;
+        private Color originalColor;
+        private Coroutine pulseCoroutine;
+
         private IVirusService virusService;
         private ITileElementService tileElementService;
         private IGridService gridService;
         private IDataFragmentService dataFragmentService;
-        private Button tileButton;
-        private int x, y;
-        private GridInputController inputController;
         private ISymbolToolService symbolToolService;
-        private Coroutine pulseCoroutine;
-        private Color originalColor;
-
-        public enum VisualTileHintType
-        {
-            None,
-            Virus,
-            Good,
-            Warning
-        }
+        private Action<int, int, PointerEventData.InputButton> onTileClicked;
 
         public void Initialize(
-            IVirusService virusService,
-            ITileElementService elementService,
-            IGridService gridService,
             int x,
             int y,
-            GridInputController inputController,
-            ISymbolToolService symbolToolService = null)
+            IGridService gridService,
+            IVirusService virusService,
+            ITileElementService elementService,
+            ISymbolToolService toolService,
+            Action<int, int, PointerEventData.InputButton> onTileClicked)
         {
-            this.virusService = virusService;
-            this.tileElementService = elementService;
-            this.gridService = gridService;
             this.x = x;
             this.y = y;
-            this.inputController = inputController;
-            this.symbolToolService = symbolToolService;
+            this.gridService = gridService;
+            this.virusService = virusService;
+            this.tileElementService = elementService;
+            this.symbolToolService = toolService;
+            this.onTileClicked = onTileClicked;
 
             tileButton = GetComponentInChildren<Button>();
-            
-            // Get the background image component if not assigned
+
             if (tileBackground == null)
-            {
                 tileBackground = GetComponent<Image>();
-                if (tileBackground == null)
-                {
-                    Debug.LogError($"[TileSlotView] No Image component found on {gameObject.name}");
-                }
-            }
-            
+
             if (tileBackground != null)
-            {
                 originalColor = tileBackground.color;
-            }
 
-            if (symbolText == null)
-            {
-                Debug.LogError($"[TileSlotView] symbolText is not assigned on {gameObject.name}");
-            }
-            else
-            {
-                symbolText.transform.SetAsLastSibling();
-                symbolText.gameObject.SetActive(false);
-            }
-
+            symbolText?.gameObject.SetActive(false);
             playerRevealHighlight?.SetActive(false);
             adjacencyHighlight?.SetActive(false);
         }
 
-        public void SetDataFragmentService(IDataFragmentService service)
+        public void SetDataFragmentService(IDataFragmentService service) => dataFragmentService = service;
+        public void SetSymbolToolService(ISymbolToolService service) => symbolToolService = service;
+
+        public void OnPointerClick(PointerEventData eventData)
         {
-            this.dataFragmentService = service;
+            onTileClicked?.Invoke(x, y, eventData.button);
         }
 
-        private int GetDistanceToNearestFragment()
+        public void Refresh()
         {
-            if (dataFragmentService == null)
+            SetVirusHintCount();
+
+            bool revealed = gridService.GetTileState(x, y) == TileState.Revealed;
+            playerRevealHighlight?.SetActive(revealed);
+
+            if (revealed)
             {
-                Debug.LogError($"[TileSlotView] dataFragmentService is null at position ({x}, {y})");
-                return -1;
+                CheckAndPulseForFragmentProximity();
+                UpdateSymbolText(gridService.GetSymbolAt(x, y));
+            }
+            else
+            {
+                symbolText?.gameObject.SetActive(false);
             }
 
-            int minDistance = int.MaxValue;
-            for (int gy = 0; gy < gridService.GridHeight; gy++)
-            {
-                for (int gx = 0; gx < gridService.GridWidth; gx++)
-                {
-                    if (dataFragmentService.IsFragmentAt(new Vector2Int(gx, gy)) && !gridService.IsTileRevealed(gx, gy))
-                    {
-                        int distance = Mathf.Abs(gx - x) + Mathf.Abs(gy - y);
-                        minDistance = Mathf.Min(minDistance, distance);
-                    }
-                }
-            }
-            return minDistance == int.MaxValue ? -1 : minDistance;
+            bool canReveal = gridService.CanRevealTile(x, y);
+            bool isFlagged = gridService.IsFlaggedAsVirus(x, y);
+            adjacencyHighlight?.SetActive(canReveal && !isFlagged);
+            tileButton.interactable = canReveal;
+
+            flagIcon?.gameObject.SetActive(isFlagged);
+
+            if (isFlagged)
+                flagIcon.transform.SetAsLastSibling();
+
+            UpdateElementVisual(revealed);
         }
 
-        private IEnumerator PulseTile(Color pulseColor, float duration = 0.5f)
-        {
-            if (tileBackground == null)
-            {
-                Debug.LogError($"[TileSlotView] tileBackground is null at position ({x}, {y})");
-                yield break;
-            }
-
-            // Stop any existing pulse
-            if (pulseCoroutine != null)
-            {
-                StopCoroutine(pulseCoroutine);
-            }
-
-            float elapsed = 0f;
-            while (elapsed < duration)
-            {
-                float t = elapsed / duration;
-                float alpha = Mathf.Sin(t * Mathf.PI); // Smooth sine wave
-                tileBackground.color = Color.Lerp(originalColor, pulseColor, alpha);
-                elapsed += Time.deltaTime;
-                yield return null;
-            }
-
-            // Reset to original color
-            tileBackground.color = originalColor;
-            pulseCoroutine = null;
-        }
-
-        private void CheckAndPulseForFragmentProximity()
-        {
-            if (!gridService.IsTileRevealed(x, y))
-            {
-                return;
-            }
-
-            // Skip pulsing if this tile is a data fragment
-            if (gridService.GetSymbolAt(x, y) == "DATA")
-            {
-                return;
-            }
-
-            int distance = GetDistanceToNearestFragment();
-            
-            if (distance == 1)
-            {
-                Color semiTransparentGreen = new Color(0, 1, 0, 0.25f);
-                pulseCoroutine = StartCoroutine(PulseTile(semiTransparentGreen));
-            }
-            else if (distance == 2)
-            {
-                Color semiTransparentYellow = new Color(1, 1, 0, 0.25f);
-                pulseCoroutine = StartCoroutine(PulseTile(semiTransparentYellow));
-            }
-        }
-
-        private void SetVirusHintCount(int x, int y)
+        private void SetVirusHintCount()
         {
             if (gridService.GetTileState(x, y) != TileState.Revealed)
             {
-                // Still hidden — do not show hint at all
                 virusHintText.text = string.Empty;
                 return;
             }
 
             int count = 0;
-            Vector2Int[] dirs;
-            if (symbolToolService != null && symbolToolService.IsPivotActive())
-            
-            {
+            Vector2Int[] dirs = symbolToolService?.IsPivotActive() == true
+                ? new[] { new Vector2Int(1, 1), new Vector2Int(-1, 1), new Vector2Int(1, -1), new Vector2Int(-1, -1) }
+                : new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
 
-                dirs = new[] { new Vector2Int(1, 1), new Vector2Int(-1, 1), new Vector2Int(1, -1), new Vector2Int(-1, -1) };
-            }
-            else
-            {
-                dirs = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
-            }
             foreach (var dir in dirs)
             {
                 int nx = x + dir.x;
@@ -199,92 +120,92 @@ namespace NewGameplay.Views
                 if (gridService.IsInBounds(nx, ny) && virusService.HasVirusAt(nx, ny))
                     count++;
             }
+
             virusHintText.text = count > 0 ? new string('.', count) : string.Empty;
         }
 
-        public void Refresh()
+        private void UpdateSymbolText(string symbol)
         {
-            SetVirusHintCount(x, y);
+            if (symbolText == null) return;
 
-            bool revealed = gridService.GetTileState(x, y) == TileState.Revealed;
-            bool wasActive = playerRevealHighlight != null && playerRevealHighlight.activeSelf;
-            playerRevealHighlight?.SetActive(revealed);
+            bool hasSymbol = !string.IsNullOrEmpty(symbol);
+            symbolText.text = symbol;
+            symbolText.gameObject.SetActive(hasSymbol);
 
-            if (revealed && !wasActive)
-            {
-                var sym = gridService.GetSymbolAt(x, y);
-                CheckAndPulseForFragmentProximity();
-            }
+            if (hasSymbol)
+                symbolText.transform.SetAsLastSibling();
+        }
 
-            bool canReveal = gridService.CanRevealTile(x, y);
-            bool isFlagged = gridService.IsFlaggedAsVirus(x, y);
-            adjacencyHighlight?.SetActive(canReveal && !isFlagged);
+        private void UpdateElementVisual(bool revealed)
+        {
+            if (elementIcon == null) return;
 
-            if (tileButton != null)
-                tileButton.interactable = canReveal;
-
-            if (symbolText != null)
-            {
-                if (revealed)
-                {
-                    var sym = gridService.GetSymbolAt(x, y);
-                    bool show = !string.IsNullOrEmpty(sym);
-                    symbolText.text = sym;
-                    symbolText.gameObject.SetActive(show);
-                    if (show)
-                        symbolText.transform.SetAsLastSibling();
-                }
-                else
-                {
-                    symbolText.gameObject.SetActive(false);
-                }
-            }
-
-            if (flagIcon != null)
-            {
-                flagIcon.gameObject.SetActive(isFlagged);
-                if (isFlagged)
-                    flagIcon.transform.SetAsLastSibling();
-            }
-
-            // 🔹 New: Apply TileElementSO visuals
             if (revealed)
             {
                 var elementSO = tileElementService.GetElementSOAt(x, y);
                 if (elementSO != null && elementSO.elementType != TileElementType.Empty)
                 {
-                    if (elementIcon != null)
+                    elementIcon.sprite = elementSO.icon;
+                    elementIcon.color = elementSO.displayColor;
+                    elementIcon.gameObject.SetActive(true);
+                    elementIcon.transform.SetAsLastSibling();
+                    return;
+                }
+            }
+
+            elementIcon.gameObject.SetActive(false);
+        }
+
+        private void CheckAndPulseForFragmentProximity()
+        {
+            if (!gridService.IsTileRevealed(x, y) || gridService.GetSymbolAt(x, y) == "DATA") return;
+
+            int distance = GetDistanceToNearestFragment();
+            if (distance == 1)
+                pulseCoroutine = StartCoroutine(PulseTile(new Color(0, 1, 0, 0.25f)));
+            else if (distance == 2)
+                pulseCoroutine = StartCoroutine(PulseTile(new Color(1, 1, 0, 0.25f)));
+        }
+
+        private int GetDistanceToNearestFragment()
+        {
+            if (dataFragmentService == null) return -1;
+
+            int minDist = int.MaxValue;
+            for (int gy = 0; gy < gridService.GridHeight; gy++)
+            {
+                for (int gx = 0; gx < gridService.GridWidth; gx++)
+                {
+                    if (dataFragmentService.IsFragmentAt(new Vector2Int(gx, gy)) && !gridService.IsTileRevealed(gx, gy))
                     {
-                        elementIcon.sprite = elementSO.icon;
-                        elementIcon.color = elementSO.displayColor;
-                        elementIcon.gameObject.SetActive(true);
-                        elementIcon.transform.SetAsLastSibling();
+                        int dist = Mathf.Abs(gx - x) + Mathf.Abs(gy - y);
+                        minDist = Mathf.Min(minDist, dist);
                     }
                 }
-                else
-                {
-                    if (elementIcon != null) elementIcon.gameObject.SetActive(false);
-
-                }
             }
-            else
-            {
-                if (elementIcon != null) elementIcon.gameObject.SetActive(false);
 
-            }
+            return minDist == int.MaxValue ? -1 : minDist;
         }
 
-        public void OnPointerClick(PointerEventData eventData)
+        private IEnumerator PulseTile(Color pulseColor, float duration = 0.5f)
         {
-            if (inputController != null)
-            {
-                inputController.HandleTileClick(x, y, eventData.button);
-            }
-        }
+            if (tileBackground == null) yield break;
 
-        public void SetSymbolToolService(ISymbolToolService toolService)
-        {
-            this.symbolToolService = toolService;
+            if (pulseCoroutine != null)
+                StopCoroutine(pulseCoroutine);
+
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                float t = elapsed / duration;
+                float alpha = Mathf.Sin(t * Mathf.PI);
+                tileBackground.color = Color.Lerp(originalColor, pulseColor, alpha);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+
+            tileBackground.color = originalColor;
+            pulseCoroutine = null;
         }
     }
 }

@@ -23,6 +23,7 @@ namespace NewGameplay.Services
             TileElementType.SystemIntegrityIncrease,
             TileElementType.ToolRefresh
         };
+
         private readonly List<Vector2Int> pendingJunkPiles = new();
 
         private IGridService gridService;
@@ -32,31 +33,31 @@ namespace NewGameplay.Services
         private IChatLogService chatLogService;
         private IProgressTrackerService progressService;
         private IVirusService virusService;
-        private PayloadManager payloadManager;
-        private MonoBehaviour gameRunner;
         private IDataFragmentService dataFragmentService;
+        private PayloadManager payloadManager;
+        private InjectController injectController;
         private bool wirelessUploadSuppressed = false;
 
-        public TileElementService(int width, int height, List<TileElementSO> configs)
-        {
-            this.gridWidth = width;
-            this.gridHeight = height;
-            this.elementConfigs = configs;
-        }
         public int GridWidth => gridWidth;
         public int GridHeight => gridHeight;
 
+        public TileElementService(int width, int height, List<TileElementSO> configs)
+        {
+            gridWidth = width;
+            gridHeight = height;
+            elementConfigs = configs;
+        }
+
         public void SetPayloadManager(PayloadManager manager) => payloadManager = manager;
         public void SetSystemIntegrityService(ISystemIntegrityService s) => systemIntegrityService = s;
-        public void SetGridService(IGridService service) => gridService = service;
+        public void SetGridService(IGridService s) => gridService = s;
         public void SetCodeShardTracker(ICodeShardTracker tracker) => codeShardTracker = tracker;
-        public void SetInjectService(IInjectService service) => injectService = service;
-        public void SetChatLogService(IChatLogService service) => chatLogService = service;
-        public void SetVirusService(IVirusService service) => virusService = service;
-        public void SetGameRunner(MonoBehaviour runner) => gameRunner = runner;
-        public TileElementType GetElementAt(int x, int y) => gridElements[x, y];
-        public TileElementSO GetElementSO(TileElementType type) => elementConfigs.FirstOrDefault(e => e.elementType == type);
-        public TileElementSO GetElementSOAt(int x, int y) => GetElementSO(gridElements[x, y]);
+        public void SetInjectService(IInjectService s) => injectService = s;
+        public void SetInjectController(InjectController controller) => injectController = controller;
+        public void SetChatLogService(IChatLogService s) => chatLogService = s;
+        public void SetVirusService(IVirusService s) => virusService = s;
+        public void SetDataFragmentService(IDataFragmentService s) => dataFragmentService = s;
+        public void SetProgressTrackerService(IProgressTrackerService s) => progressService = s;
 
         public void ResizeGrid(int width, int height)
         {
@@ -72,7 +73,7 @@ namespace NewGameplay.Services
                 for (int x = 0; x < gridWidth; x++)
                     gridElements[x, y] = TileElementType.Empty;
 
-            List<Vector2Int> candidates = new();
+            var candidates = new List<Vector2Int>();
             for (int y = 0; y < gridHeight; y++)
                 for (int x = 0; x < gridWidth; x++)
                 {
@@ -82,14 +83,11 @@ namespace NewGameplay.Services
                     candidates.Add(new Vector2Int(x, y));
                 }
 
-            for (int i = candidates.Count - 1; i > 0; i--)
-            {
-                int j = UnityEngine.Random.Range(0, i + 1);
-                (candidates[i], candidates[j]) = (candidates[j], candidates[i]);
-            }
+            candidates = candidates.OrderBy(_ => Random.value).ToList();
 
             int tilesPer = Mathf.FloorToInt(candidates.Count * 0.1f);
             int index = 0;
+
             foreach (var type in dynamicSpawnElements)
             {
                 for (int i = 0; i < tilesPer && index < candidates.Count; i++, index++)
@@ -101,15 +99,11 @@ namespace NewGameplay.Services
         {
             TileElementType type = gridElements[x, y];
 
-            if (virusService.HasVirusAt(x, y))
-                type = TileElementType.Virus;
-            else if (dataFragmentService.IsFragmentAt(new Vector2Int(x, y)))
-                type = TileElementType.DataFragment;
+            if (virusService.HasVirusAt(x, y)) type = TileElementType.Virus;
+            else if (dataFragmentService.IsFragmentAt(new Vector2Int(x, y))) type = TileElementType.DataFragment;
 
             var config = elementConfigs.FirstOrDefault(e => e.elementType == type);
             if (config == null && type != TileElementType.Virus && type != TileElementType.DataFragment) return;
-
-            Debug.Log($"[TriggerElementEffect] ({x},{y}) → {type}");
 
             switch (type)
             {
@@ -124,40 +118,15 @@ namespace NewGameplay.Services
 
                 case TileElementType.ToolRefresh:
                     injectService?.ResetForNewRound();
-                    var injectController = UnityEngine.Object.FindFirstObjectByType<InjectController>();
                     injectController?.RefreshUI();
                     break;
 
                 case TileElementType.Warp:
-                    List<Vector2Int> candidates = new();
-                    for (int gridY = 0; gridY < gridService.GridHeight; gridY++)
-                    {
-                        for (int gridX = 0; gridX < gridService.GridWidth; gridX++)
-                        {
-                            if (!gridService.IsTileRevealed(gridX, gridY) && !virusService.HasVirusAt(gridX, gridY))
-                                candidates.Add(new Vector2Int(gridX, gridY));
-                        }
-                    }
-                    if (candidates.Count > 0)
-                    {
-                        var target = candidates[Random.Range(0, candidates.Count)];
-                        Debug.Log($"[Warp] Revealing random non-virus tile at ({target.x},{target.y})");
-                        gridService.RevealTile(target.x, target.y, true);
-                    }
-                    else
-                        Debug.Log("[Warp] No valid tiles to reveal.");
+                    RevealRandomUninfectedTile();
                     break;
 
                 case TileElementType.FlagPop:
-                    Vector2Int[] dirs = { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
-                    foreach (var dir in dirs)
-                    {
-                        int nx = x + dir.x, ny = y + dir.y;
-                        if (!gridService.IsInBounds(nx, ny) || gridService.IsTileRevealed(nx, ny)) continue;
-                        if (virusService.HasVirusAt(nx, ny))
-                            gridService.SetVirusFlag(nx, ny, true);
-                    }
-                    gridService.TriggerGridUpdate();
+                    FlagAdjacentViruses(x, y);
                     break;
 
                 case TileElementType.JunkPile:
@@ -175,82 +144,40 @@ namespace NewGameplay.Services
                     break;
             }
 
-            // ✅ Wireless Upload payload: 50% chance to reveal nearest same element
-            if (!wirelessUploadSuppressed && payloadManager != null && payloadManager.ShouldRevealSimilarTile())
-            {
-                float roll = UnityEngine.Random.value;
-                Debug.Log($"[WirelessUpload] Payload active — attempting auto-reveal for {type} @ ({x},{y}) | Roll: {roll:F2}");
-
-                if (roll <= 0.5f)
-                {
-                    wirelessUploadSuppressed = true;
-                    var nearest = FindNearestMatchingTile(x, y, type);
-
-                    if (nearest.HasValue)
-                    {
-                        Debug.Log($"[WirelessUpload] Success — revealed nearest {type} at {nearest.Value}");
-                        gridService.RevealTile(nearest.Value.x, nearest.Value.y, true);
-                    }
-                    else
-                    {
-                        Debug.Log($"[WirelessUpload] No matching unrevealed {type} found.");
-                    }
-
-                    wirelessUploadSuppressed = false;
-                }
-                else
-                {
-                    Debug.Log($"[WirelessUpload] Failed — 50% chance did not trigger.");
-                }
-            }
-
+            TryWirelessAutoReveal(type, x, y);
             chatLogService?.LogTileElementReveal(type);
         }
 
         public void OnTileRevealed(int x, int y)
         {
-            if (pendingJunkPiles.Count == 0) return;
-
-
             foreach (var pos in pendingJunkPiles.ToList())
-            {
-                if (gameRunner != null)
-                    gameRunner.StartCoroutine(HandleJunkpileTransform(pos.x, pos.y));
-            }
+                HandleJunkpileTransform(pos.x, pos.y);
+
             pendingJunkPiles.Clear();
         }
 
-        private IEnumerator HandleJunkpileTransform(int x, int y)
+        private void HandleJunkpileTransform(int x, int y)
         {
-            yield return new WaitForSeconds(0.4f);
-
-            int outcome = UnityEngine.Random.Range(0, 4);
-
-
+            int outcome = Random.Range(0, 4);
             switch (outcome)
             {
                 case 0: // CodeShard
                     gridElements[x, y] = TileElementType.CodeShard;
                     TriggerElementEffect(x, y);
                     break;
-
                 case 1: // Virus
                     gridElements[x, y] = TileElementType.Empty;
                     gridService.SetSymbol(x, y, "X");
                     systemIntegrityService.Decrease(25f);
                     chatLogService?.LogVirusReveal();
-                    gridService.TriggerGridUpdate();
                     break;
-
-                case 2: // Data Fragment
+                case 2: // DataFragment
                     gridElements[x, y] = TileElementType.Empty;
                     gridService.SetSymbol(x, y, "DATA");
                     dataFragmentService?.RegisterFragmentAt(x, y);
                     progressService?.NotifyFragmentRevealed(x, y);
                     chatLogService?.LogDataFragmentReveal();
-                    progressService?.NotifyFragmentRevealed();
                     break;
-
                 case 3: // Nothing
                     gridElements[x, y] = TileElementType.Empty;
                     gridService.SetSymbol(x, y, "");
@@ -260,67 +187,106 @@ namespace NewGameplay.Services
             gridService.TriggerGridUpdate();
         }
 
-        public void AddManualElement(TileElementType type)
+        private void RevealRandomUninfectedTile()
         {
-            var candidates = gridService.GetAllEmptyTilePositions()
-                .Where(pos => gridElements[pos.x, pos.y] == TileElementType.Empty).ToList();
+            var candidates = new List<Vector2Int>();
+            for (int y = 0; y < gridHeight; y++)
+                for (int x = 0; x < gridWidth; x++)
+                    if (!gridService.IsTileRevealed(x, y) && !virusService.HasVirusAt(x, y))
+                        candidates.Add(new Vector2Int(x, y));
 
-            if (candidates.Count == 0) return;
-            var chosen = candidates[UnityEngine.Random.Range(0, candidates.Count)];
-            gridElements[chosen.x, chosen.y] = type;
-
-        }
-
-        public void AddToSpawnPool(TileElementType type)
-        {
-            if (!dynamicSpawnElements.Contains(type))
+            if (candidates.Count > 0)
             {
-                dynamicSpawnElements.Add(type);
-
+                var chosen = candidates[Random.Range(0, candidates.Count)];
+                gridService.RevealTile(chosen.x, chosen.y, true);
             }
         }
-        private Vector2Int? FindNearestMatchingTile(int originX, int originY, TileElementType match)
+
+        private void FlagAdjacentViruses(int x, int y)
         {
-            float closestDist = float.MaxValue;
-            Vector2Int? best = null;
+            var dirs = new[] { Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right };
+            foreach (var dir in dirs)
+            {
+                int nx = x + dir.x, ny = y + dir.y;
+                if (gridService.IsInBounds(nx, ny) && !gridService.IsTileRevealed(nx, ny) && virusService.HasVirusAt(nx, ny))
+                    gridService.SetVirusFlag(nx, ny, true);
+            }
+            gridService.TriggerGridUpdate();
+        }
+
+        private void TryWirelessAutoReveal(TileElementType type, int x, int y)
+        {
+            if (wirelessUploadSuppressed || payloadManager == null || !payloadManager.ShouldRevealSimilarTile()) return;
+
+            if (Random.value <= 0.5f)
+            {
+                wirelessUploadSuppressed = true;
+                var match = FindNearestMatchingTile(x, y, type);
+                if (match.HasValue)
+                    gridService.RevealTile(match.Value.x, match.Value.y, true);
+                wirelessUploadSuppressed = false;
+            }
+        }
+
+        private Vector2Int? FindNearestMatchingTile(int ox, int oy, TileElementType match)
+        {
+            float closest = float.MaxValue;
+            Vector2Int? result = null;
 
             for (int x = 0; x < gridWidth; x++)
             {
                 for (int y = 0; y < gridHeight; y++)
                 {
-                    if ((x == originX && y == originY) || gridService.IsTileRevealed(x, y))
-                        continue;
+                    if ((x == ox && y == oy) || gridService.IsTileRevealed(x, y)) continue;
 
-                    bool isMatch = false;
-
-                    if (match == TileElementType.Virus && virusService.HasVirusAt(x, y))
-                        isMatch = true;
-                    else if (match == TileElementType.DataFragment && dataFragmentService.IsFragmentAt(new Vector2Int(x, y)))
-                        isMatch = true;
-                    else if (gridElements[x, y] == match)
-                        isMatch = true;
+                    bool isMatch = match switch
+                    {
+                        TileElementType.Virus => virusService.HasVirusAt(x, y),
+                        TileElementType.DataFragment => dataFragmentService.IsFragmentAt(new Vector2Int(x, y)),
+                        _ => gridElements[x, y] == match
+                    };
 
                     if (!isMatch) continue;
 
-                    float dist = Vector2Int.Distance(new Vector2Int(originX, originY), new Vector2Int(x, y));
-                    if (dist < closestDist)
+                    float dist = Vector2Int.Distance(new Vector2Int(ox, oy), new Vector2Int(x, y));
+                    if (dist < closest)
                     {
-                        closestDist = dist;
-                        best = new Vector2Int(x, y);
+                        closest = dist;
+                        result = new Vector2Int(x, y);
                     }
                 }
             }
 
-            return best;
+            return result;
         }
 
-        public void SetDataFragmentService(IDataFragmentService service)
+        public TileElementType GetElementAt(int x, int y) => gridElements[x, y];
+        public TileElementSO GetElementSOAt(int x, int y) => GetElementSO(gridElements[x, y]);
+        public TileElementSO GetElementSO(TileElementType type) => elementConfigs.FirstOrDefault(e => e.elementType == type);
+
+        public void AddManualElement(TileElementType type)
         {
-            dataFragmentService = service;
-        }  
-        public void SetProgressTrackerService(IProgressTrackerService service)
+            var candidates = gridService.GetAllEmptyTilePositions()
+                .Where(pos => gridElements[pos.x, pos.y] == TileElementType.Empty)
+                .ToList();
+
+            if (candidates.Count > 0)
+            {
+                var chosen = candidates[Random.Range(0, candidates.Count)];
+                gridElements[chosen.x, chosen.y] = type;
+            }
+        }
+
+        public void AddToSpawnPool(TileElementType type)
         {
-            progressService = service;
+            if (!dynamicSpawnElements.Contains(type))
+                dynamicSpawnElements.Add(type);
+        }
+        private MonoBehaviour gameRunner;
+
+        public void SetGameRunner(MonoBehaviour runner)
+        {
+            this.gameRunner = runner;
         }
     }
 }
