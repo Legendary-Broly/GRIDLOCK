@@ -10,5 +10,6 @@ namespace NewGameplay.Interfaces
         void RemoveVirus(int x, int y);
         int CountVirusesInColumn(int col, int height);
         int CountVirusesInRow(int row, int width);
+        void SpawnViruses(int virusCount, int width, int height, Vector2Int? protectedTile = null);
     }
 } 
