@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,8 +17,11 @@ namespace NewGameplay.Services
         // Virus configuration
         public const string VIRUS_SYMBOL = "X";
 
-        public VirusService(IGridStateService gridStateService)
+        public event Action OnVirusCountChanged;
+
+        public VirusService(IGridService gridService, IGridStateService gridStateService)
         {
+            this.gridService = gridService;
             this.gridStateService = gridStateService;
         }
 
@@ -35,6 +37,7 @@ namespace NewGameplay.Services
             if (HasVirusAt(x, y))
             {
                 gridService.SetSymbol(x, y, "");
+                OnVirusCountChanged?.Invoke();
             }
         }
 
@@ -68,6 +71,76 @@ namespace NewGameplay.Services
                     placed++;
                 }
             }
+            OnVirusCountChanged?.Invoke();
         }
+
+        public void ClearViruses()
+        {
+            for (int y = 0; y < gridStateService.GridHeight; y++)
+            {
+                for (int x = 0; x < gridStateService.GridWidth; x++)
+                {
+                    if (HasVirusAt(x, y))
+                    {
+                        gridService.SetSymbol(x, y, "");
+                    }
+                }
+            }
+            OnVirusCountChanged?.Invoke();
+        }
+
+        public int GetVirusCountInColumn(int column)
+        {
+            int count = 0;
+            for (int y = 0; y < gridStateService.GridHeight; y++)
+            {
+                if (HasVirusAt(column, y)) count++;
+            }
+            return count;
+        }
+
+        public int GetVirusCountInRow(int row)
+        {
+            int count = 0;
+            for (int x = 0; x < gridStateService.GridWidth; x++)
+            {
+                if (HasVirusAt(x, row)) count++;
+            }
+            return count;
+        }
+
+        public int GetTotalVirusCount()
+        {
+            int count = 0;
+            for (int y = 0; y < gridStateService.GridHeight; y++)
+            {
+                for (int x = 0; x < gridStateService.GridWidth; x++)
+                {
+                    if (HasVirusAt(x, y)) count++;
+                }
+            }
+            return count;
+        }
+
+        public int CountVirusesInColumn(int col, int height)
+        {
+            int count = 0;
+            for (int y = 0; y < height; y++)
+            {
+                if (HasVirusAt(col, y)) count++;
+            }
+            return count;
+        }
+
+        public int CountVirusesInRow(int row, int width)
+        {
+            int count = 0;
+            for (int x = 0; x < width; x++)
+            {
+                if (HasVirusAt(x, row)) count++;
+            }
+            return count;
+        }
+
     }
 }

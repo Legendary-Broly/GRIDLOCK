@@ -1,351 +1,268 @@
 using System;
 using UnityEngine;
 using UnityEngine.UI;
-using NewGameplay.Interfaces;
-using NewGameplay.Services;
-using NewGameplay.Controllers;
-using NewGameplay.Utility;
 using UnityEngine.EventSystems;
-using NewGameplay.Views;
-using NewGameplay.Models;
-using TMPro;
 using System.Collections.Generic;
+using TMPro;
+using NewGameplay.Enums;
+using NewGameplay.Models;
+using NewGameplay.Interfaces;
+using NewGameplay.Controllers;
 
 namespace NewGameplay.Views
 {
     public class GridViewNew : MonoBehaviour
     {
-        [SerializeField] private GameObject gridTilePrefab;
-        [SerializeField] private Transform gridParent;
-        [SerializeField] private GameObject gridLabelPrefab;
-        [SerializeField] private GameObject horizontalDividerPrefab;
-        [SerializeField] private GameObject verticalDividerPrefab;
-        [SerializeField] private Transform dividerLayer;
-        [SerializeField] private GameObject indicatorCornerPrefab;
+        [Header("Grid Prefabs")]
+        public GameObject gridTilePrefab;
+        public GameObject gridLabelPrefab;
+        public GameObject horizontalDividerPrefab;
+        public GameObject verticalDividerPrefab;
+        public GameObject indicatorCornerPrefab;
+        public RectTransform dividerLayer;
 
-        private GameObject[,] tiles;
-        private ColorBlock[,] originalColorBlocks;
-        private TileSlotView[,] slots;
         private IGridService gridService;
         private IVirusService virusService;
         private ITileElementService tileElementService;
+        private ISymbolToolService symbolToolService;
         private IDataFragmentService dataFragmentService;
         private GridInputController inputController;
-        private ISymbolToolService symbolToolService;
+
+        private List<TileSlotView> tileSlots = new List<TileSlotView>();
+        private List<GameObject> dividers = new List<GameObject>();
+        private List<GameObject> indicators = new List<GameObject>();
+
+        private GameObject[,] tiles;
+        private TileSlotView[,] slots;
         private TextMeshProUGUI[] columnLabels;
         private TextMeshProUGUI[] rowLabels;
+
+        private int width;
+        private int height;
+
         private HashSet<int> visibleRows = new();
         private HashSet<int> visibleColumns = new();
 
-        public void Initialize(
-            IGridService gridService,
-            IVirusService virusService,
-            ITileElementService tileElementService,
-            GridInputController inputController,
-            Action<int, int, PointerEventData.InputButton> onTileClicked,
-            ISymbolToolService symbolToolService = null)
-        {
-            this.gridService = gridService;
-            this.virusService = virusService;
-            this.tileElementService = tileElementService;
-            this.inputController = inputController;
-            this.symbolToolService = symbolToolService;
-            int width = gridService.GridWidth;
-            int height = gridService.GridHeight;
+        public event Action<int, int, PointerEventData.InputButton> OnTileClicked;
 
+        public void BuildGrid(
+            int width,
+            int height,
+            System.Func<int, int, int> getColumnVirusCount,
+            System.Func<int, int, int> getRowVirusCount,
+            System.Action<int, int, UnityEngine.EventSystems.PointerEventData.InputButton> onTileClick,
+            System.Action<int, int, TileSlotView> onTileCreated)
+        {
+            this.width = width;
+            this.height = height;
+
+            ClearGrid();
+            ConfigureGridLayout();
+            InitializeGridArrays();
+            CreateGridElements(getColumnVirusCount, getRowVirusCount, onTileCreated);
+            GenerateDividers(width, height);
+        }
+
+        private void ConfigureGridLayout()
+        {
+            var layoutGroup = GetComponent<GridLayoutGroup>();
+            float containerWidth = 1475f;
+            float containerHeight = 960f;
+            float padding = 5f;
+            float panelWidth = containerWidth - padding * 2f;
+            float panelHeight = containerHeight - padding * 2f;
+
+            int totalColumns = width + 1;
+            int totalRows = height + 1;
+            float finalCellWidth = panelWidth / totalColumns;
+            float finalCellHeight = panelHeight / totalRows;
+
+            layoutGroup.padding = new RectOffset(0, 0, 0, 0);
+            layoutGroup.cellSize = new Vector2(finalCellWidth, finalCellHeight);
+            layoutGroup.spacing = Vector2.zero;
+            layoutGroup.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            layoutGroup.constraintCount = totalColumns;
+        }
+
+        private void InitializeGridArrays()
+        {
             tiles = new GameObject[width, height];
-            originalColorBlocks = new ColorBlock[width, height];
-
-            BuildGrid(width, height, onTileClicked);
+            slots = new TileSlotView[width, height];
+            columnLabels = new TextMeshProUGUI[width];
+            rowLabels = new TextMeshProUGUI[height];
         }
 
-        public void SetDataFragmentService(IDataFragmentService service)
+        private void CreateGridElements(
+            System.Func<int, int, int> getColumnVirusCount,
+            System.Func<int, int, int> getRowVirusCount,
+            System.Action<int, int, TileSlotView> onTileCreated)
         {
-            this.dataFragmentService = service;
-            if (slots != null)
+            for (int y = 0; y <= height; y++)
             {
-                for (int y = 0; y < gridService.GridHeight; y++)
+                for (int x = 0; x <= width; x++)
                 {
-                    for (int x = 0; x < gridService.GridWidth; x++)
+                    if (x == 0 && y == 0)
                     {
-                        slots[x, y]?.SetDataFragmentService(service);
+                        InstantiateIndicatorCorner();
+                        continue;
                     }
-                }
-            }
-        }
 
-        public void BuildGrid(int width, int height, Action<int, int, PointerEventData.InputButton> onTileClicked)
-        {
-            try
-            {
-                foreach (Transform child in gridParent)
-                {
-                    Destroy(child.gameObject);
-                }
-
-                if (gridParent == null)
-                {
-                    Debug.LogError("[GridViewNew] gridParent is null!");
-                    return;
-                }
-
-                var layoutGroup = gridParent.GetComponent<GridLayoutGroup>();
-
-                if (layoutGroup == null)
-                {
-                    Debug.LogError("[GridViewNew] Missing GridLayoutGroup on gridParent!");
-                    return;
-                }
-
-                RectTransform panelRect = gridParent.GetComponent<RectTransform>();
-                LayoutRebuilder.ForceRebuildLayoutImmediate(panelRect);
-
-                float containerWidth = panelRect.rect.width;
-                float containerHeight = panelRect.rect.height;
-
-                if (containerWidth <= 0f || containerHeight <= 0f)
-                {
-                    Debug.LogWarning($"[GridViewNew] Skipping BuildGrid: invalid rect dimensions ({containerWidth}x{containerHeight}) on {name}");
-                    return;
-                }
-
-                int totalColumns = width + 1;
-                int totalRows = height + 1;
-
-                float finalCellWidth = containerWidth / totalColumns;
-                float finalCellHeight = containerHeight / totalRows;
-
-                layoutGroup.padding = new RectOffset(0, 0, 0, 0);
-                layoutGroup.spacing = Vector2.zero;
-                layoutGroup.cellSize = new Vector2(finalCellWidth, finalCellHeight);
-                layoutGroup.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-                layoutGroup.constraintCount = totalColumns;
-
-                tiles = new GameObject[width, height];
-                slots = new TileSlotView[width, height];
-                columnLabels = new TextMeshProUGUI[width];
-                rowLabels = new TextMeshProUGUI[height];
-
-                for (int y = 0; y <= height; y++)
-                {
-                    for (int x = 0; x <= width; x++)
+                    if (y == 0)
                     {
-                        if (x == 0 && y == 0)
-                        {
-                            InstantiateIndicatorCorner();
-                            continue;
-                        }
-                        if (y == 0)
-                        {
-                            int col = x - 1;
-                            int virusCount = CountVirusesInColumn(col, height);
-                            columnLabels[col] = InstantiateLabelCell(virusCount.ToString());
-                            continue;
-                        }
-                        if (x == 0)
-                        {
-                            int row = y - 1;
-                            int virusCount = CountVirusesInRow(row, width);
-                            rowLabels[row] = InstantiateLabelCell(virusCount.ToString());
-                            continue;
-                        }
-
-                        int gridX = x - 1;
-                        int gridY = y - 1;
-                        GameObject slotGO = Instantiate(gridTilePrefab, gridParent);
-                        tiles[gridX, gridY] = slotGO;
-                        var slot = slotGO.GetComponent<TileSlotView>();
-                        slot.Initialize(virusService, tileElementService, gridService, gridX, gridY, inputController, symbolToolService);
-                        if (dataFragmentService != null)
-                        {
-                            slot.SetDataFragmentService(dataFragmentService);
-                        }
-                        slots[gridX, gridY] = slot;
-
-                        var btn = slotGO.GetComponentInChildren<Button>();
-                        if (btn == null)
-                            Debug.LogError("[GridViewNew] No Button on tile prefab!");
-                        else
-                            btn.onClick.AddListener(() => onTileClicked(gridX, gridY, PointerEventData.InputButton.Left));
+                        int col = x - 1;
+                        columnLabels[col] = InstantiateLabelCell(getColumnVirusCount(col, height).ToString());
+                        continue;
                     }
-                }
 
-                GenerateDividers(width, height);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogError($"[GridViewNew.BuildGrid] Exception: {ex}");
-                throw;
-            }
-        }
+                    if (x == 0)
+                    {
+                        int row = y - 1;
+                        rowLabels[row] = InstantiateLabelCell(getRowVirusCount(row, width).ToString());
+                        continue;
+                    }
 
-        public void ApplyIndicatorVisibility()
-        {
-            if (columnLabels != null)
-            {
-                for (int x = 0; x < columnLabels.Length; x++)
-                {
-                    if (columnLabels[x] != null)
-                        columnLabels[x].gameObject.SetActive(visibleColumns.Contains(x));
-                }
-            }
-
-            if (rowLabels != null)
-            {
-                for (int y = 0; y < rowLabels.Length; y++)
-                {
-                    if (rowLabels[y] != null)
-                        rowLabels[y].gameObject.SetActive(visibleRows.Contains(y));
+                    CreateGridTile(x - 1, y - 1, onTileCreated);
                 }
             }
         }
 
-        private void GenerateDividers(int width, int height)
+        private void CreateGridTile(int x, int y, System.Action<int, int, TileSlotView> onTileCreated)
         {
-            foreach (Transform child in dividerLayer)
-            {
-                Destroy(child.gameObject);
-            }
+            GameObject slotGO = Instantiate(gridTilePrefab, transform);
+            tiles[x, y] = slotGO;
 
-            for (int x = 0; x < width; x++)
-            {
-                GameObject vLine = Instantiate(verticalDividerPrefab, dividerLayer);
-                vLine.name = $"VLine_{x}";
-                RectTransform rt = vLine.GetComponent<RectTransform>();
-                float anchor = (x + 1f) / (width + 1);
-                rt.anchorMin = new Vector2((x + 1f) / (width + 1), 0f);
-                rt.anchorMax = new Vector2((x + 1f) / (width + 1), 1f);
-                rt.pivot = new Vector2(0.5f, 0.5f);
-                rt.sizeDelta = new Vector2(2f, 0f); // 2-pixel wide
-                rt.anchoredPosition = Vector2.zero;
-            }
+            var slot = slotGO.GetComponent<TileSlotView>();
+            onTileCreated?.Invoke(x, y, slot);
+            slots[x, y] = slot;
 
-            for (int y = 0; y < height; y++)
+            var btn = slotGO.GetComponentInChildren<Button>();
+            if (btn != null)
             {
-                GameObject hLine = Instantiate(horizontalDividerPrefab, dividerLayer);
-                hLine.name = $"HLine_{y}";
-                RectTransform rt = hLine.GetComponent<RectTransform>();
-                float anchor = 1f - ((y + 1f) / (height + 1));
-                rt.anchorMin = new Vector2(0f, 1f - ((y + 1f) / (height + 1)));
-                rt.anchorMax = new Vector2(1f, 1f - ((y + 1f) / (height + 1)));
-                rt.pivot = new Vector2(0.5f, 0.5f);
-                rt.sizeDelta = new Vector2(0f, 2f); // 2-pixel tall
-                rt.anchoredPosition = Vector2.zero;
+                int tx = x;
+                int ty = y;
+                btn.onClick.AddListener(() => OnTileClicked?.Invoke(tx, ty, PointerEventData.InputButton.Left));
             }
         }
 
-        public void RefreshGrid(IGridService gridService)
+        public void RenderTile(int x, int y)
         {
-            Debug.Log($"[GridViewNew] RefreshGrid called for {gridService}");
-            for (int y = 0; y < gridService.GridHeight; y++)
+            if (InBounds(x, y))
+                slots[x, y]?.Refresh();
+        }
+
+        public void RenderGrid()
+        {
+            foreach (var slot in tileSlots)
             {
-                for (int x = 0; x < gridService.GridWidth; x++)
-                {
-                    RefreshTileAt(x, y);
-                }
+                slot.UpdateVisuals();
             }
         }
 
-        public void RefreshTileAt(int x, int y)
+        public void SetInteractable(int x, int y, bool interactable)
         {
-            if (x < 0 || y < 0 || x >= gridService.GridWidth || y >= gridService.GridHeight) return;
-
-            var tile = tiles[x, y];
-            if (tile == null) return;
-            var slotView = tile.GetComponent<TileSlotView>();
-            slotView?.Refresh();
-        }
-
-        public void SetInteractable(int x, int y, bool value)
-        {
-            if (x < 0 || y < 0 || x >= gridService.GridWidth || y >= gridService.GridHeight) return;
+            if (!InBounds(x, y)) return;
 
             var button = tiles[x, y]?.transform.Find("Button")?.GetComponent<Button>();
             if (button != null)
-            {
-                button.interactable = value;
-            }
-        }
-        public void RebindSymbolToolService(ISymbolToolService service)
-        {
-            this.symbolToolService = service;
-            int width = gridService.GridWidth;
-            int height = gridService.GridHeight;
-
-            for (int y = 0; y < height; y++)
-            {
-                for (int x = 0; x < width; x++)
-                {
-                    slots[x, y]?.SetSymbolToolService(service);
-                }
-            }
-        }
-        private int CountVirusesInColumn(int x, int height)
-        {
-            int count = 0;
-            for (int y = 0; y < height; y++)
-            {
-                if (virusService.HasVirusAt(x, y)) count++;
-            }
-            return count;
+                button.interactable = interactable;
         }
 
-        private int CountVirusesInRow(int y, int width)
-        {
-            int count = 0;
-            for (int x = 0; x < width; x++)
-            {
-                if (virusService.HasVirusAt(x, y)) count++;
-            }
-            return count;
-        }
-
-        private TextMeshProUGUI InstantiateLabelCell(string label)
-        {
-            var go = Instantiate(gridLabelPrefab, gridParent);
-            var text = go.GetComponentInChildren<TextMeshProUGUI>();
-            if (text != null) text.text = label;
-            return text;
-        }
-        public void RefreshVirusLabels()
+        public void RefreshVirusLabels(System.Func<int, int, int> countColumnFn, System.Func<int, int, int> countRowFn)
         {
             for (int x = 0; x < columnLabels.Length; x++)
-            {
-                int count = CountVirusesInColumn(x, rowLabels.Length);
-                columnLabels[x].text = count.ToString();
-            }
+                columnLabels[x].text = countColumnFn(x, rowLabels.Length).ToString();
 
             for (int y = 0; y < rowLabels.Length; y++)
-            {
-                int count = CountVirusesInRow(y, columnLabels.Length);
-                rowLabels[y].text = count.ToString();
-            }
+                rowLabels[y].text = countRowFn(y, columnLabels.Length).ToString();
         }
+
         public void SetVisibleIndicators(int rowCount, int colCount, int maxRows, int maxCols)
         {
             visibleRows = PickUniqueRandomIndices(rowCount, maxRows);
             visibleColumns = PickUniqueRandomIndices(colCount, maxCols);
         }
+
+        public void ApplyIndicatorVisibility()
+        {
+            for (int x = 0; x < columnLabels.Length; x++)
+                columnLabels[x].gameObject.SetActive(visibleColumns.Contains(x));
+
+            for (int y = 0; y < rowLabels.Length; y++)
+                rowLabels[y].gameObject.SetActive(visibleRows.Contains(y));
+        }
+
+        private void GenerateDividers(int width, int height)
+        {
+            ClearDividers();
+            CreateVerticalDividers(width);
+            CreateHorizontalDividers(height);
+        }
+
+        private void ClearDividers()
+        {
+            foreach (Transform child in dividerLayer)
+                Destroy(child.gameObject);
+        }
+
+        private void CreateVerticalDividers(int width)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                GameObject vLine = Instantiate(verticalDividerPrefab, dividerLayer);
+                RectTransform rt = vLine.GetComponent<RectTransform>();
+                rt.anchorMin = new Vector2((x + 1f) / (width + 1), 0f);
+                rt.anchorMax = new Vector2((x + 1f) / (width + 1), 1f);
+                rt.sizeDelta = new Vector2(2f, 0f);
+                rt.anchoredPosition = Vector2.zero;
+            }
+        }
+
+        private void CreateHorizontalDividers(int height)
+        {
+            for (int y = 0; y < height; y++)
+            {
+                GameObject hLine = Instantiate(horizontalDividerPrefab, dividerLayer);
+                RectTransform rt = hLine.GetComponent<RectTransform>();
+                rt.anchorMin = new Vector2(0f, 1f - ((y + 1f) / (height + 1)));
+                rt.anchorMax = new Vector2(1f, 1f - ((y + 1f) / (height + 1)));
+                rt.sizeDelta = new Vector2(0f, 2f);
+                rt.anchoredPosition = Vector2.zero;
+            }
+        }
+
+        private TextMeshProUGUI InstantiateLabelCell(string label)
+        {
+            var go = Instantiate(gridLabelPrefab, transform);
+            var text = go.GetComponentInChildren<TextMeshProUGUI>();
+            if (text != null) text.text = label;
+            return text;
+        }
+
+        private void InstantiateIndicatorCorner()
+        {
+            if (indicatorCornerPrefab != null)
+                Instantiate(indicatorCornerPrefab, transform);
+        }
+
+        private void ClearGrid()
+        {
+            foreach (Transform child in transform)
+                Destroy(child.gameObject);
+        }
+
         private HashSet<int> PickUniqueRandomIndices(int count, int maxExclusive)
         {
             var result = new HashSet<int>();
             while (result.Count < Mathf.Min(count, maxExclusive))
-            {
                 result.Add(UnityEngine.Random.Range(0, maxExclusive));
-            }
             return result;
         }
 
-        private void InstantiateEmptyLabel()
+        private bool InBounds(int x, int y) => x >= 0 && y >= 0 && x < width && y < height;
+
+        private void OnDestroy()
         {
-            Instantiate(gridLabelPrefab, gridParent); // leave it blank
-        }
-        private void InstantiateIndicatorCorner()
-        {
-            if (indicatorCornerPrefab != null)
-            {
-                Instantiate(indicatorCornerPrefab, gridParent);
-            }
+            ClearGrid();
         }
     }
 }

@@ -2,34 +2,30 @@ using System.Collections.Generic;
 using UnityEngine;
 using NewGameplay.Interfaces;
 using System;
-using NewGameplay.Controllers;
 using NewGameplay.Enums;
 
 namespace NewGameplay.Services
 {
     public class InjectService : IInjectService
     {
-        private List<string> currentTools = new List<string>();
+        private readonly List<string> currentTools = new List<string>();
         private int selectedToolIndex = -1;
-        private ISymbolToolService symbolToolService;
-        private PayloadManager payloadManager;
+        private readonly IPayloadService payloadService;
+        private readonly ISymbolToolService symbolToolService;
+
         public event Action OnToolsUpdated;
         public event Action OnToolSelected;
 
         public string SelectedTool => selectedToolIndex >= 0 && selectedToolIndex < currentTools.Count ? currentTools[selectedToolIndex] : null;
-        public void SetPayloadManager(PayloadManager payloadManager)
-        {
-            this.payloadManager = payloadManager;
-        }
 
-        public void SetSymbolToolService(ISymbolToolService service)
+        public InjectService(IPayloadService payloadService, ISymbolToolService symbolToolService)
         {
-            this.symbolToolService = service;
+            this.payloadService = payloadService ?? throw new ArgumentNullException(nameof(payloadService));
+            this.symbolToolService = symbolToolService ?? throw new ArgumentNullException(nameof(symbolToolService));
         }
 
         public void ResetForNewRound()
         {
-
             string fourthTool = currentTools.Count > 3 ? currentTools[3] : null;
             currentTools.Clear();
 
@@ -37,9 +33,8 @@ namespace NewGameplay.Services
             currentTools.Add(ToolConstants.FORK_TOOL);
             currentTools.Add(ToolConstants.PIVOT_TOOL);
 
-            if (payloadManager != null && payloadManager.IsPayloadActive(PayloadType.ToolkitExpansion))
+            if (payloadService.IsPayloadActive(PayloadType.ToolkitExpansion))
             {
-
                 string[] availableTools = new string[]
                 {
                     ToolConstants.PURGE_TOOL,
@@ -48,30 +43,22 @@ namespace NewGameplay.Services
                 };
 
                 string randomTool = availableTools[UnityEngine.Random.Range(0, availableTools.Length)];
-
                 currentTools.Add(randomTool);
             }
 
             OnToolsUpdated?.Invoke();
         }
 
-        private int GetActiveToolSlotCount()
-        {
-            // If we have 4 tools, all slots are active
-            if (currentTools.Count >= 4)
-                return 4;
-            
-            // Otherwise, we have the standard 3 slots
-            return 3;
-        }
-
-
         public List<string> GetCurrentTools()
         {
             return new List<string>(currentTools);
         }
+
         public void AddTool(string toolName)
         {
+            if (string.IsNullOrEmpty(toolName))
+                throw new ArgumentException("Tool name cannot be null or empty", nameof(toolName));
+
             if (currentTools.Count >= 4) return;
 
             currentTools.Add(toolName);
@@ -83,19 +70,21 @@ namespace NewGameplay.Services
             if (index < 0 || index >= currentTools.Count) return;
             
             selectedToolIndex = index;
+            symbolToolService.SetSelectedTool(currentTools[index]);
             OnToolSelected?.Invoke();
         }
 
         public void ClearSelectedTool()
         {
             selectedToolIndex = -1;
+            symbolToolService.SetSelectedTool(null);
             OnToolSelected?.Invoke();
         }
 
         public void UseSelectedTool()
         {
             if (selectedToolIndex < 0 || selectedToolIndex >= currentTools.Count) return;
-            // No tool effect logic here. Only selection management.
+            // Tool usage is handled by SymbolToolService
         }
 
         public string GetSelectedTool()
@@ -106,8 +95,11 @@ namespace NewGameplay.Services
         public void RemoveSelectedTool()
         {
             if (selectedToolIndex < 0 || selectedToolIndex >= currentTools.Count) return;
+            
             currentTools.RemoveAt(selectedToolIndex);
             selectedToolIndex = -1;
+            symbolToolService.SetSelectedTool(null);
+            
             OnToolsUpdated?.Invoke();
             OnToolSelected?.Invoke();
         }
@@ -116,9 +108,10 @@ namespace NewGameplay.Services
         {
             currentTools.Clear();
             selectedToolIndex = -1;
+            symbolToolService.SetSelectedTool(null);
+            
             OnToolsUpdated?.Invoke();
             OnToolSelected?.Invoke();
         }
-        
     }
 }

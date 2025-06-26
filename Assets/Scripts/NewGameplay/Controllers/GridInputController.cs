@@ -1,154 +1,174 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using System;
 using NewGameplay.Interfaces;
 using NewGameplay.Views;
-using NewGameplay.Services;
-using UnityEngine.EventSystems;
-using NewGameplay.Controllers;
-using System.Collections;
-using System.Collections.Generic;
+using NewGameplay.Enums;
 
 namespace NewGameplay.Controllers
 {
-    public class GridInputController : MonoBehaviour
+    public class GridInputController : MonoBehaviour, IGridInputController
     {
         [SerializeField] private GridViewNew view;
+
         private IGridService gridService;
         private IInjectService injectService;
         private ITileElementService tileElementService;
-        private SymbolToolService symbolToolService;
+        private ISymbolToolService symbolToolService;
         private IVirusService virusService;
         private ISystemIntegrityService systemIntegrityService;
         private IChatLogService chatLogService;
-        private PayloadManager payloadManager;
+        private IPayloadService payloadService;
         private IDamageOverTimeService dotService;
 
-        public void SetPayloadManager(PayloadManager manager) => payloadManager = manager;
+        public event Action OnGridRendered;
 
         public void Initialize(
             IGridService gridService,
             IInjectService injectService,
             ITileElementService tileElementService,
             GridViewNew gridView,
-            SymbolToolService symbolToolService,
+            ISymbolToolService symbolToolService,
             IChatLogService chatLogService,
-            PayloadManager payloadManager,
-            IDamageOverTimeService dotService
-        )
+            IPayloadService payloadService,
+            IDamageOverTimeService dotService)
         {
-            this.gridService = gridService;
-            this.injectService = injectService;
-            this.tileElementService = tileElementService;
-            this.view = gridView;
-            this.symbolToolService = symbolToolService;
-            this.chatLogService = chatLogService;
-            this.payloadManager = payloadManager;
-            this.dotService = dotService;
+            this.gridService = gridService ?? throw new ArgumentNullException(nameof(gridService));
+            this.injectService = injectService ?? throw new ArgumentNullException(nameof(injectService));
+            this.tileElementService = tileElementService ?? throw new ArgumentNullException(nameof(tileElementService));
+            this.view = gridView ?? throw new ArgumentNullException(nameof(gridView));
+            this.symbolToolService = symbolToolService ?? throw new ArgumentNullException(nameof(symbolToolService));
+            this.chatLogService = chatLogService ?? throw new ArgumentNullException(nameof(chatLogService));
+            this.payloadService = payloadService ?? throw new ArgumentNullException(nameof(payloadService));
+            this.dotService = dotService ?? throw new ArgumentNullException(nameof(dotService));
 
+            WireUpEventHandlers();
+        }
+
+        private void WireUpEventHandlers()
+        {
             if (symbolToolService != null)
             {
-                symbolToolService.OnPivotActivated += OnPivotStateChanged;
-                symbolToolService.OnPivotDeactivated += OnPivotStateChanged;
-                symbolToolService.OnToolUsed += OnToolUsed;
+                symbolToolService.OnPivotActivated += HandlePivotStateChanged;
+                symbolToolService.OnPivotDeactivated += HandlePivotStateChanged;
+                symbolToolService.OnToolUsed += HandleToolUsed;
             }
-
-            InjectServiceLocator.Service = injectService;
         }
 
-        private void OnToolUsed() => injectService?.RemoveSelectedTool();
-
-        private void OnPivotStateChanged() => view.RefreshGrid(gridService);
-
-        public void HandleTileClick(int x, int y, PointerEventData.InputButton button)
+        private void HandlePivotStateChanged()
         {
-            if (button == PointerEventData.InputButton.Right)
-            {
-                if (!gridService.CanUseVirusFlag()) return;
-
-                bool isPivot = symbolToolService != null && symbolToolService.IsPivotActive();
-                bool validFlagTarget = false;
-
-                if (!gridService.IsTileRevealed(x, y) && gridService.GetLastRevealedTile().HasValue)
-                {
-                    var last = gridService.GetLastRevealedTile().Value;
-                    validFlagTarget = isPivot
-                        ? Mathf.Abs(last.x - x) == 1 && Mathf.Abs(last.y - y) == 1
-                        : Mathf.Abs(last.x - x) + Mathf.Abs(last.y - y) == 1;
-                }
-
-                if (validFlagTarget)
-                {
-                    bool isVirus = virusService.HasVirusAt(x, y);
-                    gridService.SetVirusFlag(x, y, isVirus);
-
-                    if (isVirus)
-                        chatLogService?.LogCorrectFlag();
-                    else
-                        chatLogService?.LogIncorrectFlag();
-
-                    gridService.DisableVirusFlag();
-                    view.RefreshTileAt(x, y);
-                }
-
-                return;
-            }
-
-            if (button != PointerEventData.InputButton.Left)
-                return;
-
-            // Use tool if selected
-            string selectedTool = injectService?.GetSelectedTool();
-            if (!string.IsNullOrEmpty(selectedTool))
-            {
-                symbolToolService?.TryPlaceSymbol(x, y, selectedTool);
-                view.RefreshGrid(gridService);
-                return;
-            }
-
-            if (!gridService.CanRevealTile(x, y))
-            {
-                Debug.Log($"[GridInputController] Cannot reveal ({x},{y}) – CanRevealTile==false");
-                return;
-            }
-
-            // Virus Reveal → queue DoT or apply immediate damage
-            if (virusService.HasVirusAt(x, y))
-            {
-                chatLogService?.LogVirusReveal();
-
-                if (payloadManager != null && payloadManager.ShouldSpreadDamage())
-                {
-                    dotService?.AddDot(3, 25f); // ✅ Queue new damage instance
-                }
-                else
-                {
-                    systemIntegrityService?.Decrease(25f);
-                }
-            }
-
-            // ✅ Always tick pending DoT effects after reveal
-            if (payloadManager != null && payloadManager.ShouldSpreadDamage())
-            {
-                dotService?.TickDots();
-            }
-
-            tileElementService?.OnTileRevealed(x, y);
-            gridService.RevealTile(x, y);
-            view.RefreshGrid(gridService);
+            RenderGrid();
         }
+
+        private void HandleToolUsed()
+        {
+            injectService?.RemoveSelectedTool();
+        }
+
+        public void SetVirusService(IVirusService virusService) => this.virusService = virusService ?? throw new ArgumentNullException(nameof(virusService));
+        public void SetSystemIntegrityService(ISystemIntegrityService systemIntegrityService) => this.systemIntegrityService = systemIntegrityService ?? throw new ArgumentNullException(nameof(systemIntegrityService));
+        public void RebindView(GridViewNew newView) => this.view = newView ?? throw new ArgumentNullException(nameof(newView));
 
         public void HandleTileClick(int x, int y)
         {
             HandleTileClick(x, y, PointerEventData.InputButton.Left);
         }
 
-        public void SetVirusService(IVirusService virusService) => this.virusService = virusService;
-        public void SetSystemIntegrityService(ISystemIntegrityService integrityService) => this.systemIntegrityService = integrityService;
-        public void RebindView(GridViewNew newView) => this.view = newView;
+        public void HandleTileClick(int x, int y, PointerEventData.InputButton button)
+        {
+            switch (button)
+            {
+                case PointerEventData.InputButton.Right:
+                    HandleRightClick(x, y);
+                    break;
+                case PointerEventData.InputButton.Left:
+                    HandleLeftClick(x, y);
+                    break;
+            }
+        }
+
+        private void HandleRightClick(int x, int y)
+        {
+            if (!CanHandleRightClick(x, y)) return;
+
+            bool isVirus = virusService.HasVirusAt(x, y);
+            gridService.SetVirusFlag(x, y, isVirus);
+
+            if (isVirus)
+                chatLogService?.LogCorrectFlag();
+            else
+                chatLogService?.LogIncorrectFlag();
+
+            gridService.DisableVirusFlag();
+            RenderGrid();
+        }
+
+        private bool CanHandleRightClick(int x, int y)
+        {
+            if (!gridService.CanUseVirusFlag()) return false;
+
+            bool isPivot = symbolToolService?.IsPivotActive() == true;
+            var last = gridService.GetLastRevealedTile();
+            
+            if (!last.HasValue || gridService.IsTileRevealed(x, y)) return false;
+
+            Vector2Int lastTile = last.Value;
+            return isPivot
+                ? Mathf.Abs(lastTile.x - x) == 1 && Mathf.Abs(lastTile.y - y) == 1
+                : Mathf.Abs(lastTile.x - x) + Mathf.Abs(lastTile.y - y) == 1;
+        }
+
+        private void HandleLeftClick(int x, int y)
+        {
+            if (TryHandleToolPlacement(x, y)) return;
+            if (!gridService.CanRevealTile(x, y)) return;
+
+            HandleVirusReveal(x, y);
+            HandleTileReveal(x, y);
+        }
+
+        private bool TryHandleToolPlacement(int x, int y)
+        {
+            string selectedTool = injectService?.GetSelectedTool();
+            if (string.IsNullOrEmpty(selectedTool)) return false;
+
+            symbolToolService?.TryPlaceSymbol(x, y, selectedTool);
+            RenderGrid();
+            return true;
+        }
+
+        private void HandleVirusReveal(int x, int y)
+        {
+            if (!virusService.HasVirusAt(x, y)) return;
+
+            chatLogService?.LogVirusReveal();
+
+            if (payloadService?.IsPayloadActive(PayloadType.DamageOverTime) == true)
+                dotService?.AddDot(3, 25f);
+            else
+                systemIntegrityService?.Decrease(25f);
+        }
+
+        private void HandleTileReveal(int x, int y)
+        {
+            if (payloadService?.IsPayloadActive(PayloadType.DamageOverTime) == true)
+                dotService?.TickDots();
+
+            tileElementService?.OnTileRevealed(x, y);
+            gridService.RevealTile(x, y);
+            RenderGrid();
+        }
+
+        private void RenderGrid()
+        {
+            view.RenderGrid();
+            OnGridRendered?.Invoke();
+        }
 
         public void ActivatePivotToolAndRefreshGrid()
         {
             symbolToolService?.UsePivotTool();
-            view.RefreshGrid(gridService);
+            RenderGrid();
         }
     }
 }

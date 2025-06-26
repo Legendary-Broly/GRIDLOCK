@@ -2,13 +2,14 @@ using NewGameplay.Interfaces;
 using UnityEngine;
 using NewGameplay.Views;
 using NewGameplay.Services;
+using NewGameplay.Strategies;
+using NewGameplay.ScriptableObjects;
+using NewGameplay.Models;
+using NewGameplay.Controllers;
 using System.Collections.Generic;
 using NewGameplay.Enums;
 using System;
 using System.Linq;
-using NewGameplay.UI;
-using NewGameplay.Data;
-using NewGameplay.ScriptableObjects;
 
 
 namespace NewGameplay.Controllers
@@ -33,14 +34,6 @@ namespace NewGameplay.Controllers
         private bool hasStartedAtLeastOneRound = false;
         private readonly HashSet<TileElementType> chosenTileElements = new();
         private int lastIndicatorRewardTier = 3; // Default to 3 for first round
-        private readonly RoundConfigSO roundConfig;
-        private readonly RoundConfigDatabase roundConfigDatabase;
-        private ISplitGridService splitService;
-
-        [SerializeField] private SplitGridView splitGridView;
-        [SerializeField] private SplitGridController splitGridController;
-        [SerializeField] private GameObject singleGridContainer; 
-
 
 
         public void Initialize(
@@ -54,10 +47,7 @@ namespace NewGameplay.Controllers
             SymbolToolService symbolToolService,
             PayloadManager payloadManager,
             ISystemIntegrityService systemIntegrityService,
-            RoundPopupManager roundPopupManager,
-            SplitGridController splitGridController,
-            SplitGridView splitGridView
-            )
+            RoundPopupManager roundPopupManager)
         {
             this.roundService = roundService;
             this.gridService = gridService;
@@ -70,8 +60,7 @@ namespace NewGameplay.Controllers
             this.payloadManager = payloadManager;
             this.systemIntegrityService = systemIntegrityService;
             this.roundPopupManager = roundPopupManager;
-            this.splitGridController = splitGridController;
-            this.splitGridView = splitGridView;
+
         }
 
         public void StartFirstRound()
@@ -118,36 +107,16 @@ namespace NewGameplay.Controllers
                 onTileElementSelected: (element) =>
                 {
                     lastIndicatorRewardTier = 2;
-
-                    if (roundService.CurrentRound >= 4)
-                    {
-                        splitService.AddTileElement(element); // applies to both grids
-                    }
-                    else
-                    {
-                        tileElementService.AddManualElement(element);
-                        tileElementService.AddToSpawnPool(element);
-                    }
-
+                    tileElementService.AddManualElement(element);
+                    tileElementService.AddToSpawnPool(element);
                     ProceedWithNextRound();
                 },
-
                 onPayloadSelected: (payloadId) =>
                 {
                     lastIndicatorRewardTier = 1;
-
-                    if (roundService.CurrentRound >= 4)
-                    {
-                        splitService.ApplyPayload(payloadId); // new shared method
-                    }
-                    else
-                    {
-                        payloadManager.ActivatePayload(payloadId);
-                    }
-
+                    payloadManager.ActivatePayload(payloadId);
                     ProceedWithNextRound();
                 },
-
                 selectedTileElement: selectedTileElement
             );
         }
@@ -160,50 +129,23 @@ namespace NewGameplay.Controllers
             return lastIndicatorRewardTier;
         }
 
-        public void ProceedWithNextRound()
+        private void ProceedWithNextRound()
         {
             roundService.ResetRound(); // ✅ triggers roundReset event
+            gridStateService.RestoreEchoTiles(); // ✅ REAPPLY echo-retained tiles
 
-            var config = roundService.RoundConfig;
+            int rowCount = lastIndicatorRewardTier;
+            int colCount = lastIndicatorRewardTier;
 
-            if (roundService.CurrentRound >= 4)
-            {
-                Debug.Log("[RoundManager] Enabling Split Grid mode");
-
-                if (inputController != null)
-                    inputController.enabled = false; // Disable single grid input during split grid
-
-                if (singleGridContainer != null)
-                    singleGridContainer.SetActive(false);
-
-                splitGridView.ShowSplitGrid();
-                splitGridController.RevealCenterTiles();
-                var splitConfig = roundService.RoundConfig;
-                splitGridController.ApplyRoundConfig(splitConfig);
-
-                return;
-            }
-
-            gridStateService.RestoreEchoTiles(); // REAPPLY echo-retained tiles
-            gridView.Initialize(gridService, virusService, tileElementService, inputController, inputController.HandleTileClick, symbolToolService);
-
-            if (gridService.GridHeight <= 0 || gridService.GridWidth <= 0)
-            {
-                Debug.LogWarning("[RoundManager] Grid not initialized — skipping indicator setup.");
-                return;
-            }
-
-            int rowCount = Mathf.Min(lastIndicatorRewardTier, gridService.GridHeight - 1);
-            int colCount = Mathf.Min(lastIndicatorRewardTier, gridService.GridWidth - 1);
             gridView.SetVisibleIndicators(rowCount, colCount, gridService.GridHeight, gridService.GridWidth);
 
-            RebuildGrid();
-            gridView.RefreshGrid(gridService);
+            RebuildGrid(); // ✅ ensures grid is built before refresh
+            gridView.RenderGrid();
             gridService.UnlockInteraction();
-
             if (injectController != null)
                 injectController.SetInjectButtonInteractable(true);
         }
+
 
         private void RebuildGrid()
         {
@@ -212,8 +154,19 @@ namespace NewGameplay.Controllers
 
             if (gridView != null)
             {
-                gridView.BuildGrid(width, height, inputController.HandleTileClick);
-                
+                gridView.BuildGrid(
+                    gridService.GridWidth,
+                    gridService.GridHeight,
+                    (col, h) => virusService.CountVirusesInColumn(col, h),
+                    (row, w) => virusService.CountVirusesInRow(row, w),
+                    (x, y, button) => inputController.HandleTileClick(x, y, button),
+                    (x, y, slot) =>
+                    {
+                        slot.Initialize(x, y, gridService, virusService, tileElementService, symbolToolService, (tx, ty, btn) => inputController.HandleTileClick(tx, ty, btn));
+                        slot.SetDataFragmentService(dataFragmentService);
+                    }
+                );
+
                 // Find and rebind the GridInputController
                 if (inputController != null)
                 {

@@ -7,25 +7,25 @@ namespace NewGameplay.Views
     public class CSTrackerView : MonoBehaviour
     {
         [SerializeField] private TextMeshProUGUI csText;
-        private ICodeShardTracker codeShardTracker;
+        private ICodeShardTrackerService codeShardTracker;
 
-        public void Initialize(ICodeShardTracker tracker)
+        public void Initialize(ICodeShardTrackerService tracker)
         {
             codeShardTracker = tracker;
-            codeShardTracker.OnShardCountChanged += UpdateShardText;
-            UpdateShardText();
+            codeShardTracker.OnCodeShardsChanged += UpdateShardText;
+            UpdateShardText(codeShardTracker.CurrentCodeShards);
         }
 
-        private void UpdateShardText()
+        private void UpdateShardText(int shardCount)
         {
-            csText.text = $"$CRIPTS: [{codeShardTracker.CurrentShardCount}]";
+            csText.text = "$CRIPTS: [" + shardCount + "]";
         }
 
         private void OnDestroy()
         {
             if (codeShardTracker != null)
             {
-                codeShardTracker.OnShardCountChanged -= UpdateShardText;
+                codeShardTracker.OnCodeShardsChanged -= UpdateShardText;
             }
         }
     }

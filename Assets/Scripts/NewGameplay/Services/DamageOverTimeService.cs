@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-using NewGameplay.Controllers;
-using NewGameplay.Models;
+using NewGameplay.Interfaces;
 
 namespace NewGameplay.Services
 {
@@ -22,17 +21,19 @@ namespace NewGameplay.Services
         }
 
         private readonly List<DotInstance> activeDots = new();
+        private readonly ISystemIntegrityService systemIntegrityService;
 
-        private readonly SystemIntegrityService systemIntegrityService;
+        public event System.Action<float> OnDamageApplied;
 
-        public DamageOverTimeService(SystemIntegrityService systemIntegrityService)
+        public DamageOverTimeService(ISystemIntegrityService systemIntegrityService)
         {
             this.systemIntegrityService = systemIntegrityService;
         }
 
-        public void AddDot(int ticks, float totalDamage)
+        public void AddDot(int damage, float duration)
         {
-            float perTick = totalDamage / ticks;
+            int ticks = Mathf.CeilToInt(duration);
+            float perTick = damage / (float)ticks;
             activeDots.Add(new DotInstance(ticks, perTick));
             Debug.Log($"[DOT] Virus revealed → added {ticks} damage ticks to DOT queue");
         }
@@ -47,6 +48,7 @@ namespace NewGameplay.Services
             foreach (var dot in activeDots)
             {
                 systemIntegrityService.Decrease(dot.DamagePerTick);
+                OnDamageApplied?.Invoke(dot.DamagePerTick);
                 Debug.Log($"[DOT] Applied {dot.DamagePerTick:F2} damage — {dot.RemainingTicks - 1} ticks remain");
 
                 if (dot.RemainingTicks > 1)
@@ -57,6 +59,9 @@ namespace NewGameplay.Services
             activeDots.AddRange(next);
         }
 
-        public bool HasActiveDots() => activeDots.Count > 0;
+        public void ClearDots()
+        {
+            activeDots.Clear();
+        }
     }
 }

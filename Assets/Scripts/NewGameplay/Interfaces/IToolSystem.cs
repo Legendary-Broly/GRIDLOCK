@@ -13,14 +13,25 @@ namespace NewGameplay.Interfaces
 
     public interface ISymbolToolService
     {
+        // Events
         event Action OnToolUsed;
         event Action OnPivotActivated;
         event Action OnPivotDeactivated;
 
+        // Tool State
+        bool IsPivotActive();
+        string GetSelectedTool();
+        void SetSelectedTool(string tool);
+
+        // Tool Actions
         void UsePurgeTool(int x, int y);
         void UseForkTool(int x, int y);
         void UsePivotTool();
         void DeactivatePivot();
-        bool IsPivotActive();
+        bool TryPlaceSymbol(int x, int y, string symbol);
+
+        // Tool Validation
+        bool CanUseToolAt(int x, int y, string tool);
+        bool IsValidToolPlacement(int x, int y, string tool);
     }
 } 

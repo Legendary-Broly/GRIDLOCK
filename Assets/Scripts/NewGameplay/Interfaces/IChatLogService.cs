@@ -9,13 +9,24 @@ namespace NewGameplay.Interfaces
 {
     public interface IChatLogService
     {
-        void Log(string message, ChatMessageType type = ChatMessageType.Info, ChatDisplayMode mode = ChatDisplayMode.Instant);
-        void SystemMessage(string message, ChatMessageType type = ChatMessageType.Info);
-        void LogRandomInjectLine();
-        void LogTileElementReveal(TileElementType type);
+        // Chat Log Events
         void LogVirusReveal();
+        void LogDataFragmentReveal();
         void LogCorrectFlag();
         void LogIncorrectFlag();
-        void LogDataFragmentReveal();
+        void LogRandomInjectLine();
+        //void LogExtractComplete();
+        //void LogRoundStart(int roundNumber);
+        //void LogRoundComplete(int roundNumber);
+        //void LogGameOver(bool isVictory);
+        
+        // Chat Log State
+        //void ClearLog();
+        //void AddMessage(string message);
+        //void AddSystemMessage(string message);
+        
+        // Chat Log Configuration
+        //void SetMaxMessages(int count);
+        //void SetMessageTimeout(float seconds);
     }
 }

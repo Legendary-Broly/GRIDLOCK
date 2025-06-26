@@ -20,6 +20,7 @@ namespace NewGameplay.Services
         private ITileElementService tileElementService;
         private PayloadManager payloadManager;
 
+        public event Action<Vector2Int> OnFragmentRevealed;
 
         public DataFragmentService(IGridService gridService)
         {
@@ -39,18 +40,18 @@ namespace NewGameplay.Services
 
         public void SpawnFragments(int count)
         {
-
+            Debug.Log($"[DataFragmentService] Spawning {count} fragments");
             fragmentPositions.Clear();
 
             var allPositions = gridService.GetAllEmptyTilePositions();
-
+            Debug.Log($"[DataFragmentService] Found {allPositions.Count} empty positions");
 
             if (tileElementService != null)
             {
                 allPositions = allPositions
                     .Where(pos => tileElementService.GetElementAt(pos.x, pos.y) == TileElementType.Empty)
                     .ToList();
-
+                Debug.Log($"[DataFragmentService] After filtering empty elements, {allPositions.Count} positions remain");
             }
 
             allPositions = allPositions.OrderBy(_ => UnityEngine.Random.value).ToList();
@@ -60,7 +61,7 @@ namespace NewGameplay.Services
                 Vector2Int chosenPos;
 
                 // First fragment: pick randomly
-                if (i == 0 || !payloadManager.ShouldClusterDataFragments())
+                if (i == 0 || (payloadManager != null && !payloadManager.ShouldClusterDataFragments()))
                 {
                     chosenPos = allPositions[0];
                 }
@@ -83,11 +84,10 @@ namespace NewGameplay.Services
 
                 fragmentPositions.Add(chosenPos);
                 gridService.SetSymbol(chosenPos.x, chosenPos.y, FRAGMENT_SYMBOL);
-                RegisterFragmentAt(chosenPos.x, chosenPos.y);
-
+                Debug.Log($"[DataFragmentService] Spawned fragment at ({chosenPos.x}, {chosenPos.y})");
                 allPositions.Remove(chosenPos);
             }
-
+            Debug.Log($"[DataFragmentService] Total fragments spawned: {fragmentPositions.Count}");
         }
         
         private List<Vector2Int> GetAdjacentUnoccupiedTiles(Vector2Int center, List<Vector2Int> validPool)
@@ -124,7 +124,7 @@ namespace NewGameplay.Services
             if (!fragmentPositions.Contains(pos))
             {
                 fragmentPositions.Add(pos);
-
+                Debug.Log($"[DataFragmentService] Registered fragment at ({x}, {y})");
             }
         }
 
@@ -132,6 +132,41 @@ namespace NewGameplay.Services
         {
             bool isFragment = fragmentPositions.Contains(pos);
             return isFragment;
+        }
+
+        public void PlaceFragment(Vector2Int position)
+        {
+            if (!fragmentPositions.Contains(position))
+            {
+                fragmentPositions.Add(position);
+                gridService.SetSymbol(position.x, position.y, FRAGMENT_SYMBOL);
+                RegisterFragmentAt(position.x, position.y);
+                OnFragmentRevealed?.Invoke(position);
+            }
+        }
+
+        public void RemoveFragment(Vector2Int position)
+        {
+            if (fragmentPositions.Contains(position))
+            {
+                fragmentPositions.Remove(position);
+                gridService.SetSymbol(position.x, position.y, "");
+            }
+        }
+
+        public void ClearFragments()
+        {
+            foreach (var pos in fragmentPositions)
+            {
+                gridService.SetSymbol(pos.x, pos.y, "");
+            }
+            fragmentPositions.Clear();
+        }
+
+        public void SetPayloadService(IPayloadService service)
+        {
+            // If you have a PayloadManager, you may want to cast or adapt here
+            // For now, just store as null or ignore if not used
         }
     }
 }
