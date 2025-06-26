@@ -17,3 +17,12 @@ MonoBehaviour:
   gridHeight: 11
   fragmentRequirement: 6
   virusCount: 57
+  useSplitGrid: 1
+  gridAWidth: 7
+  gridAHeight: 9
+  gridBWidth: 7
+  gridBHeight: 9
+  virusCountA: 25
+  virusCountB: 25
+  fragmentRequirementA: 3
+  fragmentRequirementB: 3
