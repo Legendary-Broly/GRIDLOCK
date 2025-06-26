@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using System;
-using NewGameplay.Services;
-using NewGameplay.Controllers;
 
 namespace NewGameplay.Interfaces
 {
@@ -10,18 +8,16 @@ namespace NewGameplay.Interfaces
         event Action OnToolsUpdated;
         event Action OnToolSelected;
 
-        void SetSymbolToolService(ISymbolToolService service);
+        string SelectedTool { get; }
+
         void ResetForNewRound();
         List<string> GetCurrentTools();
+        void AddTool(string toolName);
         void SetSelectedTool(int index);
         void ClearSelectedTool();
         void UseSelectedTool();
         string GetSelectedTool();
         void RemoveSelectedTool();
         void ClearToolBank();
-        void AddTool(string toolName);
-        string SelectedTool { get; }
-        void SetPayloadManager(PayloadManager payloadManager);
-
     }
 } 

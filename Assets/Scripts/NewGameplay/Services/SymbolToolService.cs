@@ -10,7 +10,7 @@ namespace NewGameplay.Services
         private readonly IGridService gridService;
         private readonly IVirusService virusService;
         private bool isPivotActive = false;
-        private Vector2Int? lastRevealedTile = null;
+        private string selectedTool;
 
         public event Action OnToolUsed;
         public event Action OnPivotActivated;
@@ -18,55 +18,58 @@ namespace NewGameplay.Services
 
         public SymbolToolService(IGridService gridService, IVirusService virusService)
         {
-            this.gridService = gridService;
-            this.virusService = virusService;
+            this.gridService = gridService ?? throw new ArgumentNullException(nameof(gridService));
+            this.virusService = virusService ?? throw new ArgumentNullException(nameof(virusService));
+        }
+
+        public bool IsPivotActive() => isPivotActive;
+
+        public string GetSelectedTool() => selectedTool;
+
+        public void SetSelectedTool(string tool)
+        {
+            if (string.IsNullOrEmpty(tool))
+                throw new ArgumentException("Tool cannot be null or empty", nameof(tool));
+
+            selectedTool = tool;
         }
 
         public void UsePurgeTool(int x, int y)
         {
-            if (!gridService.IsInBounds(x, y)) return;
-            
-            // Check if tile is adjacent to last revealed tile
-            if (!IsValidTargetTile(x, y)) return;
+            if (!CanUseToolAt(x, y, ToolConstants.PURGE_TOOL)) return;
 
-            // If tile has virus, remove it
             if (gridService.GetSymbolAt(x, y) == ToolConstants.VIRUS_SYMBOL)
             {
                 gridService.SetSymbol(x, y, "");
                 virusService.RemoveVirus(x, y);
 
-                // Remove virus flag if present
                 if (gridService.IsFlaggedAsVirus(x, y))
                 {
                     gridService.SetVirusFlag(x, y, false);
                 }
             }
             
-            // Reveal the tile
             gridService.RevealTile(x, y, true);
             OnToolUsed?.Invoke();
         }
 
         public void UseForkTool(int x, int y)
         {
-            if (!gridService.IsInBounds(x, y)) return;
-            
-            // Can only fork to revealed tiles
-            if (!gridService.IsTileRevealed(x, y)) return;
+            if (!CanUseToolAt(x, y, ToolConstants.FORK_TOOL)) return;
 
-            // Reset virus flag if present at the target tile
             if (gridService.IsFlaggedAsVirus(x, y))
             {
                 gridService.SetVirusFlag(x, y, false);
             }
 
-            lastRevealedTile = new Vector2Int(x, y);
             gridService.SetLastRevealedTile(new Vector2Int(x, y));
             OnToolUsed?.Invoke();
         }
 
         public void UsePivotTool()
         {
+            if (!CanUseToolAt(0, 0, ToolConstants.PIVOT_TOOL)) return;
+
             isPivotActive = true;
             OnPivotActivated?.Invoke();
             OnToolUsed?.Invoke();
@@ -82,11 +85,11 @@ namespace NewGameplay.Services
             gridService.TriggerGridUpdate();
         }
 
-        public bool IsPivotActive() => isPivotActive;
-
-        public void TryPlaceSymbol(int x, int y, string tool)
+        public bool TryPlaceSymbol(int x, int y, string symbol)
         {
-            switch (tool)
+            if (!IsValidToolPlacement(x, y, symbol)) return false;
+
+            switch (symbol)
             {
                 case ToolConstants.PURGE_TOOL:
                     UsePurgeTool(x, y);
@@ -97,6 +100,44 @@ namespace NewGameplay.Services
                 case ToolConstants.PIVOT_TOOL:
                     UsePivotTool();
                     break;
+                default:
+                    return false;
+            }
+
+            return true;
+        }
+
+        public bool CanUseToolAt(int x, int y, string tool)
+        {
+            if (!gridService.IsInBounds(x, y)) return false;
+
+            switch (tool)
+            {
+                case ToolConstants.PURGE_TOOL:
+                    return IsValidTargetTile(x, y);
+                case ToolConstants.FORK_TOOL:
+                    return gridService.IsTileRevealed(x, y);
+                case ToolConstants.PIVOT_TOOL:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        public bool IsValidToolPlacement(int x, int y, string tool)
+        {
+            if (string.IsNullOrEmpty(tool)) return false;
+
+            switch (tool)
+            {
+                case ToolConstants.PURGE_TOOL:
+                    return CanUseToolAt(x, y, tool);
+                case ToolConstants.FORK_TOOL:
+                    return CanUseToolAt(x, y, tool);
+                case ToolConstants.PIVOT_TOOL:
+                    return CanUseToolAt(x, y, tool);
+                default:
+                    return false;
             }
         }
 
@@ -105,14 +146,12 @@ namespace NewGameplay.Services
             var lastRevealed = gridService.GetLastRevealedTile();
             if (!lastRevealed.HasValue) return false;
 
-            // If pivot is active, check diagonal
             if (isPivotActive)
             {
                 return Mathf.Abs(x - lastRevealed.Value.x) == 1 && 
                        Mathf.Abs(y - lastRevealed.Value.y) == 1;
             }
 
-            // Otherwise check adjacent
             return Mathf.Abs(x - lastRevealed.Value.x) + 
                    Mathf.Abs(y - lastRevealed.Value.y) == 1;
         }

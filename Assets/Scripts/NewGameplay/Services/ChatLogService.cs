@@ -44,9 +44,15 @@ namespace NewGameplay.Services
         }
         public void LogRandomInjectLine()
         {
-            if (injectMessages.Count == 0) return;
-
-            string line = GetRandomLine(injectMessages, ref lastInjectLine);
+            string[] injectLines = new[]
+            {
+                "injecting code...",
+                "payload delivered.",
+                "system breach in progress.",
+                "exploit running.",
+                "accessing backdoor..."
+            };
+            string line = injectLines[UnityEngine.Random.Range(0, injectLines.Length)];
             Log(line, ChatMessageType.Info, ChatDisplayMode.Typewriter);
         }
         public void LogTileElementReveal(TileElementType type)
@@ -106,12 +112,12 @@ namespace NewGameplay.Services
             "good eye.",
             "you saw that too, huh?",
             "marked and dangerous.",
-            "i’d avoid that.",
-            "yes. that one’s ugly.",
+            "i'd avoid that.",
+            "yes. that one's ugly.",
             "your instincts are improving.",
-            "almost like you know what you’re doing.",
-            "spicy little hazard, isn’t it?",
-            "you’re learning.",
+            "almost like you know what you're doing.",
+            "spicy little hazard, isn't it?",
+            "you're learning.",
             "flag confirmed. menace contained."
         };
         private readonly List<string> incorrectFlagLines = new()
@@ -123,14 +129,14 @@ namespace NewGameplay.Services
             "looks safe to me.",
             "false alarm.",
             "clean tile. for now.",
-            "you’re jumping at ghosts.",
+            "you're jumping at ghosts.",
             "no threat detected.",
             "flag wasted. oh well.",
             "too cautious? or just paranoid?",
-            "you’ll regret wasting those.",
-            "that one’s harmless. mostly.",
+            "you'll regret wasting those.",
+            "that one's harmless. mostly.",
             "see? told you to trust me.",
-            "you don’t have to fear everything, you know."
+            "you don't have to fear everything, you know."
         };
         private readonly List<string> injectMessages = new()
         {
@@ -142,12 +148,12 @@ namespace NewGameplay.Services
             "opening new surface layer...",
             "locating stable entry vector...",
             "poke it again. harder this time.",
-            "this won’t backfire. probably.",
+            "this won't backfire. probably.",
             "stand by. injection en route...",
             "compiling breach algorithm...",
             "threading the needle...",
             "spooling another access line...",
-            "let’s crack this grid open.",
+            "let's crack this grid open.",
             "found a soft spot."
         };
         private readonly List<string> codeShardLines = new()
@@ -156,16 +162,16 @@ namespace NewGameplay.Services
             "that looks valuable.",
             "a few more of those and we'll rich.",
             "money in the bank.",
-            "oh, that’s a good one.",
+            "oh, that's a good one.",
             "fragment secured. very shiny.",
             "keep finding those. trust me.",
             "another piece of the puzzle.",
             "currency. in raw form.",
-            "good. we’ll spend that later.",
+            "good. we'll spend that later.",
             "how many do you need? all of them.",
-            "you’re building something. don’t forget.",
+            "you're building something. don't forget.",
             "code is its own kind of weapon.",
-            "hoarding these feels right, doesn’t it?"
+            "hoarding these feels right, doesn't it?"
         };
         private readonly List<string> systemIntegrityLines = new()
         {
@@ -174,13 +180,13 @@ namespace NewGameplay.Services
             "ah, that's better.",
             "better than duct tape.",
             "bandaged. for now.",
-            "we’re holding together with string and spite.",
-            "system’s still twitching. that counts.",
+            "we're holding together with string and spite.",
+            "system's still twitching. that counts.",
             "partial restoration complete. breathe.",
             "that should stop the bleeding.",
             "better. not safe. but better.",
             "stabilizing... there.",
-            "don’t celebrate yet.",
+            "don't celebrate yet.",
             "you earned that patch. probably.",
             "one less alarm bell screaming in the dark."
         };
@@ -193,41 +199,41 @@ namespace NewGameplay.Services
             "lucky you.",
             "fresh ammo in the chamber.",
             "gears are greased again.",
-            "you’ll burn through those too.",
-            "use them wisely. or don’t.",
+            "you'll burn through those too.",
+            "use them wisely. or don't.",
             "full toolkit. just like old times.",
             "rearmed. reloaded. still doomed.",
             "how generous of the system.",
             "no excuses now.",
-            "hope you don’t waste this gift.",
+            "hope you don't waste this gift.",
             "tools online. act accordingly."
         };
         private readonly List<string> dataFragmentLines = new()
         {
             "there it is.",
             "got one.",
-            "that’s the one.",
+            "that's the one.",
             "fragment recovered. lovely.",
-            "it’s not hiding anymore.",
+            "it's not hiding anymore.",
             "you're getting good at this.",
             "i was starting to worry.",
             "extraction target acquired.",
-            "juicy bit of data, isn’t it?",
-            "don’t drop it this time.",
-            "you see that? that’s progress.",
-            "now we’re getting somewhere.",
+            "juicy bit of data, isn't it?",
+            "don't drop it this time.",
+            "you see that? that's progress.",
+            "now we're getting somewhere.",
             "good. now get the rest.",
             "one of many.",
             "see? the system <b>wants</b> you to win.",
             "it was waiting for you.",
-            "now that’s a find.",
+            "now that's a find.",
             "you earned that. i guess.",
             "what a lovely thing to unearth.",
-            "it’s real. i promise.",
-            "feels good, doesn’t it?",
+            "it's real. i promise.",
+            "feels good, doesn't it?",
             "you found it.",
-            "yes. this one’s important.",
-            "don’t show this to anyone.",
+            "yes. this one's important.",
+            "don't show this to anyone.",
         };
     }
 }

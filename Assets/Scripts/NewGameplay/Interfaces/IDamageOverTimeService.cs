@@ -1,11 +1,14 @@
+using System;
 using UnityEngine;
 
-namespace NewGameplay
+namespace NewGameplay.Interfaces
 {
     public interface IDamageOverTimeService
     {
-        void AddDot(int ticks, float totalDamage);
+        event Action<float> OnDamageApplied;
+        
+        void AddDot(int damage, float duration);
         void TickDots();
-        bool HasActiveDots();
+        void ClearDots();
     }
 }

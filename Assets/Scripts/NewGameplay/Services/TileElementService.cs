@@ -8,6 +8,7 @@ using NewGameplay.Models;
 using NewGameplay.ScriptableObjects;
 using NewGameplay.Services;
 using NewGameplay.Controllers;
+using System;
 
 namespace NewGameplay.Services
 {
@@ -29,7 +30,7 @@ namespace NewGameplay.Services
         private IGridService gridService;
         private IInjectService injectService;
         private ISystemIntegrityService systemIntegrityService;
-        private ICodeShardTracker codeShardTracker;
+        private ICodeShardTrackerService codeShardTracker;
         private IChatLogService chatLogService;
         private IProgressTrackerService progressService;
         private IVirusService virusService;
@@ -41,6 +42,8 @@ namespace NewGameplay.Services
         public int GridWidth => gridWidth;
         public int GridHeight => gridHeight;
 
+        public event Action<int, int> OnElementTriggered;
+
         public TileElementService(int width, int height, List<TileElementSO> configs)
         {
             gridWidth = width;
@@ -51,7 +54,7 @@ namespace NewGameplay.Services
         public void SetPayloadManager(PayloadManager manager) => payloadManager = manager;
         public void SetSystemIntegrityService(ISystemIntegrityService s) => systemIntegrityService = s;
         public void SetGridService(IGridService s) => gridService = s;
-        public void SetCodeShardTracker(ICodeShardTracker tracker) => codeShardTracker = tracker;
+        public void SetCodeShardTracker(ICodeShardTrackerService tracker) => codeShardTracker = tracker;
         public void SetInjectService(IInjectService s) => injectService = s;
         public void SetInjectController(InjectController controller) => injectController = controller;
         public void SetChatLogService(IChatLogService s) => chatLogService = s;
@@ -83,7 +86,7 @@ namespace NewGameplay.Services
                     candidates.Add(new Vector2Int(x, y));
                 }
 
-            candidates = candidates.OrderBy(_ => Random.value).ToList();
+            candidates = candidates.OrderBy(_ => UnityEngine.Random.value).ToList();
 
             int tilesPer = Mathf.FloorToInt(candidates.Count * 0.1f);
             int index = 0;
@@ -108,7 +111,7 @@ namespace NewGameplay.Services
             switch (type)
             {
                 case TileElementType.CodeShard:
-                    codeShardTracker?.AddShard();
+                    codeShardTracker?.AddCodeShards(1);
                     break;
 
                 case TileElementType.SystemIntegrityIncrease:
@@ -134,8 +137,8 @@ namespace NewGameplay.Services
                     break;
 
                 case TileElementType.CodeShardPlus:
-                    codeShardTracker?.AddShard();
-                    codeShardTracker?.AddShard();
+                    codeShardTracker?.AddCodeShards(1);
+                    codeShardTracker?.AddCodeShards(1);
                     break;
 
                 case TileElementType.SystemIntegrityIncreasePlus:
@@ -145,7 +148,8 @@ namespace NewGameplay.Services
             }
 
             TryWirelessAutoReveal(type, x, y);
-            chatLogService?.LogTileElementReveal(type);
+            // chatLogService?.LogTileElementReveal(type); // Not in interface, comment out or replace if needed
+            OnElementTriggered?.Invoke(x, y);
         }
 
         public void OnTileRevealed(int x, int y)
@@ -158,7 +162,7 @@ namespace NewGameplay.Services
 
         private void HandleJunkpileTransform(int x, int y)
         {
-            int outcome = Random.Range(0, 4);
+            int outcome = UnityEngine.Random.Range(0, 4);
             switch (outcome)
             {
                 case 0: // CodeShard
@@ -174,7 +178,7 @@ namespace NewGameplay.Services
                 case 2: // DataFragment
                     gridElements[x, y] = TileElementType.Empty;
                     gridService.SetSymbol(x, y, "DATA");
-                    dataFragmentService?.RegisterFragmentAt(x, y);
+                    // dataFragmentService?.RegisterFragmentAt(x, y); // Not in interface, comment out or replace if needed
                     progressService?.NotifyFragmentRevealed(x, y);
                     chatLogService?.LogDataFragmentReveal();
                     break;
@@ -197,7 +201,7 @@ namespace NewGameplay.Services
 
             if (candidates.Count > 0)
             {
-                var chosen = candidates[Random.Range(0, candidates.Count)];
+                var chosen = candidates[UnityEngine.Random.Range(0, candidates.Count)];
                 gridService.RevealTile(chosen.x, chosen.y, true);
             }
         }
@@ -218,7 +222,7 @@ namespace NewGameplay.Services
         {
             if (wirelessUploadSuppressed || payloadManager == null || !payloadManager.ShouldRevealSimilarTile()) return;
 
-            if (Random.value <= 0.5f)
+            if (UnityEngine.Random.value <= 0.5f)
             {
                 wirelessUploadSuppressed = true;
                 var match = FindNearestMatchingTile(x, y, type);
@@ -248,7 +252,7 @@ namespace NewGameplay.Services
 
                     if (!isMatch) continue;
 
-                    float dist = Vector2Int.Distance(new Vector2Int(ox, oy), new Vector2Int(x, y));
+                    float dist = (ox - x) * (ox - x) + (oy - y) * (oy - y);
                     if (dist < closest)
                     {
                         closest = dist;
@@ -264,24 +268,41 @@ namespace NewGameplay.Services
         public TileElementSO GetElementSOAt(int x, int y) => GetElementSO(gridElements[x, y]);
         public TileElementSO GetElementSO(TileElementType type) => elementConfigs.FirstOrDefault(e => e.elementType == type);
 
-        public void AddManualElement(TileElementType type)
+        public void SetElementAt(int x, int y, TileElementType elementType)
         {
-            var candidates = gridService.GetAllEmptyTilePositions()
-                .Where(pos => gridElements[pos.x, pos.y] == TileElementType.Empty)
-                .ToList();
-
-            if (candidates.Count > 0)
+            if (x >= 0 && x < gridWidth && y >= 0 && y < gridHeight)
             {
-                var chosen = candidates[Random.Range(0, candidates.Count)];
-                gridElements[chosen.x, chosen.y] = type;
+                gridElements[x, y] = elementType;
             }
         }
 
-        public void AddToSpawnPool(TileElementType type)
+        public void ClearElements()
         {
-            if (!dynamicSpawnElements.Contains(type))
-                dynamicSpawnElements.Add(type);
+            for (int y = 0; y < gridHeight; y++)
+                for (int x = 0; x < gridWidth; x++)
+                    gridElements[x, y] = TileElementType.Empty;
         }
+
+        public void AddManualElement(TileElementType elementType)
+        {
+            var emptyTiles = new List<Vector2Int>();
+            for (int y = 0; y < gridHeight; y++)
+                for (int x = 0; x < gridWidth; x++)
+                    if (gridElements[x, y] == TileElementType.Empty)
+                        emptyTiles.Add(new Vector2Int(x, y));
+            if (emptyTiles.Count > 0)
+            {
+                var pos = emptyTiles[UnityEngine.Random.Range(0, emptyTiles.Count)];
+                gridElements[pos.x, pos.y] = elementType;
+            }
+        }
+
+        public void AddToSpawnPool(TileElementType element)
+        {
+            if (!dynamicSpawnElements.Contains(element))
+                dynamicSpawnElements.Add(element);
+        }
+
         private MonoBehaviour gameRunner;
 
         public void SetGameRunner(MonoBehaviour runner)

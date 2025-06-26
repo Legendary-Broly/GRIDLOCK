@@ -2117,12 +2117,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridTilePrefab: {fileID: 125028872983614588, guid: 909a29bf736c0ed4b84c577f87c95aae, type: 3}
-  gridParent: {fileID: 2044628732}
   gridLabelPrefab: {fileID: 3419044283886011146, guid: 583c8861166c1874f9f096f8d9d2fe80, type: 3}
   horizontalDividerPrefab: {fileID: 3854813823360930598, guid: 00a896772e0b7bb418b1f1943fec959d, type: 3}
   verticalDividerPrefab: {fileID: 8180981085047075541, guid: c6f5f8de7f548b742aba5257bf237673, type: 3}
-  dividerLayer: {fileID: 457711118}
   indicatorCornerPrefab: {fileID: 2258433216880475918, guid: 9d8d24fb53414e14d9b8a0bee1c9ff43, type: 3}
+  dividerLayer: {fileID: 457711118}
 --- !u!224 &188904233
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3632,7 +3631,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 930555188380910069, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2550352508341975600, guid: 1f4a9fb8ce0baa5419f7b8e1377793a7, type: 3}
       propertyPath: m_Color.b
@@ -4639,6 +4638,7 @@ GameObject:
   - component: {fileID: 435358095}
   - component: {fileID: 435358094}
   - component: {fileID: 435358093}
+  - component: {fileID: 435358097}
   m_Layer: 0
   m_Name: SplitManager
   m_TagString: Untagged
@@ -4673,8 +4673,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8d4f036b133f5184bba15537abe6a120, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridViewA: {fileID: 1371235913}
-  gridViewB: {fileID: 188904232}
 --- !u!114 &435358094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4717,6 +4715,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridViewA: {fileID: 1371235913}
   gridViewB: {fileID: 188904232}
+--- !u!114 &435358097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435358091}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ffd1e255c58314c4bbffd70a326ed94e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  splitGridController: {fileID: 435358096}
+  splitInjectController: {fileID: 435358094}
+  splitExtractController: {fileID: 435358095}
+  splitGridInputController: {fileID: 435358093}
+  splitGridView: {fileID: 630119461}
 --- !u!1 &439217881
 GameObject:
   m_ObjectHideFlags: 0
@@ -7239,7 +7254,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &630119460
 RectTransform:
   m_ObjectHideFlags: 0
@@ -9236,10 +9251,10 @@ RectTransform:
   - {fileID: 1061186267}
   m_Father: {fileID: 630119460}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 358.75, y: -480}
+  m_SizeDelta: {x: 717.5, y: 960}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &893618705
 CanvasRenderer:
@@ -10218,7 +10233,9 @@ MonoBehaviour:
   roundConfigDatabase: {fileID: 11400000, guid: 75b8ca7eac88bc54b9543d750bf93dbc, type: 2}
   gameOverController: {fileID: 800430610}
   chatLogView: {fileID: 439217886}
-  payloadManager: {fileID: 927012053}
+  splitManager: {fileID: 435358097}
+  gridFrame: {fileID: 2113597798}
+  singleGridContainer: {fileID: 2044628731}
 --- !u!4 &1028974840
 Transform:
   m_ObjectHideFlags: 0
@@ -13918,12 +13935,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridTilePrefab: {fileID: 125028872983614588, guid: 909a29bf736c0ed4b84c577f87c95aae, type: 3}
-  gridParent: {fileID: 2044628732}
   gridLabelPrefab: {fileID: 3419044283886011146, guid: 583c8861166c1874f9f096f8d9d2fe80, type: 3}
   horizontalDividerPrefab: {fileID: 3854813823360930598, guid: 00a896772e0b7bb418b1f1943fec959d, type: 3}
   verticalDividerPrefab: {fileID: 8180981085047075541, guid: c6f5f8de7f548b742aba5257bf237673, type: 3}
-  dividerLayer: {fileID: 457711118}
   indicatorCornerPrefab: {fileID: 2258433216880475918, guid: 9d8d24fb53414e14d9b8a0bee1c9ff43, type: 3}
+  dividerLayer: {fileID: 457711118}
 --- !u!1 &1378503957
 GameObject:
   m_ObjectHideFlags: 0
@@ -20773,12 +20789,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridTilePrefab: {fileID: 125028872983614588, guid: 909a29bf736c0ed4b84c577f87c95aae, type: 3}
-  gridParent: {fileID: 2044628732}
   gridLabelPrefab: {fileID: 3419044283886011146, guid: 583c8861166c1874f9f096f8d9d2fe80, type: 3}
   horizontalDividerPrefab: {fileID: 3854813823360930598, guid: 00a896772e0b7bb418b1f1943fec959d, type: 3}
   verticalDividerPrefab: {fileID: 8180981085047075541, guid: c6f5f8de7f548b742aba5257bf237673, type: 3}
-  dividerLayer: {fileID: 457711118}
   indicatorCornerPrefab: {fileID: 2258433216880475918, guid: 9d8d24fb53414e14d9b8a0bee1c9ff43, type: 3}
+  dividerLayer: {fileID: 457711118}
 --- !u!114 &2044628736
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22256,10 +22271,10 @@ RectTransform:
   - {fileID: 298946026847768374}
   m_Father: {fileID: 630119460}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 1116.25, y: -480}
+  m_SizeDelta: {x: 717.5, y: 960}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6912858865043605684
 CanvasRenderer:

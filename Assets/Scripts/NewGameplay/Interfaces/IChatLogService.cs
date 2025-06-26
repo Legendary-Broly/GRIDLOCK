@@ -12,6 +12,9 @@ namespace NewGameplay.Interfaces
         // Chat Log Events
         void LogVirusReveal();
         void LogDataFragmentReveal();
+        void LogCorrectFlag();
+        void LogIncorrectFlag();
+        void LogRandomInjectLine();
         //void LogExtractComplete();
         //void LogRoundStart(int roundNumber);
         //void LogRoundComplete(int roundNumber);

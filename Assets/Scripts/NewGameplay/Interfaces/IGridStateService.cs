@@ -13,17 +13,19 @@ namespace NewGameplay.Interfaces
         int GridWidth { get; }
         int GridHeight { get; }
 
-        string GetGridState(int x, int y);
-        void SetGridState(int x, int y, string symbol);
-
-        TileState GetTileState(int x, int y);
-        void SetTileState(int x, int y, TileState newState);
-
         void SetGridSize(int width, int height);
-        string GetSymbolAt(int x, int y);
-        void SetVirusFlag(int x, int y, bool flagged);
+        string GetGridState(int x, int y);
+        void SetGridState(int x, int y, string state);
+        TileState GetTileState(int x, int y);
+        void SetTileState(int x, int y, TileState state);
         bool IsFlaggedAsVirus(int x, int y);
+        void SetVirusFlag(int x, int y, bool flagged);
         void ClearAllTiles();
+
+        // Service Dependencies
+        void SetPayloadService(IPayloadService service);
+
+        string GetSymbolAt(int x, int y);
         void PrecomputeEchoTiles();
         void RestoreEchoTiles();
     }

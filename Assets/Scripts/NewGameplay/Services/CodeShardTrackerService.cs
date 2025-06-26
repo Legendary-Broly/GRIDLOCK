@@ -3,20 +3,32 @@ using NewGameplay.Interfaces;
 
 namespace NewGameplay.Services
 {
-    public class CodeShardTrackerService : ICodeShardTracker
+    public class CodeShardTrackerService : ICodeShardTrackerService
     {
-        private int currentShardCount;
+        private int currentCodeShards;
         private int shardsRequiredForNextHack = 5;
 
-        public int CurrentShardCount => currentShardCount;
+        public int CurrentCodeShards => currentCodeShards;
         public int ShardsRequiredForNextHack => shardsRequiredForNextHack;
 
-        public event Action OnShardCountChanged;
+        public event Action<int> OnCodeShardsChanged;
 
-        public void AddShard()
+        public void AddCodeShards(int amount)
         {
-            currentShardCount++;
-            OnShardCountChanged?.Invoke();
+            currentCodeShards += amount;
+            OnCodeShardsChanged?.Invoke(currentCodeShards);
+        }
+
+        public void RemoveCodeShards(int amount)
+        {
+            currentCodeShards = Math.Max(0, currentCodeShards - amount);
+            OnCodeShardsChanged?.Invoke(currentCodeShards);
+        }
+
+        public void ResetCodeShards()
+        {
+            currentCodeShards = 0;
+            OnCodeShardsChanged?.Invoke(currentCodeShards);
         }
     }
 }

@@ -4,7 +4,6 @@ using UnityEngine;
 using NewGameplay.Interfaces;
 using NewGameplay.Enums;
 using NewGameplay.Models;
-using NewGameplay.Controllers;
 
 namespace NewGameplay.Services
 {
@@ -12,12 +11,12 @@ namespace NewGameplay.Services
     {
         private readonly IGridStateService gridStateService;
         private readonly IVirusService virusService;
+        private IChatLogService chatLogService;
         private ITileElementService tileElementService;
         private IProgressTrackerService progressService;
         private ISymbolToolService symbolToolService;
-        private IChatLogService chatLogService;
         private IDataFragmentService dataFragmentService;
-        private PayloadManager payloadManager;
+        private IPayloadService payloadService;
 
         private Vector2Int? lastRevealedTile = null;
         private bool gridInteractionLocked = true;
@@ -38,18 +37,19 @@ namespace NewGameplay.Services
             IVirusService virusService,
             IChatLogService chatLogService)
         {
-            this.gridStateService = gridStateService;
-            this.virusService = virusService;
-            this.chatLogService = chatLogService;
+            this.gridStateService = gridStateService ?? throw new ArgumentNullException(nameof(gridStateService));
+            this.virusService = virusService ?? throw new ArgumentNullException(nameof(virusService));
+            this.chatLogService = chatLogService ?? throw new ArgumentNullException(nameof(chatLogService));
+            
             gridStateService.OnGridStateChanged += HandleGridStateChanged;
         }
 
-        public void SetTileElementService(ITileElementService service) => tileElementService = service;
-        public void SetProgressService(IProgressTrackerService service) => progressService = service;
-        public void SetDataFragmentService(IDataFragmentService service) => dataFragmentService = service;
-        public void SetSymbolToolService(ISymbolToolService service) => symbolToolService = service;
-        public void SetChatLogService(IChatLogService chatLogService) => this.chatLogService = chatLogService;
-        public void SetPayloadManager(PayloadManager manager) => payloadManager = manager;
+        public void SetTileElementService(ITileElementService service) => tileElementService = service ?? throw new ArgumentNullException(nameof(service));
+        public void SetProgressService(IProgressTrackerService service) => progressService = service ?? throw new ArgumentNullException(nameof(service));
+        public void SetDataFragmentService(IDataFragmentService service) => dataFragmentService = service ?? throw new ArgumentNullException(nameof(service));
+        public void SetSymbolToolService(ISymbolToolService service) => symbolToolService = service ?? throw new ArgumentNullException(nameof(service));
+        public void SetChatLogService(IChatLogService service) => chatLogService = service ?? throw new ArgumentNullException(nameof(service));
+        public void SetPayloadService(IPayloadService service) => payloadService = service ?? throw new ArgumentNullException(nameof(service));
 
         public void LockInteraction() => gridInteractionLocked = true;
         public void UnlockInteraction() => gridInteractionLocked = false;
@@ -78,7 +78,7 @@ namespace NewGameplay.Services
 
             gridStateService.SetTileState(x, y, TileState.Revealed);
 
-            if (payloadManager != null && payloadManager.ShouldRevealRandomTilesOnVirus() && GetSymbolAt(x, y) == "X")
+            if (payloadService != null && payloadService.IsPayloadActive(PayloadType.Phishing) && GetSymbolAt(x, y) == "X")
             {
                 RevealBonusTiles();
             }

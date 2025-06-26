@@ -1,9 +1,15 @@
 // IRoundService.cs
-public interface IRoundService
+using NewGameplay.ScriptableObjects;
+
+namespace NewGameplay.Interfaces
 {
-    void ResetRound();
-    event System.Action onRoundReset;
-    //void TriggerRoundReset(); // Add this
-    int GetGridSizeForRound(int round);
-    int CurrentRound { get; }
+    public interface IRoundService
+    {
+        void ResetRound();
+        event System.Action onRoundReset;
+        //void TriggerRoundReset(); // Add this
+        int GetGridSizeForRound(int round);
+        int CurrentRound { get; }
+        RoundConfigSO CurrentRoundConfig { get; }
+    }
 }

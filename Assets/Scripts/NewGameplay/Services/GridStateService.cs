@@ -21,6 +21,7 @@ namespace NewGameplay.Services
         public int GridWidth => gridWidth;
         public int GridHeight => gridHeight;
         private IGridService gridService;
+        private IPayloadService payloadService;
 
         public void SetPayloadManager(PayloadManager manager) => payloadManager = manager;
 
@@ -142,6 +143,10 @@ namespace NewGameplay.Services
         public bool IsFlaggedAsVirus(int x, int y)
         {
             return IsValidTile(x, y) && virusFlags[x, y];
+        }
+        public void SetPayloadService(IPayloadService payloadService)
+        {
+            this.payloadService = payloadService;
         }
         public void PrecomputeEchoTiles()
         {

@@ -33,7 +33,8 @@ namespace NewGameplay.Services
             IInjectService inject,
             IDataFragmentService dataFragmentService,
             IVirusService virusService,
-            ITileElementService tileElementService
+            ITileElementService tileElementService,
+            RoundConfigDatabase roundConfigDatabase
             )
         {
             this.gridStateService = gridStateService;
@@ -43,12 +44,14 @@ namespace NewGameplay.Services
             this.dataFragmentService = dataFragmentService;
             this.virusService = virusService;
             this.tileElementService = tileElementService;
-            
+            this.roundConfigDatabase = roundConfigDatabase;
+                        
         }
         public void Initialize(RoundConfigDatabase configDatabase)
         {
             roundConfigDatabase = configDatabase;
         }
+
         public int GetGridSizeForRound(int round)
         {
             return Mathf.Clamp(6 + round, 7, 13); // 7 to 13 inclusive
@@ -67,7 +70,7 @@ namespace NewGameplay.Services
                 }
                 isFirstReset = false;
 
-                // Store the last revealed tile position before resetting
+                // Store the last revealed tile posidtion before resetting
                 Vector2Int? lastRevealedTile = null;
                 if (grid is GridService gridService)
                 {
@@ -144,6 +147,7 @@ namespace NewGameplay.Services
             }
         }
         public int CurrentRound => currentRound;
+        public RoundConfigSO CurrentRoundConfig => roundConfigDatabase?.GetConfigForRound(currentRound);
 
     }
 }

@@ -16,7 +16,7 @@ namespace NewGameplay.Controllers
         private IDataFragmentService dataFragmentService;
         private IRoundService roundService;
         private IGridService gridService;
-        private ICodeShardTracker codeShardTracker;
+        private ICodeShardTrackerService codeShardTracker;
         private ITileElementService tileElementService;
         private IExtractService extractService;
         private RoundPopupManager roundPopupManager;
@@ -44,7 +44,7 @@ namespace NewGameplay.Controllers
             IGridService gridService,
             IProgressTrackerService progressService,
             IDataFragmentService dataFragmentService,
-            ICodeShardTracker codeShardTracker,
+            ICodeShardTrackerService codeShardTracker,
             ITileElementService tileElementService,
             IRoundService roundService,
             RoundPopupManager roundPopupManager,

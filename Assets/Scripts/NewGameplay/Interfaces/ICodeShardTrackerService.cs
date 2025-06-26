@@ -1,11 +1,16 @@
 using System;
+using System.Runtime.CompilerServices;
 
 namespace NewGameplay.Interfaces
 {
-    public interface ICodeShardTracker
+    public interface ICodeShardTrackerService
     {
-        int CurrentShardCount { get; }
-        void AddShard();
-        event Action OnShardCountChanged;
+        event Action<int> OnCodeShardsChanged;
+        
+        
+        int CurrentCodeShards { get; }
+        void AddCodeShards(int amount);
+        void RemoveCodeShards(int amount);
+        void ResetCodeShards();
     }
 }
